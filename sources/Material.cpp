@@ -32,3 +32,12 @@ void Material::unbind()
     TRACE();
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
+
+/*
+Model: arrays of Meshes
+Mesh: memory layout for GL
+    - one material
+Material:
+    - 4 textures
+    - 1 shader
+*/
