@@ -1,8 +1,12 @@
 #ifndef MATERIAL_HPP
 # define MATERIAL_HPP
 
+# include "pch.hpp"
 # include "Texture.hpp"
 # include "Interfaces/IShader.hpp"
+
+namespace NAMESPACE
+{
 
 class Material
 {
@@ -24,11 +28,12 @@ public:
     inline void setDiffuse(Texture *diffuse) { this->diffuse = diffuse; }
     inline void setSpecular(Texture *specular) { this->specular = specular; }
     inline void setEmission(Texture *emission) { this->emission = emission; }
-    inline float &setShininess() { return (shininess); }
     inline void setShininess(float shininess) { this->shininess = shininess; }
 
     void bind();
     void unbind();
 };
+
+}
 
 #endif

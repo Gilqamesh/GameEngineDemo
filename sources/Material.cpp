@@ -4,6 +4,9 @@
 #include "Debug/Trace.hpp"
 #include "Debug/OpenGL.hpp"
 
+namespace NAMESPACE
+{
+
 Material::Material(IShader &shader)
     : shader(shader)
 {
@@ -41,3 +44,5 @@ Material:
     - 4 textures
     - 1 shader
 */
+
+}

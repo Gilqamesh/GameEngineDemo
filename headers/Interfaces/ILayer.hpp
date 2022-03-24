@@ -1,12 +1,12 @@
-#ifndef ISHADER_HPP
-# define ISHADER_HPP
+#ifndef ILAYER_HPP
+# define ILAYER_HPP
 
 # include "pch.hpp"
 
 namespace NAMESPACE
 {
 
-class IShader
+class ILayer
 {
 public:
 };

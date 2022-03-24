@@ -1,10 +1,12 @@
 #ifndef NULLTEXTURE_HPP
 # define NULLTEXTURE_HPP
 
+# include "pch.hpp"
 # include "Texture.hpp"
-# include <string>
-# include <queue>
-# include <mutex>
+
+
+namespace NAMESPACE
+{
 
 /*
 * singleton class
@@ -19,5 +21,7 @@ public:
     ~NullTexture();
     static NullTexture *getInstance();
 };
+
+}
 
 #endif

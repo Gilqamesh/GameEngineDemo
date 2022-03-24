@@ -3,7 +3,7 @@ compile_flags = -Wall -Wextra -Werror -std=c++17
 GLEW = /goinfre/edavid/.brew/Cellar/glew/2.2.0_1
 GLFW = /goinfre/edavid/.brew/Cellar/glfw/3.3.6
 link_flags = -L$(GLEW)/lib -lGLEW -L$(GLFW)/lib -lglfw -framework OpenGL
-compiler = g++
+compiler = clang++
 pwd = $(shell pwd)
 header_directory = $(pwd)/headers
 source_directory = $(pwd)/sources

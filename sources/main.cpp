@@ -1,4 +1,6 @@
-#include "Debug/Log.hpp"
+#include "pch.hpp"
+
+using namespace NAMESPACE;
 
 int main()
 {

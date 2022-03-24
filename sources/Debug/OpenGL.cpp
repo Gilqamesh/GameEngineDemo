@@ -1,6 +1,8 @@
 #include "Debug/OpenGL.hpp"
-#include <iostream>
 #include "Debug/Trace.hpp"
+
+namespace NAMESPACE
+{
 
 void GLClearError(void)
 {
@@ -17,4 +19,6 @@ bool GLLogCall(const char* function, const char* file, int line)
         return (false);
     }
     return (true);
+}
+
 }

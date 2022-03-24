@@ -3,6 +3,9 @@
 #include "Debug/Trace.hpp"
 #include "Vendor/stb_image/stb_image.h"
 
+namespace NAMESPACE
+{
+
 Texture::Texture(const std::string &path)
 {
     TRACE();
@@ -53,4 +56,6 @@ void Texture::setUniform(IShader &shader) const
 {
     /* todo: set shader uniform */
     (void)shader;
+}
+
 }

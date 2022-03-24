@@ -5,9 +5,12 @@
 //                              Vector Class                                  //
 // ************************************************************************** //
 
+# include "pch.hpp"
 # include "Math/Quaternion.hpp"
 # include "Math/Matrix.hpp"
-# include <math.h>
+
+namespace NAMESPACE
+{
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix;
@@ -171,6 +174,8 @@ bool operator!=(const Vector<T, LENGTH> &v1, const Vector<T, LENGTH> &v2)
         if (v1[i] != v2[i])
             return (true);
     return (false);
+}
+
 }
 
 #endif

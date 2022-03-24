@@ -1,0 +1,29 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "/Users/edavid/Desktop/Myrepo/GameEngineDemo/headers/",
+                "/goinfre/edavid/.brew/Cellar/glew/2.2.0_1/include",
+                "/goinfre/edavid/.brew/Cellar/glfw/3.3.6/include"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang++",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "${default}",
+            "mergeConfigurations": false,
+            "browse": {
+                "path": [
+                    "/goinfre/edavid/.brew/Cellar/glew/2.2.0_1",
+                    "/goinfre/edavid/.brew/Cellar/glfw/3.3.6",
+                    "/Users/edavid/Desktop/Myrepo/GameEngineDemo/headers"
+                ]
+            }
+        }
+    ],
+    "version": 4
+}

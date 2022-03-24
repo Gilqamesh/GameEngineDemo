@@ -1,5 +1,8 @@
 #include "Singletons/NullTexture.hpp"
 
+namespace NAMESPACE
+{
+
 NullTexture *NullTexture::thisInstance = nullptr;
 std::mutex NullTexture::thisInstanceMutex;
 
@@ -23,4 +26,6 @@ NullTexture *NullTexture::getInstance()
         thisInstanceMutex.unlock();
     }
     return (thisInstance);
+}
+
 }

@@ -5,8 +5,10 @@
 //                              Quaternion Class                              //
 // ************************************************************************** //
 
-# include <iostream>
-# include <math.h>
+# include "pch.hpp"
+
+namespace NAMESPACE
+{
 
 template <typename T, unsigned int LENGTH>
 class Vector;
@@ -80,5 +82,7 @@ Quaternion<T> operator*(const T &a, const Quaternion<T> &q) { return (Quaternion
 
 template <typename T>
 Quaternion<T> operator/(const Quaternion<T> &q, const T &a) { return (Quaternion<T>(q[0] / a, q[1] / a, q[2] / a, q[3] / a)); }
+
+}
 
 #endif

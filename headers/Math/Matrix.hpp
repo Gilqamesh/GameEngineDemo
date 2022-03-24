@@ -5,10 +5,11 @@
 //                              Matrix Class                                  //
 // ************************************************************************** //
 
-# include <array>
-# include <iostream>
-# include <math.h>
+# include "pch.hpp"
 # include "Vector.hpp"
+
+namespace NAMESPACE
+{
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix;
@@ -377,6 +378,8 @@ bool operator!=(const Matrix<T, ROWS, COLUMNS>& m1, const Matrix<T, ROWS, COLUMN
             if (m1(r, c) == m2(r, c))
                 return (false);
     return (true);
+}
+
 }
 
 #endif

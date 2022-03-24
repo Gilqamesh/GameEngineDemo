@@ -1,8 +1,10 @@
 #ifndef OPENGL_HPP
 # define OPENGL_HPP
 
-# include <GL/glew.h>
-# include <csignal>
+# include "pch.hpp"
+
+namespace NAMESPACE
+{
 
 # define ASSERT(x) if(!(x)) raise(SIGTRAP);
 # define GLCall(x) GLClearError();\
@@ -11,5 +13,7 @@
 
 void GLClearError(void);
 bool GLLogCall(const char* function, const char* file, int line);
+
+}
 
 #endif

@@ -1,7 +1,10 @@
 #ifndef TEXTURE_HPP
 # define TEXTURE_HPP
 
-# include <string>
+# include "pch.hpp"
+
+namespace NAMESPACE
+{
 
 class IShader;
 
@@ -15,5 +18,7 @@ public:
     void unbind() const;
     void setUniform(IShader &shader) const;
 };
+
+}
 
 #endif
