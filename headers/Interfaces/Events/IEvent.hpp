@@ -15,14 +15,14 @@ enum class EventType
     MouseButtonPressed, MouseButtonReleased, MouseMoved, MouseScrolled
 };
 
-enum class EventCategory
+enum EventCategory
 {
     None                     = 0,
     EventCategoryApplication = 1 << 0,
     EventCategoryInput       = 1 << 1,
     EventCategoryKeyboard    = 1 << 2,
     EventCategoryMouse       = 1 << 3,
-    EventCategoryMouseButton = 1 << 4,
+    EventCategoryMouseButton = 1 << 4
 };
 
 class IEvent
@@ -31,8 +31,8 @@ public:
     virtual ~IEvent() = default;
     virtual EventType getEventType() const = 0;
     virtual int getCategories() const = 0;
-    inline bool isInCategory(EventCategory category) const final { return (category & getCategories()); }
-    inline bool isHandled() const final { return (handled); }
+    inline bool isInCategory(EventCategory category) const { return (getCategories() & category); }
+    inline bool isHandled() const { return (handled); }
 private:
     bool handled;
 };

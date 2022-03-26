@@ -14,8 +14,13 @@ This file should serve as a precompiled header, so only put stuff here that will
 # include <mutex>
 # include <array>
 # include <math.h>
-# include <GL/glew.h>
-# include <GLFW/glfw3.h>
+# include "/goinfre/edavid/.brew/Cellar/glew/2.2.0_1/include/GL/glew.h"
+# include "/goinfre/edavid/.brew/Cellar/glfw/3.3.6/include/GLFW/glfw3.h"
 # include <csignal>
+# include <memory>
+# include "Debug/Log.hpp"
+# include "Debug/Trace.hpp"
+# include "Debug/OpenGL.hpp"
+# include <exception>
 
 #endif

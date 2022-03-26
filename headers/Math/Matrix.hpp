@@ -26,32 +26,29 @@ Matrix<T, ROWS, COLUMNS> adjugate(const Matrix<T, ROWS, COLUMNS> &m);
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix
 {
-    friend T                        determinant<T, ROWS, COLUMNS>(const Matrix<T, ROWS, COLUMNS> &m);
-    friend Matrix<T, ROWS, COLUMNS> cofactor<T, ROWS, COLUMNS>(const Matrix<T, ROWS, COLUMNS> &m);
-    friend Matrix<T, ROWS, COLUMNS> adjugate<T, ROWS, COLUMNS>(const Matrix<T, ROWS, COLUMNS> &m);
     private:
         std::array<T, ROWS * COLUMNS>                   entries;
     public:
-        Matrix():                                       entries()              { }
+        Matrix():                                       entries()           { }
         Matrix(T* a)
         {
             for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
                 entries[i] = a[i];
         }
         template <typename... Args>
-        Matrix(const Args & ... args):                  entries({args...})     { }
+        Matrix(const Args & ... args):                  entries({args...})  { }
         ~Matrix()                                                           { }
-        Matrix(const Matrix &m):                        entries(m.entries)        { }
+        Matrix(const Matrix &m):                        entries(m.entries)  { }
         Matrix &operator=(const Matrix &m)                                  { if (this != &m) entries = m.entries; return (*this); }
 
         T*        data(void)        { return (entries.data()); }
         const T*  data(void) const  { return (entries.data()); }
 
         // ONLY FOR SQUARE MATRICES
-        T       determinant(void)       { return (::determinant(*this)); }
-        Matrix &cofactor(void)          { *this = ::cofactor(*this); return (*this); }
+        T       determinant(void)       { return (NAMESPACE::determinant(*this)); }
+        Matrix &cofactor(void)          { *this = NAMESPACE::cofactor(*this); return (*this); }
         Matrix &adjugate(void)          { return (cofactor().transpose()); }
-        Matrix &inverse(void)           { *this = ::adjugate(*this) / determinant(); return (*this); }
+        Matrix &inverse(void)           { *this = NAMESPACE::adjugate(*this) / determinant(); return (*this); }
         Matrix &transpose(void)
         {
             for (unsigned int r = ROWS - 1; r > 0; --r)

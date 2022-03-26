@@ -8,6 +8,12 @@
 namespace NAMESPACE
 {
 
+/*
+ * For now Shaders are hardcoded so that they expect these Textures
+ * In the future there are couple of things to improve:
+ *  - instead of having multiple Textures in Material, there should be a single Texture layout that is a configuration of multiple Textures
+ *  - need to generate shaders runtime so that Textures can be handled dynamically and Materials can have any number of Textures
+ */
 class Material
 {
 Texture *ambient;

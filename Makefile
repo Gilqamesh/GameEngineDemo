@@ -11,8 +11,12 @@ object_directory = $(pwd)/objects
 source_files = $(foreach file,$(shell find sources -type f -not -name "*.h"),$(pwd)/$(file))
 object_files = $(subst $(source_directory),$(object_directory),$(source_files:.cpp=.o))
 header_files = $(foreach file,$(shell find headers -type f),$(pwd)/$(file))
+precompiledheader_file = $(header_directory)/pch.hpp.gch
 
-dependencies: $(name) | $(source_directory) $(header_directory) $(object_directory)
+dependencies: $(name) $(precompiledheader_file) | $(source_directory) $(header_directory) $(object_directory)
+
+$(precompiledheader_file):
+	$(compiler) $(basename $@)
 
 $(name): $(subst $(source_directory),$(object_directory),$(source_files:.cpp=.o)) | $(source_directory) $(header_directory) $(object_directory)
 	$(compiler) $(link_flags) -o $@ $^

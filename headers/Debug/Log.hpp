@@ -7,6 +7,7 @@ namespace NAMESPACE
 {
 
 # define LOG(x) (std::cout << x << std::endl)
+# define LOG_E(x) (std::cerr << x << std::endl)
 # define PRINT_HERE() (LOG(__FILE__ << " " << __LINE__))
 # define TERMINATE(x) {\
     PRINT_HERE();\
