@@ -6,6 +6,9 @@
 namespace NAMESPACE
 {
 
+class MacWindow : public IWindow
+{
+GLFWwindow *window;
 struct MacWindowProps
 {
     MacWindowProps()
@@ -13,23 +16,19 @@ struct MacWindowProps
     int width;
     int height;
     std::string title;
-    std::function<void (IEvent &)> eventCallback;
+    eventCallbackFn eventCallback;
     bool VSync;
-};
-
-class MacWindow : public IWindow
-{
-GLFWwindow *window;
-MacWindowProps windowProps;
+} windowProps;
 public:
     MacWindow(const MacWindowProps &windowProps = MacWindowProps());
     virtual void onUpdate() override;
     virtual inline int getWidth() const override { return (windowProps.width); }
     virtual inline int getHeigh() const override { return (windowProps.height); }
-    virtual inline void *getWindow() const override { return ((void *)window); }
+    /* Try to avoid the need for this */
+    virtual inline GLFWwindow *getWindow() const override { return (window); }
     virtual void setVSync(bool enabled) override;
     virtual inline bool isVSync() override { return (windowProps.VSync); }
-    virtual inline void setEventCallback(const std::function<void (IEvent &)> &fn) override { windowProps.eventCallback = fn; }
+    virtual inline void setEventCallback(const eventCallbackFn &fn) override { windowProps.eventCallback = fn; }
 };
 
 }

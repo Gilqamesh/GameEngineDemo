@@ -15,6 +15,7 @@ public:
     inline float getX() const { return (posX); }
     inline float getY() const { return (posY); }
     virtual inline EventType getEventType() const override { return (EventType::MouseMoved); }
+    static inline EventType getStaticType() { return (EventType::MouseMoved); }
     virtual inline int getCategories() const override { return (EventCategoryMouse | EventCategoryInput); }
 };
 

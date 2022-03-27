@@ -11,6 +11,7 @@ class IEvent;
 class IWindow
 {
 public:
+    typedef typename std::function<void (IEvent &)> eventCallbackFn;
     virtual ~IWindow() = default;
     virtual void onUpdate() = 0;
     virtual int getWidth() const = 0;
@@ -18,7 +19,7 @@ public:
     virtual void *getWindow() const = 0;
     virtual void setVSync(bool enabled) = 0;
     virtual bool isVSync() = 0;
-    virtual void setEventCallback(const std::function<void (IEvent &)> &) = 0;
+    virtual void setEventCallback(const eventCallbackFn &) = 0;
 };
 
 }

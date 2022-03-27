@@ -10,6 +10,7 @@ class AppRenderEvent : public IEvent
 {
 public:
     virtual inline EventType getEventType() const override { return (EventType::AppRender); }
+    static inline EventType getStaticType() { return (EventType::AppRender); }
     virtual inline int getCategories() const override { return (EventCategoryApplication); }
 };
 

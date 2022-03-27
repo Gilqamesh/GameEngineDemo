@@ -43,7 +43,8 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
         glfwTerminate();
         TERMINATE("glewInit() failed");
     }
-    glfwSetWindowUserPointer(window, (void *)&windowProps);
+    glViewport(0, 0, windowProps.width, windowProps.height);
+    glfwSetWindowUserPointer(window, &this->windowProps);
     setVSync(true);
 
     /*
@@ -126,6 +127,7 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
 void MacWindow::onUpdate()
 {
     TRACE();
+    GLCall(glClear(GL_COLOR_BUFFER_BIT));
     glfwPollEvents();
     glfwSwapBuffers(window);
 }

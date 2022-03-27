@@ -11,6 +11,7 @@ class KeyTypedEvent : public IKeyEvent
 public:
     KeyTypedEvent(int keycode);
     virtual inline EventType getEventType() const override { return (EventType::KeyTyped); }
+    static inline EventType getStaticType() { return (EventType::KeyTyped); }
 };
 
 }

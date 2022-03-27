@@ -29,10 +29,11 @@ Trace *Trace::getInstance()
 
 void Trace::add(const std::string &traceMsg)
 {
-    static Trace *traceInstance = getInstance();
+    traceInstanceMutex.lock();
     if (traceInstance->size() > 20)
         traceInstance->pop();
     traceInstance->push(traceMsg);
+    traceInstanceMutex.unlock();
 }
 
 void Trace::printHistory(std::ostream &os)

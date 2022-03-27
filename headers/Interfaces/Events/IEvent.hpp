@@ -28,13 +28,11 @@ enum EventCategory
 class IEvent
 {
 public:
+    bool handled;
     virtual ~IEvent() = default;
     virtual EventType getEventType() const = 0;
     virtual int getCategories() const = 0;
     inline bool isInCategory(EventCategory category) const { return (getCategories() & category); }
-    inline bool isHandled() const { return (handled); }
-private:
-    bool handled;
 };
 
 }

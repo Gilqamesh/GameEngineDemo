@@ -1,15 +1,20 @@
-# include "Debug/Log.hpp"
-# include "Math/Matrix.hpp"
+#include "Applications/MacApplication.hpp"
+#include "Debug/Log.hpp"
 
 using namespace NAMESPACE;
 
 int main()
 {
-    Matrix<int, 4, 4> m(identity_matrix<int, 4, 4>());
-    Matrix<int, 4, 4> n = cofactor(m);
-    Matrix<int, 4, 4> o = adjugate(m);
-    int a = determinant(m);
-    LOG(a << "\n" << m);
-    LOG(n);
-    LOG(o);
+    TRACE();
+    try
+    {
+        MacApplication *application = new MacApplication();
+        application->run();
+        LOG("Yay it worked");
+    }
+    catch (std::exception &e)
+    {
+        Trace::getInstance()->printHistory(std::cout);
+        LOG(e.what());
+    }
 }

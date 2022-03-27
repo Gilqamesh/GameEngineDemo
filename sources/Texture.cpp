@@ -36,6 +36,7 @@ Texture::Texture(const std::string &path)
 
 Texture::~Texture()
 {
+    TRACE();
     GLCall(glDeleteTextures(1, &GL_ID));
 }
 
@@ -54,6 +55,7 @@ void Texture::unbind() const
 
 void Texture::setUniform(IShader &shader) const
 {
+    TRACE();
     /* todo: set shader uniform */
     (void)shader;
 }

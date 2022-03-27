@@ -12,6 +12,8 @@ class MacApplication : public IApplication
 {
 MacWindow *window;
 LayerStack *layerManager;
+bool running;
+bool minimized;
 public:
     MacApplication();
     ~MacApplication();
@@ -19,6 +21,7 @@ public:
     virtual void onEvent(IEvent &e) override;
     virtual void pushLayer(ILayer *layer) override;
     virtual void popLayer(ILayer *layer) override;
+    inline MacWindow *getWindow() { return (window); }
 };
 
 }

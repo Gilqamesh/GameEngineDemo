@@ -11,6 +11,7 @@ class MouseButtonReleasedEvent : public IMouseButtonEvent
 public:
     MouseButtonReleasedEvent(int mouseCode);
     virtual inline EventType getEventType() const override { return (EventType::MouseButtonReleased); }
+    static inline EventType getStaticType() { return (EventType::MouseButtonReleased); }
 };
 
 }

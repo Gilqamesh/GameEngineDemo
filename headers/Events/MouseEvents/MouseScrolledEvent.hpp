@@ -15,6 +15,7 @@ public:
     inline float getOffsetX() const { return (offsetX); }
     inline float getOffsetY() const { return (offsetY); }
     virtual inline EventType getEventType() const override { return (EventType::MouseScrolled); }
+    static inline EventType getStaticType() { return (EventType::MouseScrolled); }
     virtual inline int getCategories() const override { return (EventCategoryMouse | EventCategoryInput); }
 };
 
