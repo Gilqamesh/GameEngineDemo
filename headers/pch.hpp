@@ -22,5 +22,6 @@ This file should serve as a precompiled header, so only put stuff here that will
 # include "Debug/Trace.hpp"
 # include "Debug/OpenGL.hpp"
 # include <exception>
+# include <functional>
 
 #endif

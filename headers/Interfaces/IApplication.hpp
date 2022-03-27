@@ -2,6 +2,7 @@
 # define IAPPLICATION_HPP
 
 # include "pch.hpp"
+# include "Interfaces/ILayerManager.hpp"
 
 namespace NAMESPACE
 {
@@ -24,7 +25,7 @@ public:
     virtual void run() = 0;
     virtual void onEvent(IEvent &e) = 0;
     virtual void pushLayer(ILayer *layer) = 0;
-    virtual void pushOverlay(ILayer *overlay) = 0;
+    virtual void popLayer(ILayer *layer) = 0;
 };
 
 }

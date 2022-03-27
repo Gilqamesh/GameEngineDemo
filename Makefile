@@ -15,8 +15,8 @@ precompiledheader_file = $(header_directory)/pch.hpp.gch
 
 dependencies: $(name) $(precompiledheader_file) | $(source_directory) $(header_directory) $(object_directory)
 
-$(precompiledheader_file):
-	$(compiler) $(basename $@)
+$(precompiledheader_file): $(basename $@)
+	$(compiler) $^
 
 $(name): $(subst $(source_directory),$(object_directory),$(source_files:.cpp=.o)) | $(source_directory) $(header_directory) $(object_directory)
 	$(compiler) $(link_flags) -o $@ $^

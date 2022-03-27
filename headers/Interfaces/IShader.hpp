@@ -9,6 +9,7 @@ namespace NAMESPACE
 class IShader
 {
 public:
+    virtual ~IShader() = default;
 };
 
 }

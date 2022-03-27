@@ -13,7 +13,7 @@ struct MacWindowProps
     int width;
     int height;
     std::string title;
-    void (*eventCallback)(IEvent &e);
+    std::function<void (IEvent &)> eventCallback;
     bool VSync;
 };
 
@@ -29,7 +29,7 @@ public:
     virtual inline void *getWindow() const override { return ((void *)window); }
     virtual void setVSync(bool enabled) override;
     virtual inline bool isVSync() override { return (windowProps.VSync); }
-    virtual inline void setEventCallback(void (*fn)(IEvent &e)) override { windowProps.eventCallback = fn; }
+    virtual inline void setEventCallback(const std::function<void (IEvent &)> &fn) override { windowProps.eventCallback = fn; }
 };
 
 }

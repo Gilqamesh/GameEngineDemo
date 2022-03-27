@@ -3,6 +3,7 @@
 
 # include "Interfaces/IApplication.hpp"
 # include "Windows/MacWindow.hpp"
+# include "LayerManagers/LayerStack.hpp"
 
 namespace NAMESPACE
 {
@@ -10,11 +11,14 @@ namespace NAMESPACE
 class MacApplication : public IApplication
 {
 MacWindow *window;
+LayerStack *layerManager;
 public:
-    void run();
-    void onEvent(IEvent &e);
-    void pushLayer(ILayer *layer);
-    void pushOverlay(ILayer *overlay);
+    MacApplication();
+    ~MacApplication();
+    virtual void run() override;
+    virtual void onEvent(IEvent &e) override;
+    virtual void pushLayer(ILayer *layer) override;
+    virtual void popLayer(ILayer *layer) override;
 };
 
 }
