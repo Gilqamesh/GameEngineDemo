@@ -1,17 +1,19 @@
-#ifndef FIRST_HPP
-# define FIRST_HPP
+#ifndef FIRSTLAYER_HPP
+# define FIRSTLAYER_HPP
 
 # include "Interfaces/ILayer.hpp"
 # include "Applications/MacApplication.hpp"
+# include "Cameras/PerspectiveCamera.hpp"
 
 namespace NAMESPACE
 {
 
-class First : public ILayer
+class FirstLayer : public ILayer
 {
 MacApplication *application;
+PerspectiveCamera *camera;
 public:
-    First(MacApplication *macApplication);
+    FirstLayer(MacApplication *macApplication);
     virtual void onAttach() override;
     virtual void onDetach() override;
     virtual void onEvent(IEvent &e) override;

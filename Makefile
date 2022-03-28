@@ -1,7 +1,7 @@
 name = demo
 compile_flags = -Wall -Wextra -Werror -std=c++17
-GLEW = /goinfre/edavid/.brew/Cellar/glew/2.2.0_1
-GLFW = /goinfre/edavid/.brew/Cellar/glfw/3.3.6
+GLEW = /Users/edavid/.brew/Cellar/glew/2.2.0_1
+GLFW = /Users/edavid/.brew/Cellar/glfw/3.3.6
 link_flags = -L$(GLEW)/lib -lGLEW -L$(GLFW)/lib -lglfw -framework OpenGL
 compiler = clang++
 pwd = $(shell pwd)
@@ -15,8 +15,8 @@ precompiledheader_file = $(header_directory)/pch.hpp.gch
 
 dependencies: $(name) $(precompiledheader_file) | $(source_directory) $(header_directory) $(object_directory)
 
-$(precompiledheader_file): $(basename $@)
-	$(compiler) $^
+$(precompiledheader_file): $(basename $(precompiledheader_file))
+	$(compiler) -I$(header_directory) -I$(GLEW)/include -I$(GLFW)/include $^
 
 $(name): $(subst $(source_directory),$(object_directory),$(source_files:.cpp=.o)) | $(source_directory) $(header_directory) $(object_directory)
 	$(compiler) $(link_flags) -o $@ $^
@@ -35,7 +35,6 @@ $(object_directory)/main.o: $(source_directory)/main.cpp $(header_files) | $(obj
 %.o: $$(subst $(object_directory),$(source_directory),$$(subst .o,.cpp,$$@)) | $(object_directory)
 	cd $(dir $@) && $(compiler) $(compile_flags) -I$(header_directory) -I$(GLEW)/include -I$(GLFW)/include -c $<
 
-
 $(object_directory):
 	mkdir $@ && cd $@ && touch .gitkeep
 $(source_directory):
@@ -49,6 +48,7 @@ all:
 clean:
 	find $(object_directory) -name "*.o" -delete
 	rm -f imgui.ini
+	rm -f $(precompiledheader_file)
 fclean: clean
 	rm -f $(name)
 re: fclean

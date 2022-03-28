@@ -4,6 +4,9 @@
 # include "Interfaces/IApplication.hpp"
 # include "Windows/MacWindow.hpp"
 # include "LayerManagers/LayerStack.hpp"
+# include "Events/WindowEvents/WindowCloseEvent.hpp"
+# include "Events/WindowEvents/WindowResizeEvent.hpp"
+# include "Events/KeyEvents/KeyPressedEvent.hpp"
 
 namespace NAMESPACE
 {
@@ -22,6 +25,11 @@ public:
     virtual void pushLayer(ILayer *layer) override;
     virtual void popLayer(ILayer *layer) override;
     inline MacWindow *getWindow() { return (window); }
+private:
+    inline void close() { running = false; }
+    bool onWindowClose(WindowCloseEvent &e);
+    bool onWindowResize(WindowResizeEvent &e);
+    bool onKeyPress(KeyPressedEvent &e);
 };
 
 }

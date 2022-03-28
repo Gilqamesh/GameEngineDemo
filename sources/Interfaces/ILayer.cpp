@@ -3,6 +3,10 @@
 namespace NAMESPACE
 {
 
-
+ILayer::ILayer(LayerType layerType)
+    : layerType(layerType)
+{
+    
+}
 
 }

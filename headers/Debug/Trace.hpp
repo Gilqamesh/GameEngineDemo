@@ -12,7 +12,6 @@ namespace NAMESPACE
 */
 class Trace : public std::queue<std::string>
 {
-Trace();
 static Trace *traceInstance;
 static std::mutex traceInstanceMutex;
 public:
@@ -20,6 +19,8 @@ public:
     static Trace *getInstance();
     static void add(const std::string &traceMsg);
     void printHistory(std::ostream &os);
+private:
+Trace();
 };
 
 /*

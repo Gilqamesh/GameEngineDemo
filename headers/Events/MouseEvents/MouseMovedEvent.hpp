@@ -6,16 +6,16 @@
 namespace NAMESPACE
 {
 
-class MouseMoved : public IEvent
+class MouseMovedEvent : public IEvent
 {
 float posX;
 float posY;
 public:
-    MouseMoved(float x, float y);
+    MouseMovedEvent(float x, float y);
     inline float getX() const { return (posX); }
     inline float getY() const { return (posY); }
-    virtual inline EventType getEventType() const override { return (EventType::MouseMoved); }
-    static inline EventType getStaticType() { return (EventType::MouseMoved); }
+    virtual inline EventType getEventType() const override { return (EventType::MouseMovedEvent); }
+    static inline EventType getStaticType() { return (EventType::MouseMovedEvent); }
     virtual inline int getCategories() const override { return (EventCategoryMouse | EventCategoryInput); }
 };
 

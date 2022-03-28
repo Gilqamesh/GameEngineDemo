@@ -2,8 +2,7 @@
 #include "Interfaces/Events/IEvent.hpp"
 #include "Interfaces/ILayer.hpp"
 #include "Events/EventDispatcher.hpp"
-#include "Events/WindowEvents/WindowCloseEvent.hpp"
-#include "Events/WindowEvents/WindowResizeEvent.hpp"
+#include "Inputs/GLFWInput.hpp"
 
 namespace NAMESPACE
 {
@@ -49,20 +48,13 @@ void MacApplication::onEvent(IEvent &e)
     TRACE();
     EventDispatcher dispatcher(e);
     dispatcher.dispatch<WindowCloseEvent>([this](IEvent &e) -> bool {
-        (void)e;
-        running = false;
-        return (true);
+        return (this->onWindowClose(dynamic_cast<WindowCloseEvent &>(e)));
     });
     dispatcher.dispatch<WindowResizeEvent>([this](IEvent &e) -> bool {
-        WindowResizeEvent &we = dynamic_cast<WindowResizeEvent &>(e);
-        if (we.getWidth() == 0 || we.getHeight() == 0)
-        {
-            this->minimized = true;
-            return (false);
-        }
-        this->minimized = false;
-        GLCall(glViewport(0, 0, we.getWidth(), we.getHeight()));
-        return (false);
+        return (this->onWindowResize(dynamic_cast<WindowResizeEvent &>(e)));
+    });
+    dispatcher.dispatch<KeyPressedEvent>([this](IEvent &e) -> bool {
+        return (this->onKeyPress(dynamic_cast<KeyPressedEvent &>(e)));
     });
     for (LayerStack::reverse_iterator rit = layerManager->rbegin(); rit != layerManager->rend(); ++rit)
     {
@@ -84,6 +76,34 @@ void MacApplication::popLayer(ILayer *layer)
     TRACE();
     layerManager->popLayer(layer);
     layer->onDetach();
+}
+
+bool MacApplication::onWindowClose(WindowCloseEvent &e)
+{
+    (void)e;
+    this->close();
+    return (true);
+}
+
+bool MacApplication::onWindowResize(WindowResizeEvent &e)
+{
+    if (e.getWidth() == 0 || e.getHeight() == 0)
+    {
+        this->minimized = true;
+        return (false);
+    }
+    this->minimized = false;
+    GLCall(glViewport(0, 0, e.getWidth(), e.getHeight()));
+    return (false);
+}
+
+bool MacApplication::onKeyPress(KeyPressedEvent &e)
+{
+    if (e.getKeycode() == GLFW_KEY_ESCAPE) {
+        this->close();
+        return (true);
+    }
+    return (false);
 }
 
 

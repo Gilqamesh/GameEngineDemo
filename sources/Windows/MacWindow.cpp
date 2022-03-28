@@ -3,7 +3,7 @@
 #include "Events/WindowEvents/WindowCloseEvent.hpp"
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
 #include "Events/MouseEvents/MouseButtonReleasedEvent.hpp"
-#include "Events/MouseEvents/MouseMoved.hpp"
+#include "Events/MouseEvents/MouseMovedEvent.hpp"
 #include "Events/MouseEvents/MouseScrolledEvent.hpp"
 #include "Events/KeyEvents/KeyPressedEvent.hpp"
 #include "Events/KeyEvents/KeyReleasedEvent.hpp"
@@ -84,7 +84,7 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
     glfwSetCursorPosCallback(window, [](GLFWwindow *window, double x, double y){
         MacWindowProps *w = (MacWindowProps *)glfwGetWindowUserPointer(window);
 
-        MouseMoved e(x, y);
+        MouseMovedEvent e(x, y);
         w->eventCallback(e);
     });
     glfwSetScrollCallback(window, [](GLFWwindow *window, double offsetX, double offsetY){
