@@ -1,7 +1,7 @@
 name = demo
 compile_flags = -Wall -Wextra -Werror -std=c++17
-GLEW = /Users/edavid/.brew/Cellar/glew/2.2.0_1
-GLFW = /Users/edavid/.brew/Cellar/glfw/3.3.6
+GLEW = /goinfre/edavid/.brew/Cellar/glew/2.2.0_1
+GLFW = /goinfre/edavid/.brew/Cellar/glfw/3.3.6
 link_flags = -L$(GLEW)/lib -lGLEW -L$(GLFW)/lib -lglfw -framework OpenGL
 compiler = clang++
 pwd = $(shell pwd)
@@ -19,7 +19,7 @@ $(precompiledheader_file): $(basename $(precompiledheader_file))
 	$(compiler) -I$(header_directory) -I$(GLEW)/include -I$(GLFW)/include $^
 
 $(name): $(subst $(source_directory),$(object_directory),$(source_files:.cpp=.o)) | $(source_directory) $(header_directory) $(object_directory)
-	$(compiler) $(link_flags) -o $@ $^
+	@$(compiler) $(link_flags) -o $@ $^
 
 .SECONDEXPANSION:
 $(object_directory)/main.o: $(source_directory)/main.cpp $(header_files) | $(object_directory)

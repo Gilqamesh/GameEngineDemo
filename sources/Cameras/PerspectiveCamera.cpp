@@ -1,5 +1,6 @@
 #include "Cameras/PerspectiveCamera.hpp"
 #include "Events/EventDispatcher.hpp"
+#include "Math/Utils.hpp"
 
 namespace NAMESPACE
 {
@@ -73,6 +74,13 @@ bool PerspectiveCamera::onMouseMove(MouseMovedEvent &e)
 
     if (pitch >  89.0f) pitch = 89.0f;
     if (pitch < -89.0f) pitch = -89.0f;
+
+    front[0] = std::cos(DegreesToRadians(yaw)) * std::cos(DegreesToRadians(pitch));
+    front[1] = std::sin(DegreesToRadians(pitch));
+    front[2] = std::sin(DegreesToRadians(yaw)) * std::cos(DegreesToRadians(pitch));
+    front = normalize(front);
+    right = normalize(cross_product(front, worldUp));
+    up = normalize(cross_product(right, front));
 
     return (true);
 }

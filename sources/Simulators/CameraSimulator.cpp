@@ -1,6 +1,6 @@
 #include "Simulators/CameraSimulator.hpp"
 #include "Applications/MacApplication.hpp"
-#include "Layers/Test/FirstLayer.hpp"
+#include "Layers/PerspectiveCameraLayer.hpp"
 
 namespace NAMESPACE
 {
@@ -10,11 +10,11 @@ void CameraSimulator::main()
     try
     {
         MacApplication *app = new MacApplication();
-        FirstLayer *firstLayer = new FirstLayer(app);
-        app->pushLayer(firstLayer);
+        PerspectiveCameraLayer *perspectiveCameraLayer = new PerspectiveCameraLayer(app);
+        app->pushLayer(perspectiveCameraLayer);
         app->run();
         delete app;
-        delete firstLayer;
+        delete perspectiveCameraLayer;
     }
     catch (std::exception &e)
     {

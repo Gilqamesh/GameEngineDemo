@@ -106,5 +106,4 @@ bool MacApplication::onKeyPress(KeyPressedEvent &e)
     return (false);
 }
 
-
 }
