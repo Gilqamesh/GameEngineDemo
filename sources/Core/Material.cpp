@@ -1,5 +1,5 @@
-#include "./Material.hpp"
-#include "Texture.hpp"
+#include "Core/Material.hpp"
+#include "Core/Texture.hpp"
 #include "Singletons/NullTexture.hpp"
 #include "Debug/Trace.hpp"
 #include "Debug/OpenGL.hpp"

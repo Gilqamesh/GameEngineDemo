@@ -1,4 +1,4 @@
-#include "./Texture.hpp"
+#include "Core/Texture.hpp"
 #include "Debug/OpenGL.hpp"
 #include "Debug/Trace.hpp"
 #include "Vendor/stb_image/stb_image.h"
