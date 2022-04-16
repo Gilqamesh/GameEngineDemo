@@ -9,6 +9,7 @@ namespace NAMESPACE
 {
 
 /*
+ * Does not own it's member objects
  * For now Shaders are hardcoded so that they expect these Textures
  * In the future there are couple of things to improve:
  *  - instead of having multiple Textures in Material, there should be a single Texture layout that is a configuration of multiple Textures
