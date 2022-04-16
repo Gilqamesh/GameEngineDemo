@@ -1,3 +1,4 @@
 shaders
 object factory
 quadtree collision detection (maybe?)
+understand how to use dynamic meshes: how to update index buffer dynamically along with vertex buffer

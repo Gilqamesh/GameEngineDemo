@@ -38,5 +38,4 @@ void VertexBuffer::unbind() const
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
-
 }
