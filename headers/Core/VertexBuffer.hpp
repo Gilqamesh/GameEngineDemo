@@ -22,8 +22,8 @@ public:
     VertexBuffer(GLuint size);
     ~VertexBuffer();
 
-    void bind();
-    void unbind();
+    void bind() const;
+    void unbind() const;
 };
 
 }
