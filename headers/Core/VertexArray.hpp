@@ -3,7 +3,7 @@
 
 # include "pch.hpp"
 # include "Core/VertexBuffer.hpp"
-# include "Core/VertexBufferLayout.hpp"
+# include "Core/VertexLayout.hpp"
 
 namespace NAMESPACE
 {
@@ -15,7 +15,7 @@ public:
     VertexArray();
     ~VertexArray();
 
-    void configure(const VertexBuffer &vb, const VertexBufferLayout &layout) const;
+    void configure(const VertexBuffer &vb, const VertexLayout &layout) const;
 
     void bind() const;
     void unbind() const;

@@ -16,7 +16,7 @@ VertexArray::~VertexArray()
     GLCall(glDeleteVertexArrays(1, &GL_ID));
 }
 
-void VertexArray::configure(const VertexBuffer &vb, const VertexBufferLayout &layout) const
+void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout) const
 {
     bind();
     vb.bind();
@@ -28,7 +28,7 @@ void VertexArray::configure(const VertexBuffer &vb, const VertexBufferLayout &la
         GLCall(glEnableVertexAttribArray(i));
         GLCall(glVertexAttribPointer(i, element._count, element._type, element._normalized,
             layout.getStride(), (const void *)&offset));
-        offset += element._count * VertexBufferElement::getSizeOfType(element._type);
+        offset += element._count * VertexElement::getSizeOfType(element._type);
     }
 }
 

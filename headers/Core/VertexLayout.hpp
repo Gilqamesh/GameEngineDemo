@@ -1,12 +1,12 @@
-#ifndef VERTEXBUFFERLAYOUT_HPP
-# define VERTEXBUFFERLAYOUT_HPP
+#ifndef VERTEXLAYOUT_HPP
+# define VERTEXLAYOUT_HPP
 
 # include "pch.hpp"
 
 namespace NAMESPACE
 {
 
-struct VertexBufferElement
+struct VertexElement
 {
     GLuint  _type;
     GLuint  _count;
@@ -25,12 +25,12 @@ struct VertexBufferElement
     }
 };
 
-class VertexBufferLayout
+class VertexLayout
 {
-std::vector<VertexBufferElement> elements;
-GLuint                           stride;
+std::vector<VertexElement>  elements;
+GLuint                      stride;
 public:
-    VertexBufferLayout();
+    VertexLayout();
 
     template <typename T>
     void push(GLuint count)
@@ -43,24 +43,24 @@ public:
     void push<GLfloat>(GLuint count)
     {
         elements.push_back({ GL_FLOAT, count, GL_FALSE });
-        stride += count * VertexBufferElement::getSizeOfType(GL_FLOAT);
+        stride += count * VertexElement::getSizeOfType(GL_FLOAT);
     }
 
     template <>
     void push<GLuint>(GLuint count)
     {
         elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-        stride += count * VertexBufferElement::getSizeOfType(GL_UNSIGNED_INT);
+        stride += count * VertexElement::getSizeOfType(GL_UNSIGNED_INT);
     }
 
     template <>
     void push<GLubyte>(GLuint count)
     {
         elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-        stride += count * VertexBufferElement::getSizeOfType(GL_UNSIGNED_BYTE);
+        stride += count * VertexElement::getSizeOfType(GL_UNSIGNED_BYTE);
     }
 
-    inline const std::vector<VertexBufferElement> &getElements() const { return (elements); }
+    inline const std::vector<VertexElement> &getElements() const { return (elements); }
     inline GLuint getStride() const { return (stride); }
 };
 
