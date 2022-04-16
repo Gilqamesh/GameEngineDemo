@@ -3,7 +3,7 @@
 
 # include "pch.hpp"
 # include "Texture.hpp"
-# include "Interfaces/IShader.hpp"
+# include "Shader.hpp"
 
 namespace NAMESPACE
 {
@@ -20,10 +20,10 @@ Texture *ambient;
 Texture *diffuse;
 Texture *specular;
 Texture *emission;
-IShader &shader;
+Shader *_shader;
 float shininess;
 public:
-    Material(IShader &shader);
+    Material(Shader *shader);
     inline const Texture *getAmbient() const { return (ambient); }
     inline const Texture *getDiffuse() const { return (diffuse); }
     inline const Texture *getSpecular() const { return (specular); }

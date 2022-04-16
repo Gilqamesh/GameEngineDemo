@@ -7,8 +7,8 @@
 namespace NAMESPACE
 {
 
-Material::Material(IShader &shader)
-    : shader(shader)
+Material::Material(Shader *shader)
+    : _shader(shader)
 {
     ambient = NullTexture::getInstance();
     diffuse = NullTexture::getInstance();
@@ -21,13 +21,13 @@ void Material::bind()
 {
     TRACE();
     ambient->bind(0);
-    ambient->setUniform(shader);
+    ambient->setUniform(_shader);
     diffuse->bind(1);
-    diffuse->setUniform(shader);
+    diffuse->setUniform(_shader);
     specular->bind(2);
-    specular->setUniform(shader);
+    specular->setUniform(_shader);
     emission->bind(3);
-    emission->setUniform(shader);
+    emission->setUniform(_shader);
 }
 
 void Material::unbind()

@@ -8,7 +8,8 @@ This file should serve as a precompiled header, so only put stuff here that will
 # define NAMESPACE idk
 
 # include <iostream>
-# include <string>
+# include <fstream>
+# include <sstream>
 # include <string>
 # include <queue>
 # include <mutex>

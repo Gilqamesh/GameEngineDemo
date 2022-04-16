@@ -6,17 +6,17 @@
 namespace NAMESPACE
 {
 
-class IShader;
+class Shader;
 
 class Texture
 {
-unsigned int GL_ID;
+GLuint GL_ID;
 public:
     Texture(const std::string &path);
     ~Texture();
-    void bind(unsigned int slot = 0) const;
+    void bind(GLuint slot = 0) const;
     void unbind() const;
-    void setUniform(IShader &shader) const;
+    void setUniform(Shader *shader) const;
 };
 
 }
