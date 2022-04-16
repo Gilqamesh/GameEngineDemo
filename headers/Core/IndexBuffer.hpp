@@ -5,10 +5,10 @@
 
 namespace NAMESPACE
 {
-GLuint GL_ID;
-GLuint _count;
 class IndexBuffer
 {
+GLuint GL_ID;
+GLuint _count;
 public:
     IndexBuffer(const void *data, GLuint count);
     ~IndexBuffer();
