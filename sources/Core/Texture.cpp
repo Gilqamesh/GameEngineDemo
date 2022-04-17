@@ -42,6 +42,25 @@ Texture::~Texture()
     GLCall(glDeleteTextures(1, &GL_ID));
 }
 
+Texture::Texture(Texture &&other)
+    : GL_ID(other.GL_ID), _name(other._name)
+{
+    TRACE();
+    other.GL_ID = 0;
+}
+
+Texture &operator=(Texture &&other)
+{
+    TRACE();
+    if (this != &other)
+    {
+        GL_ID = other.GL_ID;
+        _name = other._name;
+        other.GL_ID = 0;
+    }
+    return (*this);
+}
+
 void Texture::bind(unsigned int slot) const
 {
     TRACE();

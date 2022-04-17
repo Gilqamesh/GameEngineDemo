@@ -16,6 +16,13 @@ public:
     Texture(const std::string &texturePath, const std::string &textureName);
     ~Texture();
 
+    // to avoid destruction of OpenGL context
+    Texture(const Texture &other) = delete;
+    Texture &operator=(const Texture &other) = delete;
+
+    Texture(Texture &&other);
+    Texture &operator=(Texture &&other);
+
     void bind(GLuint slot = 0) const;
     void unbind() const;
 
