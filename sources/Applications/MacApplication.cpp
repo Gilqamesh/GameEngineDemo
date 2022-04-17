@@ -37,7 +37,10 @@ void MacApplication::run()
         if (minimized == false)
         {
             for (LayerStack::iterator it = layerManager->begin(); it != layerManager->end(); ++it)
+            {
                 (*it)->onUpdate(deltaTime);
+                (*it)->onRender();
+            }
         }
         window->onUpdate();
     }

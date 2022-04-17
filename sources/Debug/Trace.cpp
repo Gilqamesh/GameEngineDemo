@@ -38,9 +38,9 @@ void Trace::add(const std::string &traceMsg)
 
 void Trace::printHistory(std::ostream &os)
 {
-    os << "Printing Trace History:" << std::endl;
-    for (std::deque<std::string>::const_iterator cit = c.begin(); cit != c.end(); ++cit)
-        os << *cit << std::endl;
+    os << "Trace History:" << std::endl;
+    for (auto message : c)
+        os << message << std::endl;
 }
 
 }

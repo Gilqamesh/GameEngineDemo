@@ -78,7 +78,7 @@ GLint Shader::getUniformLocation(const std::string &name)
 {
     TRACE();
     if (uniformLocationCache.count(name))
-        return (uniformLocationCache.at(name));
+        return (uniformLocationCache[name]);
 
     GLCall(int location = glGetUniformLocation(GL_ID, name.c_str()));
     if (location == -1)
@@ -119,9 +119,9 @@ GLuint Shader::compileShader(GLuint shaderType, const std::string &sourceCode)
     if (compilation_result == GL_FALSE) // shader compilation failed
     {
         int length;
-        GLCall(glGetShaderiv(compilation_result, GL_INFO_LOG_LENGTH, &length));
+        GLCall(glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length));
         char *message = new char[length];
-        GLCall(glGetShaderInfoLog(compilation_result, length, &length, message));
+        GLCall(glGetShaderInfoLog(shader, length, &length, message));
         LOG_E("Failed to compile shader! " << _shaderName);
         LOG_E(message);
         delete [] message;

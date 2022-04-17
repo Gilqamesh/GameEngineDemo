@@ -5,20 +5,23 @@ namespace NAMESPACE
 {
 
 PerspectiveCameraLayer::PerspectiveCameraLayer(MacApplication *macApplication)
-    : ILayer(LayerType::overlay), _macApplication(macApplication)
+    : ILayer(LayerType::overlay), _macApplication(macApplication), _camera(nullptr)
 {
     TRACE();
-    _camera = new PerspectiveCamera(_macApplication->getWindow()->getWindow());
 }
 
 void PerspectiveCameraLayer::onAttach()
 {
     TRACE();
+    _camera = new PerspectiveCamera(_macApplication->getWindow()->getWindow());
+    glfwSetInputMode(_macApplication->getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void PerspectiveCameraLayer::onDetach()
 {
     TRACE();
+    delete _camera;
+    glfwSetInputMode(_macApplication->getWindow()->getWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 }
 
 void PerspectiveCameraLayer::onEvent(IEvent &e)

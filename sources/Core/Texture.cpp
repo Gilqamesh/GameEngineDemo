@@ -7,14 +7,15 @@
 namespace NAMESPACE
 {
 
-Texture::Texture(const std::string &path)
+Texture::Texture(const std::string &texturePath, const std::string &textureName)
+    : _name(textureName)
 {
     TRACE();
 	unsigned char* buffer;
 
 	stbi_set_flip_vertically_on_load(1);
     int width, height, bpp; /* currently we dont need the object to hold these variables */
-	buffer = stbi_load(path.c_str(), &width, &height, &bpp, 4);
+	buffer = stbi_load(texturePath.c_str(), &width, &height, &bpp, 4);
 
 	GLCall(glGenTextures(1, &GL_ID));
 	GLCall(glBindTexture(GL_TEXTURE_2D, GL_ID));

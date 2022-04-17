@@ -23,14 +23,16 @@ Texture *_specular;
 Texture *_emission;
 Shader *_shader;
 float _shininess;
+std::string _name;
 public:
     Material(); // Warning: Shader needs to be set
-    Material(Shader *shader);
+    Material(Shader *shader, const std::string &name);
     inline const Texture *getAmbient() const { return (_ambient); }
     inline const Texture *getDiffuse() const { return (_diffuse); }
     inline const Texture *getSpecular() const { return (_specular); }
     inline const Texture *getEmission() const { return (_emission); }
     inline float getShininess() const { return (_shininess); }
+    inline const std::string &getName() const { return (_name); }
 
     inline void setAmbient(Texture *ambient) { this->_ambient = ambient; }
     inline void setDiffuse(Texture *diffuse) { this->_diffuse = diffuse; }
@@ -38,6 +40,7 @@ public:
     inline void setEmission(Texture *emission) { this->_emission = emission; }
     inline void setShader(Shader *shader) { this->_shader = shader; }
     inline void setShininess(float shininess) { this->_shininess = shininess; }
+    inline void setName(const std::string name) { _name = name; }
 
     void bind();
     void unbind();

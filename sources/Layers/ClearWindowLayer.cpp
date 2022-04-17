@@ -5,6 +5,7 @@ namespace NAMESPACE
 {
 
 ClearWindowLayer::ClearWindowLayer()
+    : ILayer(LayerType::regular)
 {
     TRACE();
 }

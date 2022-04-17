@@ -15,14 +15,16 @@ TriangleMeshesLayer::TriangleMeshesLayer()
 void TriangleMeshesLayer::onAttach()
 {
     TRACE();
+    GLCall(glPolygonMode(GL_FRONT_AND_BACK, GL_FILL));
     shaderManager.addShader("resources/shaders/Triangle/vs.glsl", "resources/shaders/Triangle/fs.glsl", "Triangle");
+    textureManager.addTexture("resources/textures/Red.png", "Red");
     Material material(shaderManager.getShader("Triangle"));
-    material.setDiffuse();
+    material.setDiffuse(textureManager.getTexture("Red"));
     TriangleMeshFactory triangleMeshFactory;
     for (unsigned int i = 0; i < 1; ++i)
     {
         triangleMeshes.push_back(triangleMeshFactory.createStaticMesh(identity_matrix<GLfloat, 4, 4>()));
-        triangleMeshes[i].setMaterial();
+        triangleMeshes[i].setMaterial(material);
     }
 }
 
@@ -51,6 +53,7 @@ void TriangleMeshesLayer::onRender()
     shaderManager.getShader("Triangle")->setMat4("MVP", identity_matrix<GLfloat, 4, 4>());
     for (auto mesh : triangleMeshes)
     {
+        PRINT_HERE();
         mesh.draw();
     }
 }

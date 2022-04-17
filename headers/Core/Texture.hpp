@@ -11,7 +11,7 @@ class Shader;
 class Texture
 {
 GLuint GL_ID;
-std::string name;
+std::string _name;
 public:
     Texture(const std::string &texturePath, const std::string &textureName);
     ~Texture();

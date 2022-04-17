@@ -7,7 +7,7 @@ NullTexture *NullTexture::thisInstance = nullptr;
 std::mutex NullTexture::thisInstanceMutex;
 
 NullTexture::NullTexture()
-    : Texture("./resources/textures/NullTexture.png")
+    : Texture("resources/textures/NullTexture.png", "NullTexture")
 {
 
 }

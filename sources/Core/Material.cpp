@@ -8,6 +8,7 @@ namespace NAMESPACE
 {
 
 Material::Material()
+    : _shader(nullptr), _name("Default Material Name")
 {
     TRACE();
     _ambient = NullTexture::getInstance();
@@ -17,8 +18,8 @@ Material::Material()
     _shininess = 0.5f;
 }
 
-Material::Material(Shader *shader)
-    : _shader(shader)
+Material::Material(Shader *shader, const std::string &name)
+    : _shader(shader), _name(name)
 {
     TRACE();
     _ambient = NullTexture::getInstance();
