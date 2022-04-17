@@ -23,11 +23,8 @@ private:
 Trace();
 };
 
-/*
- * Bug at window->eventCallback(fn), fn gets registered as empty std::function target
- */
-# define TRACE() (Trace::getInstance()->add("File: " + std::string(__FILE__) + ", \t\tfunction: " \
-    + std::string(__FUNCTION__) + ", \t\tline: " + std::to_string(__LINE__)))
+# define TRACE() (Trace::getInstance()->add("File: " + std::string(__FILE__) + ", function: " \
+    + std::string(__FUNCTION__) + ", line: " + std::to_string(__LINE__)))
 // # define TRACE()
 
 }

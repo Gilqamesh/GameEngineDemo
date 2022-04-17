@@ -13,7 +13,7 @@ Vector<GLfloat, 3> _position;
 Vector<GLfloat, 3> _normal;
 Vector<GLfloat, 2> _texCoords;
 public:
-    PositionNormalTextureVertex(const Vector<GLfloat, 3> &position, const Vector<GLfloat, 3> &normal, const Vector<GLfloat, 2> &texCoords)
+    PositionNormalTextureVertex(const Vector<GLfloat, 3> &position, const Vector<GLfloat, 3> &normal, const Vector<GLfloat, 2> &texCoords);
 
     inline void setPosition(const Vector<GLfloat, 3> &position) { _position = position; }
     inline void setNormal(const Vector<GLfloat, 3> &normal) { _normal = normal; }

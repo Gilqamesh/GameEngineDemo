@@ -21,16 +21,38 @@ DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &ind
     TRACE();
 }
 
+DynamicMesh::DynamicMesh(DynamicMesh &&other)
+    // invoke the copy move operator for each OpenGL context objects
+    : _vertexArray(std::move(other._vertexArray)),
+    _vertexBuffer(std::move(other._vertexBuffer)),
+    _indexBuffer(std::move(other._indexBuffer))
+{
+
+}
+
+DynamicMesh &DynamicMesh::operator=(DynamicMesh &&other)
+{
+    if (this != &other)
+    {
+        // invoke the move assignment operator for each OpenGL context objects
+        _vertexArray = std::move(other._vertexArray);
+        _vertexBuffer = std::move(other._vertexBuffer);
+        _indexBuffer = std::move(other._indexBuffer);
+    }
+    return (*this);
+}
+
+/*
+ * unfinished
+ */
 void DynamicMesh::setVertexBuffer(const std::vector<IVertex> vertices)
 {
     TRACE();
     ASSERT(vertices.size());
+    _vertexArray.bind();
     _vertexBuffer.bind();
     GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * vertices[0].getStride(), vertices.data()));
-    _vertexArray.bind();
-    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout());
-    _vertexArray.unbind();
-    _vertexBuffer.unbind();
+    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
 }
 
 void DynamicMesh::draw()

@@ -22,6 +22,13 @@ public:
     VertexBuffer(GLuint size);
     ~VertexBuffer();
 
+    // to avoid destruction of OpenGL context
+    VertexBuffer(const VertexBuffer &other) = delete;
+    VertexBuffer &operator=(const VertexBuffer &other) = delete;
+
+    VertexBuffer(VertexBuffer &&other);
+    VertexBuffer &operator=(VertexBuffer &&other);
+
     void bind() const;
     void unbind() const;
 };

@@ -19,6 +19,13 @@ public:
     StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces);
     StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material);
 
+    // to avoid destruction of OpenGL context objects: VertexArray, VertexBuffer, IndexBuffer
+    StaticMesh(const StaticMesh &other) = delete;
+    StaticMesh &operator=(const StaticMesh &other) = delete;
+
+    StaticMesh(StaticMesh &&other);
+    StaticMesh &operator=(StaticMesh &&other);
+
     void draw();
 };
 

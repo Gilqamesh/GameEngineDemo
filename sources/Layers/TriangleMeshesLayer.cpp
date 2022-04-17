@@ -24,8 +24,9 @@ void TriangleMeshesLayer::onAttach()
     TriangleMeshFactory triangleMeshFactory;
     for (unsigned int i = 0; i < 1; ++i)
     {
-        triangleMeshes.push_back(triangleMeshFactory.createStaticMesh(identity_matrix<GLfloat, 4, 4>()));
-        triangleMeshes[i].setMaterial(redTriangle);
+        Entity mesh = meshManager.createStaticMesh(&triangleMeshFactory, identity_matrix<GLfloat, 4, 4>());
+        meshes.insert(mesh);
+        meshManager.setStaticMeshMaterial(mesh, redTriangle);
     }
 }
 
@@ -52,12 +53,11 @@ void TriangleMeshesLayer::onRender()
 {
     TRACE();
     auto *shader = shaderManager.getShader("Triangle");
+    shader->bind();
     shader->setMat4("MVP", identity_matrix<GLfloat, 4, 4>());
-    for (auto mesh : triangleMeshes)
-    {
-        PRINT_HERE();
-        mesh.draw();
-    }
+    shader->unbind();
+    PRINT_HERE();
+    meshManager.drawMeshes();
 }
 
 }

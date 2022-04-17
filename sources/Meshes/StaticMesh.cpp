@@ -11,7 +11,7 @@ StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<G
 {
     TRACE();
     ASSERT(vertices.size());
-    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout());
+    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
 }
 
 StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material)
@@ -22,7 +22,28 @@ StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<G
 {
     TRACE();
     ASSERT(vertices.size());
-    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout());
+    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
+}
+
+StaticMesh::StaticMesh(StaticMesh &&other)
+    // invoke the copy move operator for each OpenGL context objects
+    : _vertexArray(std::move(other._vertexArray)),
+    _vertexBuffer(std::move(other._vertexBuffer)),
+    _indexBuffer(std::move(other._indexBuffer))
+{
+
+}
+
+StaticMesh &StaticMesh::operator=(StaticMesh &&other)
+{
+    if (this != &other)
+    {
+        // invoke the move assignment operator for each OpenGL context objects
+        _vertexArray = std::move(other._vertexArray);
+        _vertexBuffer = std::move(other._vertexBuffer);
+        _indexBuffer = std::move(other._indexBuffer);
+    }
+    return (*this);
 }
 
 void StaticMesh::draw()

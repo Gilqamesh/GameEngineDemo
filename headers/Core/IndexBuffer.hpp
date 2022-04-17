@@ -13,8 +13,15 @@ public:
     IndexBuffer(const void *data, GLuint count);
     ~IndexBuffer();
 
-    void bind();
-    void unbind();
+    // to avoid destruction of OpenGL context
+    IndexBuffer(const IndexBuffer &other) = delete;
+    IndexBuffer &operator=(const IndexBuffer &other) = delete;
+
+    IndexBuffer(IndexBuffer &&other);
+    IndexBuffer &operator=(IndexBuffer &&other);
+
+    void bind() const;
+    void unbind() const;
 
     inline GLuint getCount() const { return (_count); }
 };

@@ -16,11 +16,28 @@ VertexArray::~VertexArray()
     GLCall(glDeleteVertexArrays(1, &GL_ID));
 }
 
-void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout) const
+VertexArray::VertexArray(VertexArray &&other)
+    : GL_ID(other.GL_ID)
+{
+    other.GL_ID = 0;
+}
+
+VertexArray &VertexArray::operator=(VertexArray &&other)
+{
+    if (this != &other)
+    {
+        GL_ID = other.GL_ID;
+        other.GL_ID = 0;
+    }
+    return (*this);
+}
+
+void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout, const IndexBuffer &ib) const
 {
     TRACE();
     bind();
     vb.bind();
+    ib.bind();
     const auto &elements = layout.getElements();
 
     for (unsigned int i = 0, offset = 0; i < elements.size(); ++i)
@@ -31,6 +48,9 @@ void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout) 
             layout.getStride(), (const void *)&offset));
         offset += element._count * VertexElement::getSizeOfType(element._type);
     }
+    unbind();
+    vb.unbind();
+    ib.unbind();
 }
 
 void VertexArray::bind() const

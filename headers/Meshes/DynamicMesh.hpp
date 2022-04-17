@@ -20,6 +20,13 @@ public:
     DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces);
     DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces, const Material &material);
 
+    // to avoid destruction of OpenGL context objects: VertexArray, VertexBuffer, IndexBuffer
+    DynamicMesh(const DynamicMesh &other) = delete;
+    DynamicMesh &operator=(const DynamicMesh &other) = delete;
+
+    DynamicMesh(DynamicMesh &&other);
+    DynamicMesh &operator=(DynamicMesh &&other);
+
     void setVertexBuffer(const std::vector<IVertex> vertices);
     void draw();
 
