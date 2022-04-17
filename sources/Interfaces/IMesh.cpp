@@ -1,4 +1,5 @@
 #include "Interfaces/IMesh.hpp"
+#include "Debug/Trace.hpp"
 
 namespace NAMESPACE
 {
@@ -6,7 +7,7 @@ namespace NAMESPACE
 IMesh::IMesh(const Material &material)
     : _material(material)
 {
-
+    TRACE();
 }
 
 }

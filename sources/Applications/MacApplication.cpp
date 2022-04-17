@@ -83,6 +83,7 @@ void MacApplication::popLayer(ILayer *layer)
 
 bool MacApplication::onWindowClose(WindowCloseEvent &e)
 {
+    TRACE();
     (void)e;
     this->close();
     return (true);
@@ -90,6 +91,7 @@ bool MacApplication::onWindowClose(WindowCloseEvent &e)
 
 bool MacApplication::onWindowResize(WindowResizeEvent &e)
 {
+    TRACE();
     if (e.getWidth() == 0 || e.getHeight() == 0)
     {
         this->minimized = true;
@@ -102,6 +104,7 @@ bool MacApplication::onWindowResize(WindowResizeEvent &e)
 
 bool MacApplication::onKeyPress(KeyPressedEvent &e)
 {
+    TRACE();
     if (e.getKeycode() == GLFW_KEY_ESCAPE) {
         this->close();
         return (true);

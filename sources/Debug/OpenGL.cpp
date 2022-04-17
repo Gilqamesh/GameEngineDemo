@@ -6,11 +6,13 @@ namespace NAMESPACE
 
 void GLClearError(void)
 {
+    TRACE();
     while (glGetError() != GL_NO_ERROR);
 }
 
 bool GLLogCall(const char* function, const char* file, int line)
 {
+    TRACE();
     while (GLenum error = glGetError())
     {
         Trace::getInstance()->printHistory(std::cout);

@@ -6,7 +6,7 @@ namespace NAMESPACE
 VertexLayout::VertexLayout()
     : stride(0)
 {
-
+    TRACE();
 }
 
 }

@@ -25,8 +25,7 @@ void ShaderManager::addShader(const std::string &vertexShaderPath, const std::st
     if (exists(shaderName) == true)
         throw std::runtime_error("Shader " + shaderName + " already exists in the ShaderManager");
 
-    Shader *shader = new Shader(vertexShaderPath, fragmentShaderPath, shaderName);
-    _shaders[shaderName] = shader;
+    _shaders[shaderName] = new Shader(vertexShaderPath, fragmentShaderPath, shaderName);
 }
 
 void ShaderManager::deleteShader(const std::string &shaderName)
@@ -41,6 +40,7 @@ void ShaderManager::deleteShader(const std::string &shaderName)
 
 void ShaderManager::clear()
 {
+    TRACE();
     for (auto shader : _shaders)
         delete shader.second;
 

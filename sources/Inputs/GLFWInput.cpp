@@ -1,4 +1,5 @@
 #include "Inputs/GLFWInput.hpp"
+#include "Debug/Trace.hpp"
 
 namespace NAMESPACE
 {
@@ -9,16 +10,18 @@ GLFWwindow *GLFWInput::currentWindow = nullptr;
 
 GLFWInput::GLFWInput()
 {
-    
+    TRACE();   
 }
 
 GLFWInput::~GLFWInput()
 {
+    TRACE();
     delete thisInstance;
 }
 
 GLFWInput *GLFWInput::getInstance(GLFWwindow *window)
 {
+    TRACE();
     currentWindow = window;
     if (thisInstance == nullptr)
     {
@@ -31,16 +34,19 @@ GLFWInput *GLFWInput::getInstance(GLFWwindow *window)
 
 bool GLFWInput::isKeyPressed(int keycode) const
 {
+    TRACE();
     return (glfwGetKey(currentWindow, keycode) == GLFW_PRESS);
 }
 
 bool GLFWInput::isMousePressed(int mousecode) const
 {
+    TRACE();
     return (glfwGetMouseButton(currentWindow, mousecode) == GLFW_PRESS);
 }
 
 float GLFWInput::getMouseX() const
 {
+    TRACE();
     double x, y;
     glfwGetCursorPos(currentWindow, &x, &y);
     return (x);
@@ -48,6 +54,7 @@ float GLFWInput::getMouseX() const
 
 float GLFWInput::getMouseY() const
 {
+    TRACE();
     double x, y;
     glfwGetCursorPos(currentWindow, &x, &y);
     return (y);
@@ -55,6 +62,7 @@ float GLFWInput::getMouseY() const
 
 Vector<float, 2> GLFWInput::getMousePosition() const
 {
+    TRACE();
     double x, y;
     glfwGetCursorPos(currentWindow, &x, &y);
     return (Vector<float, 2>((float)x, (float)y));

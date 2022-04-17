@@ -25,8 +25,7 @@ void TextureManager::addTexture(const std::string &texturePath, const std::strin
     if (exists(textureName) == true)
         throw std::runtime_error("Texture " + textureName + " already exists in the TextureManager");
 
-    Texture *texture = new Texture(texturePath, textureName);
-    _textures[textureName] = texture;
+    _textures[textureName] = new Texture(texturePath, textureName);
 }
 
 void TextureManager::deleteTexture(const std::string &textureName)

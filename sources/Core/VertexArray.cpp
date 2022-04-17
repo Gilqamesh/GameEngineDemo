@@ -18,6 +18,7 @@ VertexArray::~VertexArray()
 
 void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout) const
 {
+    TRACE();
     bind();
     vb.bind();
     const auto &elements = layout.getElements();

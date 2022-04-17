@@ -5,6 +5,7 @@
 # include "Meshes/StaticMesh.hpp"
 # include "Managers/ShaderManager.hpp"
 # include "Managers/TextureManager.hpp"
+# include "Managers/MaterialManager.hpp"
 
 namespace NAMESPACE
 {
@@ -14,6 +15,7 @@ class TriangleMeshesLayer : public ILayer
 std::vector<StaticMesh> triangleMeshes;
 ShaderManager shaderManager;
 TextureManager textureManager;
+MaterialManager materialManager;
 public:
     TriangleMeshesLayer();
     virtual void onAttach() override;
