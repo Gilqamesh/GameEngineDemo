@@ -7,7 +7,7 @@
 namespace NAMESPACE
 {
 
-class PositionNormalVertex
+class PositionNormalVertex : IVertex
 {
 Vector<GLfloat, 3> _position;
 Vector<GLfloat, 3> _normal;

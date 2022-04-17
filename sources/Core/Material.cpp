@@ -7,6 +7,16 @@
 namespace NAMESPACE
 {
 
+Material::Material()
+{
+    TRACE();
+    _ambient = NullTexture::getInstance();
+    _diffuse = NullTexture::getInstance();
+    _specular = NullTexture::getInstance();
+    _emission = NullTexture::getInstance();
+    _shininess = 0.5f;
+}
+
 Material::Material(Shader *shader)
     : _shader(shader)
 {

@@ -6,23 +6,23 @@
 # include "Core/VertexArray.hpp"
 # include "Core/VertexBuffer.hpp"
 # include "Core/IndexBuffer.hpp"
-# include "Core/Material.hpp"
-
 
 namespace NAMESPACE
 {
 
 class DynamicMesh : public IMesh
 {
-VertexArray     _vertexArray;   // owns
-VertexBuffer    _vertexBuffer;  // owns
-IndexBuffer     _indexBuffer;   // owns
-Material        _material;      // does not own
+VertexArray     _vertexArray;
+VertexBuffer    _vertexBuffer;
+IndexBuffer     _indexBuffer;
 public:
+    // 'vertexBufferSize' is in bytes
+    DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces);
     DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces, const Material &material);
 
     void setVertexBuffer(const std::vector<IVertex> vertices);
-    virtual void drawMesh() override;
+    void draw();
+
 };
 
 }

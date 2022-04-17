@@ -10,8 +10,8 @@ namespace NAMESPACE
 
 class PerspectiveCameraLayer : public ILayer
 {
-MacApplication *application;
-PerspectiveCamera *camera;
+MacApplication *_macApplication;
+PerspectiveCamera *_camera;
 public:
     PerspectiveCameraLayer(MacApplication *macApplication);
     virtual void onAttach() override;

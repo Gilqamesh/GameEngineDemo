@@ -3,19 +3,29 @@
 namespace NAMESPACE
 {
 
-StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material)
+StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces)
     : IMesh(),
     _vertexArray(),
     _vertexBuffer(vertices.data(), vertices.size() * vertices[0].getStride()),
-    _indexBuffer(indeces.data(), indeces.size()),
-    _material(material)
+    _indexBuffer(indeces.data(), indeces.size())
 {
     TRACE();
     ASSERT(vertices.size());
     _vertexArray.configure(_vertexBuffer, vertices[0].getLayout());
 }
 
-void StaticMesh::drawMesh()
+StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material)
+    : IMesh(material),
+    _vertexArray(),
+    _vertexBuffer(vertices.data(), vertices.size() * vertices[0].getStride()),
+    _indexBuffer(indeces.data(), indeces.size())
+{
+    TRACE();
+    ASSERT(vertices.size());
+    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout());
+}
+
+void StaticMesh::draw()
 {
     TRACE();
     _vertexArray.bind();

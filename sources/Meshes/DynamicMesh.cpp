@@ -3,12 +3,20 @@
 namespace NAMESPACE
 {
 
-DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces, const Material &material)
+DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces)
     : IMesh(),
     _vertexArray(),
     _vertexBuffer(vertexBufferSize),
-    _indexBuffer(indeces.data(), indeces.size()),
-    _material(material)
+    _indexBuffer(indeces.data(), indeces.size())
+{
+    TRACE();
+}
+
+DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces, const Material &material)
+    : IMesh(material),
+    _vertexArray(),
+    _vertexBuffer(vertexBufferSize),
+    _indexBuffer(indeces.data(), indeces.size())
 {
     TRACE();
 }
@@ -25,7 +33,7 @@ void DynamicMesh::setVertexBuffer(const std::vector<IVertex> vertices)
     _vertexBuffer.unbind();
 }
 
-void DynamicMesh::drawMesh()
+void DynamicMesh::draw()
 {
     TRACE();
     _vertexArray.bind();

@@ -5,10 +5,10 @@ namespace NAMESPACE
 {
 
 PerspectiveCameraLayer::PerspectiveCameraLayer(MacApplication *macApplication)
-    : ILayer(LayerType::regular), application(macApplication)
+    : ILayer(LayerType::overlay), _macApplication(macApplication)
 {
     TRACE();
-    camera = new PerspectiveCamera(application->getWindow()->getWindow());
+    _camera = new PerspectiveCamera(_macApplication->getWindow()->getWindow());
 }
 
 void PerspectiveCameraLayer::onAttach()
@@ -24,13 +24,13 @@ void PerspectiveCameraLayer::onDetach()
 void PerspectiveCameraLayer::onEvent(IEvent &e)
 {
     TRACE();
-    camera->onEvent(e);
+    _camera->onEvent(e);
 }
 
 void PerspectiveCameraLayer::onUpdate(float deltaTime)
 {
     TRACE();
-    camera->onUpdate(deltaTime);
+    _camera->onUpdate(deltaTime);
 }
 
 void PerspectiveCameraLayer::onRender()

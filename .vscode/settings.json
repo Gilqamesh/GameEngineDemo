@@ -66,6 +66,8 @@
         "unordered_set": "cpp",
         "__tree": "cpp",
         "map": "cpp",
-        "stack": "cpp"
+        "stack": "cpp",
+        "fstream": "cpp",
+        "iomanip": "cpp"
     }
 }

@@ -24,6 +24,7 @@ Texture *_emission;
 Shader *_shader;
 float _shininess;
 public:
+    Material(); // Warning: Shader needs to be set
     Material(Shader *shader);
     inline const Texture *getAmbient() const { return (_ambient); }
     inline const Texture *getDiffuse() const { return (_diffuse); }

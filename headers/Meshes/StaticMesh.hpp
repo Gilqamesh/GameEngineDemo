@@ -6,21 +6,20 @@
 # include "Core/VertexArray.hpp"
 # include "Core/VertexBuffer.hpp"
 # include "Core/IndexBuffer.hpp"
-# include "Core/Material.hpp"
 
 namespace NAMESPACE
 {
 
 class StaticMesh : public IMesh
 {
-VertexArray     _vertexArray;   // owns
-VertexBuffer    _vertexBuffer;  // owns
-IndexBuffer     _indexBuffer;   // owns
-Material        _material;      // does not own
+VertexArray     _vertexArray;
+VertexBuffer    _vertexBuffer;
+IndexBuffer     _indexBuffer;
 public:
+    StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces);
     StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material);
 
-    virtual void drawMesh() override;
+    void draw();
 };
 
 }
