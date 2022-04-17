@@ -43,6 +43,7 @@ void ShaderManager::clear()
 {
     for (auto shader : _shaders)
         delete shader.second;
+
     _shaders.clear();
 }
 

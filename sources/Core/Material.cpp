@@ -32,13 +32,13 @@ void Material::bind()
 {
     TRACE();
     _ambient->bind(0);
-    _ambient->setUniform(_shader);
+    _ambient->setUniform(_shader, "u_ambient", 0);
     _diffuse->bind(1);
-    _diffuse->setUniform(_shader);
+    _diffuse->setUniform(_shader, "u_diffuse", 1);
     _specular->bind(2);
-    _specular->setUniform(_shader);
+    _specular->setUniform(_shader, "u_specular", 2);
     _emission->bind(3);
-    _emission->setUniform(_shader);
+    _emission->setUniform(_shader, "u_emission", 3);
 }
 
 void Material::unbind()
@@ -46,14 +46,5 @@ void Material::unbind()
     TRACE();
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
-
-/*
-Model: arrays of Meshes
-Mesh: memory layout for GL
-    - one material
-Material:
-    - 4 textures
-    - 1 shader
-*/
 
 }

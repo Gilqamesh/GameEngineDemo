@@ -2,6 +2,7 @@
 #include "Debug/OpenGL.hpp"
 #include "Debug/Trace.hpp"
 #include "Vendor/stb_image/stb_image.h"
+#include "Core/Shader.hpp"
 
 namespace NAMESPACE
 {
@@ -53,11 +54,10 @@ void Texture::unbind() const
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture::setUniform(Shader *shader) const
+void Texture::setUniform(Shader *shader, const std::string &name, GLint value) const
 {
     TRACE();
-    /* todo: set shader uniform */
-    (void)shader;
+    shader->setInt(name, value);
 }
 
 }
