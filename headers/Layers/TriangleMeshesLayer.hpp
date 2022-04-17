@@ -12,6 +12,7 @@ class TriangleMeshesLayer : public ILayer
 {
 MacApplication *_macApplication;
 std::vector<StaticMesh> triangleMeshes;
+
 public:
     TriangleMeshesLayer(MacApplication *macApplication);
     virtual void onAttach() override;

@@ -16,7 +16,11 @@ void TriangleMeshesLayer::onAttach()
 {
     TRACE();
     TriangleMeshFactory triangleMeshFactory;
-    triangleMeshes.push_back(triangleMeshFactory.createStaticMesh(identity_matrix<GLfloat, 4, 4>()));
+    for (unsigned int i = 0; i < 1; ++i)
+    {
+        triangleMeshes.push_back(triangleMeshFactory.createStaticMesh(identity_matrix<GLfloat, 4, 4>()));
+        // triangleMeshes[i].setMaterial();
+    }
 }
 
 void TriangleMeshesLayer::onDetach()
