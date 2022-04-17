@@ -20,6 +20,26 @@ Shader::~Shader()
     GLCall(glDeleteProgram(GL_ID));
 }
 
+Shader::Shader(Shader &&other)
+    : GL_ID(other.GL_ID), _shaderName(other._shaderName), uniformLocationCache(other.uniformLocationCache)
+{
+    TRACE();
+    other.GL_ID = 0;
+}
+
+Shader &Shader::operator=(Shader &&other)
+{
+    TRACE();
+    if (this != &other)
+    {
+        GL_ID = other.GL_ID;
+        _shaderName = other._shaderName;
+        uniformLocationCache = other.uniformLocationCache;
+        other.GL_ID = 0;
+    }
+    return (*this);
+}
+
 void Shader::bind()
 {
     TRACE();

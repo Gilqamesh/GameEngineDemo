@@ -17,6 +17,13 @@ public:
     Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath, const std::string &shaderName);
     ~Shader();
 
+    // to avoid destruction of OpenGL context
+    Shader(const Shader &other) = delete;
+    Shader &operator=(const Shader &other) = delete;
+
+    Shader(Shader &&other);
+    Shader &operator=(Shader &&other);
+
     void bind();
     void unbind();
 

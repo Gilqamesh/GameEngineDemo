@@ -49,7 +49,7 @@ Texture::Texture(Texture &&other)
     other.GL_ID = 0;
 }
 
-Texture &operator=(Texture &&other)
+Texture &Texture::operator=(Texture &&other)
 {
     TRACE();
     if (this != &other)
