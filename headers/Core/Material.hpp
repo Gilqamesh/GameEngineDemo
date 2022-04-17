@@ -17,25 +17,26 @@ namespace NAMESPACE
  */
 class Material
 {
-Texture *ambient;
-Texture *diffuse;
-Texture *specular;
-Texture *emission;
+Texture *_ambient;
+Texture *_diffuse;
+Texture *_specular;
+Texture *_emission;
 Shader *_shader;
-float shininess;
+float _shininess;
 public:
     Material(Shader *shader);
-    inline const Texture *getAmbient() const { return (ambient); }
-    inline const Texture *getDiffuse() const { return (diffuse); }
-    inline const Texture *getSpecular() const { return (specular); }
-    inline const Texture *getEmission() const { return (emission); }
-    inline float getShininess() const { return (shininess); }
+    inline const Texture *getAmbient() const { return (_ambient); }
+    inline const Texture *getDiffuse() const { return (_diffuse); }
+    inline const Texture *getSpecular() const { return (_specular); }
+    inline const Texture *getEmission() const { return (_emission); }
+    inline float getShininess() const { return (_shininess); }
 
-    inline void setAmbient(Texture *ambient) { this->ambient = ambient; }
-    inline void setDiffuse(Texture *diffuse) { this->diffuse = diffuse; }
-    inline void setSpecular(Texture *specular) { this->specular = specular; }
-    inline void setEmission(Texture *emission) { this->emission = emission; }
-    inline void setShininess(float shininess) { this->shininess = shininess; }
+    inline void setAmbient(Texture *ambient) { this->_ambient = ambient; }
+    inline void setDiffuse(Texture *diffuse) { this->_diffuse = diffuse; }
+    inline void setSpecular(Texture *specular) { this->_specular = specular; }
+    inline void setEmission(Texture *emission) { this->_emission = emission; }
+    inline void setShader(Shader *shader) { this->_shader = shader; }
+    inline void setShininess(float shininess) { this->_shininess = shininess; }
 
     void bind();
     void unbind();

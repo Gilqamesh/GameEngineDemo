@@ -10,24 +10,25 @@ namespace NAMESPACE
 Material::Material(Shader *shader)
     : _shader(shader)
 {
-    ambient = NullTexture::getInstance();
-    diffuse = NullTexture::getInstance();
-    specular = NullTexture::getInstance();
-    emission = NullTexture::getInstance();
-    shininess = 0.5f;
+    TRACE();
+    _ambient = NullTexture::getInstance();
+    _diffuse = NullTexture::getInstance();
+    _specular = NullTexture::getInstance();
+    _emission = NullTexture::getInstance();
+    _shininess = 0.5f;
 }
 
 void Material::bind()
 {
     TRACE();
-    ambient->bind(0);
-    ambient->setUniform(_shader);
-    diffuse->bind(1);
-    diffuse->setUniform(_shader);
-    specular->bind(2);
-    specular->setUniform(_shader);
-    emission->bind(3);
-    emission->setUniform(_shader);
+    _ambient->bind(0);
+    _ambient->setUniform(_shader);
+    _diffuse->bind(1);
+    _diffuse->setUniform(_shader);
+    _specular->bind(2);
+    _specular->setUniform(_shader);
+    _emission->bind(3);
+    _emission->setUniform(_shader);
 }
 
 void Material::unbind()
