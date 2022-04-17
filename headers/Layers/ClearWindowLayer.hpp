@@ -1,19 +1,15 @@
-#ifndef TRIANGLEMESHESLAYER_HPP
-# define TRIANGLEMESHESLAYER_HPP
+#ifndef CLEARWINDOWLAYER_HPP
+# define CLEARWINDOWLAYER_HPP
 
 # include "Interfaces/ILayer.hpp"
-# include "Meshes/StaticMesh.hpp"
-# include "Managers/ShaderManager.hpp"
 
 namespace NAMESPACE
 {
 
-class TriangleMeshesLayer : public ILayer
+class ClearWindowLayer : public ILayer
 {
-std::vector<StaticMesh> triangleMeshes;
-ShaderManager shaderManager;
 public:
-    TriangleMeshesLayer();
+    ClearWindowLayer();
     virtual void onAttach() override;
     virtual void onDetach() override;
     virtual void onEvent(IEvent &e) override;

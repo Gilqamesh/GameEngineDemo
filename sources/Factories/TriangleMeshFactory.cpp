@@ -46,5 +46,4 @@ DynamicMesh TriangleMeshFactory::createDynamicMesh(const Matrix<GLfloat, 4, 4> &
     return (triangle);
 }
 
-
 }

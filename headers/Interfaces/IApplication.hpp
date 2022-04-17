@@ -11,10 +11,8 @@ class IEvent;
 class ILayer;
 
 /*
- * Observer Pattern
- * Application is the Observable
- * Layers are the Observers
- * Additionally, registration order of the event defines
+ * Layers are observing the Application
+ * Push order of the layers define
  *  - rendering order
  *  - event order
  */
