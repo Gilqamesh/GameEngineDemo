@@ -15,7 +15,7 @@ public:
     virtual ~IWindow() = default;
     virtual void onUpdate() = 0;
     virtual int getWidth() const = 0;
-    virtual int getHeigh() const = 0;
+    virtual int getHeight() const = 0;
     virtual GLFWwindow *getWindow() const = 0;
     virtual void setVSync(bool enabled) = 0;
     virtual bool isVSync() = 0;

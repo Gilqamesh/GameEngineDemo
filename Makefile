@@ -13,7 +13,7 @@ object_files = $(subst $(source_directory),$(object_directory),$(source_files:.c
 header_files = $(foreach file,$(shell find headers -type f),$(pwd)/$(file))
 precompiledheader_file = $(header_directory)/pch.hpp.gch
 
-dependencies: $(name) $(precompiledheader_file) | $(source_directory) $(header_directory) $(object_directory)
+dependencies: $(precompiledheader_file) $(name) | $(source_directory) $(header_directory) $(object_directory)
 
 $(precompiledheader_file): $(basename $(precompiledheader_file))
 	$(compiler) -I$(header_directory) -I$(GLEW)/include -I$(GLFW)/include $^
@@ -48,8 +48,8 @@ all:
 clean:
 	find $(object_directory) -name "*.o" -delete
 	rm -f imgui.ini
-	rm -f $(precompiledheader_file)
 fclean: clean
 	rm -f $(name)
-re: fclean
+	rm -f $(precompiledheader_file)
+re: clean
 	make $(name)

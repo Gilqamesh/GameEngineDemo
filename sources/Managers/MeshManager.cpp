@@ -8,9 +8,7 @@ Entity MeshManager::createStaticMesh(IMeshFactory *meshFactory, const Matrix<GLf
 {
     TRACE();
     Entity entity = _coordinator.createEntity();
-    PRINT_HERE();
     _staticMeshes.insert(std::pair<Entity, StaticMesh>(entity, meshFactory->createStaticMesh(modelMatrix)));
-    PRINT_HERE();
 
     return (entity);
 }

@@ -1,31 +1,27 @@
-#include "Meshes/StaticMesh.hpp"
+#include "Core/Meshes/DynamicMesh.hpp"
 
 namespace NAMESPACE
 {
 
-StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces)
+DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces)
     : IMesh(),
     _vertexArray(),
-    _vertexBuffer(vertices.data(), vertices.size() * vertices[0].getStride()),
+    _vertexBuffer(vertexBufferSize),
     _indexBuffer(indeces.data(), indeces.size())
 {
     TRACE();
-    ASSERT(vertices.size());
-    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
 }
 
-StaticMesh::StaticMesh(const std::vector<IVertex> &vertices, const std::vector<GLuint> &indeces, const Material &material)
+DynamicMesh::DynamicMesh(GLuint vertexBufferSize, const std::vector<GLuint> &indeces, const Material &material)
     : IMesh(material),
     _vertexArray(),
-    _vertexBuffer(vertices.data(), vertices.size() * vertices[0].getStride()),
+    _vertexBuffer(vertexBufferSize),
     _indexBuffer(indeces.data(), indeces.size())
 {
     TRACE();
-    ASSERT(vertices.size());
-    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
 }
 
-StaticMesh::StaticMesh(StaticMesh &&other)
+DynamicMesh::DynamicMesh(DynamicMesh &&other)
     // invoke the copy move operator for each OpenGL context objects
     : _vertexArray(std::move(other._vertexArray)),
     _vertexBuffer(std::move(other._vertexBuffer)),
@@ -34,7 +30,7 @@ StaticMesh::StaticMesh(StaticMesh &&other)
 
 }
 
-StaticMesh &StaticMesh::operator=(StaticMesh &&other)
+DynamicMesh &DynamicMesh::operator=(DynamicMesh &&other)
 {
     if (this != &other)
     {
@@ -46,7 +42,20 @@ StaticMesh &StaticMesh::operator=(StaticMesh &&other)
     return (*this);
 }
 
-void StaticMesh::draw()
+/*
+ * unfinished
+ */
+void DynamicMesh::setVertexBuffer(const std::vector<IVertex> vertices)
+{
+    TRACE();
+    ASSERT(vertices.size());
+    _vertexArray.bind();
+    _vertexBuffer.bind();
+    GLCall(glBufferSubData(GL_ARRAY_BUFFER, 0, vertices.size() * vertices[0].getStride(), vertices.data()));
+    _vertexArray.configure(_vertexBuffer, vertices[0].getLayout(), _indexBuffer);
+}
+
+void DynamicMesh::draw()
 {
     TRACE();
     _vertexArray.bind();

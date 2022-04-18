@@ -23,10 +23,10 @@ public:
     Texture(Texture &&other);
     Texture &operator=(Texture &&other);
 
-    void bind(GLuint slot = 0) const;
+    void bind(GLint slot = 0) const;
     void unbind() const;
 
-    void setUniform(Shader *shader, const std::string &name, GLint value) const;
+    void setUniform(Shader *shader, const std::string &name, GLint slot) const;
 
     inline const std::string &getName() const { return (_name); }
 };

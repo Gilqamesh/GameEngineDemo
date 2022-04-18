@@ -6,7 +6,7 @@
 namespace NAMESPACE
 {
 
-inline float DegreesToRadians(float degrees)
+inline float degToRad(float degrees)
 {
     return (degrees / 180.0f * 3.14159265358979323f);
 }

@@ -23,7 +23,7 @@ public:
     MacWindow(const MacWindowProps &windowProps = MacWindowProps());
     virtual void onUpdate() override;
     virtual inline int getWidth() const override { return (windowProps.width); }
-    virtual inline int getHeigh() const override { return (windowProps.height); }
+    virtual inline int getHeight() const override { return (windowProps.height); }
     /* Try to avoid the need for this */
     virtual inline GLFWwindow *getWindow() const override { return (window); }
     virtual void setVSync(bool enabled) override;

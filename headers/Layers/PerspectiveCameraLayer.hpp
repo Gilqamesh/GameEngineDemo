@@ -19,6 +19,8 @@ public:
     virtual void onEvent(IEvent &e) override;
     virtual void onUpdate(float deltaTime) override;
     virtual void onRender() override;
+
+    inline PerspectiveCamera *getCamera() const { return (_camera); }
 };
 
 }

@@ -9,8 +9,8 @@ StaticMesh TriangleMeshFactory::createStaticMesh(const Matrix<GLfloat, 4, 4> &mo
 {
     TRACE();
     Vector<GLfloat, 4> a{0.0f, 0.0f, 0.0f};
-    Vector<GLfloat, 4> b{0.0f, 0.0f, 1.0f};
-    Vector<GLfloat, 4> c{1.0f, 0.0f, 0.0f};
+    Vector<GLfloat, 4> b{0.0f, 100.0f, 0.0f};
+    Vector<GLfloat, 4> c{0.0f, 0.0f, 100.0f};
 
     a = a * modelMatrix;
 

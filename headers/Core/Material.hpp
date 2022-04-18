@@ -27,6 +27,10 @@ std::string _name;
 public:
     Material(); // Warning: Shader needs to be set
     Material(Shader *shader, const std::string &name);
+
+    Material(const Material &other);
+    Material &operator=(const Material &other);
+
     inline const Texture *getAmbient() const { return (_ambient); }
     inline const Texture *getDiffuse() const { return (_diffuse); }
     inline const Texture *getSpecular() const { return (_specular); }

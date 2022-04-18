@@ -13,14 +13,14 @@ void TriangleSimulator::main()
     {
         MacApplication *app = new MacApplication();
         ClearWindowLayer *clearWindowLayer = new ClearWindowLayer();
-        TriangleMeshesLayer *triangleMeshesLayer = new TriangleMeshesLayer();
-        // PerspectiveCameraLayer *perspectiveCameraLayer = new PerspectiveCameraLayer(app);
+        PerspectiveCameraLayer *perspectiveCameraLayer = new PerspectiveCameraLayer(app);
+        TriangleMeshesLayer *triangleMeshesLayer = new TriangleMeshesLayer(app, perspectiveCameraLayer->getCamera());
         app->pushLayer(clearWindowLayer);
         app->pushLayer(triangleMeshesLayer);
         // app->pushLayer(perspectiveCameraLayer);
         app->run();
         delete app;
-        // delete perspectiveCameraLayer;
+        delete perspectiveCameraLayer;
         delete triangleMeshesLayer;
         delete clearWindowLayer;
     }

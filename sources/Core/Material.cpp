@@ -29,22 +29,48 @@ Material::Material(Shader *shader, const std::string &name)
     _shininess = 0.5f;
 }
 
+Material::Material(const Material &other)
+    : _ambient(other._ambient),
+    _diffuse(other._diffuse),
+    _specular(other._specular),
+    _emission(other._emission),
+    _shader(other._shader),
+    _shininess(other._shininess),
+    _name(other._name)
+{
+    TRACE();
+}
+
+Material &Material::operator=(const Material &other)
+{
+    TRACE();
+    if (this != &other)
+    {
+        _ambient = other._ambient;
+        _diffuse = other._diffuse;
+        _specular = other._specular;
+        _emission = other._emission;
+        _shader = other._shader;
+        _shininess = other._shininess;
+        _name = other._name;
+    }
+    return (*this);
+}
+
 void Material::bind()
 {
     TRACE();
-    _ambient->bind(0);
+    _shader->bind();
     _ambient->setUniform(_shader, "u_ambient", 0);
-    _diffuse->bind(1);
     _diffuse->setUniform(_shader, "u_diffuse", 1);
-    _specular->bind(2);
     _specular->setUniform(_shader, "u_specular", 2);
-    _emission->bind(3);
     _emission->setUniform(_shader, "u_emission", 3);
 }
 
 void Material::unbind()
 {
     TRACE();
+    _shader->unbind();
     GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 

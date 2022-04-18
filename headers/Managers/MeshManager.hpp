@@ -1,8 +1,8 @@
 #ifndef MESHMANAGER_HPP
 # define MESHMANAGER_HPP
 
-# include "Meshes/StaticMesh.hpp"
-# include "Meshes/DynamicMesh.hpp"
+# include "Core/Meshes/StaticMesh.hpp"
+# include "Core/Meshes/DynamicMesh.hpp"
 # include "ECS/Coordinator.hpp"
 # include "Interfaces/IMeshFactory.hpp"
 

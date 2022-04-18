@@ -37,20 +37,20 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
         glfwTerminate();
         TERMINATE("glfwCreateWindow() failed");
     }
+    GLCall(glViewport(0, 0, windowProps.width, windowProps.height));
     glfwMakeContextCurrent(window);
     if (glewInit() != GLEW_OK)
     {
         glfwTerminate();
         TERMINATE("glewInit() failed");
     }
-    glViewport(0, 0, windowProps.width, windowProps.height);
     glfwSetWindowUserPointer(window, &this->windowProps);
     setVSync(true);
 
     /*
      * Set Event Callbacks
      */
-    glfwSetWindowSizeCallback(window, [](GLFWwindow *window, int width, int height){
+    glfwSetFramebufferSizeCallback(window, [](GLFWwindow *window, int width, int height){
         MacWindowProps *w = (MacWindowProps *)glfwGetWindowUserPointer(window);
 
         w->width = width;
