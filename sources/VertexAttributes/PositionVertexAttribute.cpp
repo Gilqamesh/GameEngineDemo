@@ -20,4 +20,11 @@ void PositionVertexAttribute::push(VertexLayout &layout)
     layout.push<GLfloat>(3);
 }
 
+size_t PositionVertexAttribute::getSize()
+{
+    TRACE();
+    ASSERT(_coordinates.size());
+    return (_coordinates.size() * sizeof(_coordinates[0]));
+}
+
 }

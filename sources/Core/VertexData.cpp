@@ -11,6 +11,11 @@ VertexData::VertexData()
     _layout.push<GLfloat>(2); // Texture
 }
 
+VertexData::~VertexData()
+{
+
+}
+
 VertexData::VertexData(VertexData &&other)
     // invoke the copy move operator for each OpenGL context objects
     : _vertexArray(std::move(other._vertexArray)),

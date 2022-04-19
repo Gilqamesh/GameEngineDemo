@@ -23,6 +23,7 @@ VertexBuffer    _vertexTextureBuffer;
 IndexBuffer     _indexBuffer;
 public:
     VertexData();
+    ~VertexData();
 
     // to avoid destruction of OpenGL context objects: VertexArray, VertexBuffer, IndexBuffer
     VertexData(const VertexData &other) = delete;

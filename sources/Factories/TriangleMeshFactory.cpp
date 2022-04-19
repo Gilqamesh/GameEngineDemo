@@ -25,15 +25,8 @@ Mesh TriangleMeshFactory::createMesh(const Matrix<GLfloat, 4, 4> &transform)
     positionVertexVector.push_back(positionA);
     positionVertexVector.push_back(positionB);
     positionVertexVector.push_back(positionC);
-    for (auto position : positionVertexVector)
-    {
-        std::cout << position._coordinates[0] << ", " << position._coordinates[1] << ", " << position._coordinates[2] << std::endl;
-    }
-    TERMINATE(".");
 
     VertexBuffer positionBuffer(positionVertexVector.getData(), positionVertexVector.getSize());
-
-    // Next up: Check 'positionBuffer's values.
 
     NormalVertexAttribute normalA(-1.0f, 0.0f, 0.0f);
     NormalVertexAttribute normalB(-1.0f, 100.0f, 0.0f);

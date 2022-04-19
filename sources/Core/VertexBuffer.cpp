@@ -14,9 +14,6 @@ VertexBuffer::VertexBuffer(const void *data, GLuint size)
 {
     TRACE();
     GLCall(glGenBuffers(1, &GL_ID));
-    for (unsigned int i = 0; i < 9; ++i)
-        LOG(((float *)(data))[i]);
-    TERMINATE("");
     bind();
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
     unbind();

@@ -8,11 +8,12 @@ namespace NAMESPACE
 {
 class PositionVertexAttribute : public IVertexAttribute
 {
-public:
 Vector<GLfloat, 3> _coordinates; // x, y, z
+public:
     PositionVertexAttribute();
     PositionVertexAttribute(GLfloat x, GLfloat y, GLfloat z);
-    virtual void push(VertexLayout &layout) override;
+    void push(VertexLayout &layout);
+    size_t getSize();
 };
 
 }

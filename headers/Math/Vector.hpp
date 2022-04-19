@@ -33,6 +33,8 @@ class Vector
         T*       data(void)         { return (entries.data()); }
         const T* data(void) const   { return (entries.data()); }
 
+        size_t size() const { return (LENGTH); }
+
 		Vector &operator+=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] + v[i]; return (*this); }
 		Vector &operator-=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] - v[i]; return (*this); }
 		Vector &operator*=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] * a;    return (*this); }

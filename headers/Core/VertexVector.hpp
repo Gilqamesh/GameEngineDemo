@@ -13,7 +13,7 @@ public:
     inline const void *getData() { return (this->data()); }
     inline GLsizeiptr getSize() {
         ASSERT(this->size());
-        return (this->size() * sizeof(this->at(0)));
+        return (this->size() * sizeof(this->operator[](0)));
     }
 };
 

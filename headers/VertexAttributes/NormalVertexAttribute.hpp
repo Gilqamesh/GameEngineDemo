@@ -12,7 +12,8 @@ Vector<GLfloat, 3> _direction; // x, y, z
 public:
     NormalVertexAttribute();
     NormalVertexAttribute(GLfloat x, GLfloat y, GLfloat z);
-    virtual void push(VertexLayout &layout) override;
+    void push(VertexLayout &layout);
+    size_t getSize();
 };
 
 }
