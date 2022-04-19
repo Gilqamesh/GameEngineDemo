@@ -13,6 +13,7 @@ VertexArray::VertexArray()
 VertexArray::~VertexArray()
 {
     TRACE();
+    ASSERT(GL_ID == 0);
     GLCall(glDeleteVertexArrays(1, &GL_ID));
 }
 
@@ -43,18 +44,28 @@ void VertexArray::pushVertexAttribute(const VertexAttribute &attribute, GLuint s
 {
     TRACE();
     GLCall(glEnableVertexAttribArray(attribute._index));
+    LOG("attribute._index: " << attribute._index);
+    LOG("attribute._count: " << attribute._count);
+    LOG("attribute._type: " << attribute._type);
+    printf("attribute._normalized: %d\n", attribute._normalized);
+    LOG("stride: " << stride);
+    LOG("attribute._offset " << attribute._offset);
     GLCall(glVertexAttribPointer(
         attribute._index,
         attribute._count,
         attribute._type,
         attribute._normalized,
+        // 0,
         stride,
-        (const void *)&attribute._offset));
+        0
+        // (const void *)&attribute._offset
+        ));
 }
 
 void VertexArray::bind()
 {
     TRACE();
+    ASSERT(GL_ID);
     GLCall(glBindVertexArray(GL_ID));
 }
 

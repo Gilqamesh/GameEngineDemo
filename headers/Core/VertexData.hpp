@@ -38,6 +38,10 @@ public:
     inline void setIBO(IndexBuffer &&indexBuffer) { _indexBuffer = std::move(indexBuffer); }
 
     inline GLuint getCountOfIndeces() const { return (_indexBuffer.getCount()); }
+    inline VertexBuffer &getPositionBuffer() { return (_vertexPositionBuffer); }
+    inline VertexBuffer &getNormalBuffer() { return (_vertexNormalBuffer); }
+    inline VertexBuffer &getTextureBuffer() { return (_vertexTextureBuffer); }
+    inline IndexBuffer &getIndexBuffer() { return (_indexBuffer); }
 
     /*
      * Call it after all VBOs and the IBO are set

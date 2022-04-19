@@ -30,12 +30,6 @@ public:
     inline void setVertexData(VertexData &&vertexData) { _vertexData = std::move(vertexData); }
     inline void setMaterial(const Material &material) { _material = material; }
 
-    /*
-     * Caller's responsibility:
-     *      - prior to calling this function, call setVertexData() and setMaterial() on this object
-     */
-    void configure();
-
     void draw();
 };
 

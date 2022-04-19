@@ -10,8 +10,8 @@ Mesh TriangleMeshFactory::createMesh(const Matrix<GLfloat, 4, 4> &transform)
 {
     TRACE();
     Vector<GLfloat, 4> a{0.0f, 0.0f, 0.0f, 1.0f};
-    Vector<GLfloat, 4> b{0.0f, 100.0f, 0.0f, 1.0f};
-    Vector<GLfloat, 4> c{0.0f, 0.0f, 100.0f, 1.0f};
+    Vector<GLfloat, 4> b{0.0f, 1.0f, 0.0f, 1.0f};
+    Vector<GLfloat, 4> c{0.0f, 0.0f, 1.0f, 1.0f};
 
     a = a * transform;
     b = b * transform;
@@ -29,8 +29,8 @@ Mesh TriangleMeshFactory::createMesh(const Matrix<GLfloat, 4, 4> &transform)
     VertexBuffer positionBuffer(positionVertexVector.getData(), positionVertexVector.getSize());
 
     NormalVertexAttribute normalA(-1.0f, 0.0f, 0.0f);
-    NormalVertexAttribute normalB(-1.0f, 100.0f, 0.0f);
-    NormalVertexAttribute normalC(-1.0f, 0.0f, 100.0f);
+    NormalVertexAttribute normalB(-1.0f, 1.0f, 0.0f);
+    NormalVertexAttribute normalC(-1.0f, 0.0f, 1.0f);
 
     VertexVector<NormalVertexAttribute> normalVertexVector;
     normalVertexVector.push_back(normalA);

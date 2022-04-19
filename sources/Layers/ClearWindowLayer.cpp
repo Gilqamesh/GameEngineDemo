@@ -31,12 +31,11 @@ void ClearWindowLayer::onUpdate(float deltaTime)
 {
     TRACE();
     (void)deltaTime;
-    PRINT_HERE();
-    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 }
 
 void ClearWindowLayer::onRender()
 {
+    GLCall(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
     TRACE();
 }
 

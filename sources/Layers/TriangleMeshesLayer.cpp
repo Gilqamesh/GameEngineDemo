@@ -31,10 +31,9 @@ void TriangleMeshesLayer::onAttach()
     TriangleMeshFactory triangleMeshFactory;
     for (unsigned int i = 0; i < 1; ++i)
     {
-        Entity mesh = meshManager.createMesh(&triangleMeshFactory, scale_matrix(Vector<GLfloat, 3>(10.0f, 10.0f, 10.0f)));
+        Entity mesh = meshManager.createMesh(&triangleMeshFactory, identity_matrix<GLfloat, 4, 4>());
         meshes.insert(mesh);
         meshManager.setMeshMaterial(mesh, redTriangle);
-        meshManager.configureMesh(mesh);
     }
 }
 
@@ -77,6 +76,7 @@ void TriangleMeshesLayer::onRender()
     // ));
     shader->unbind();
     PRINT_HERE();
+    GLCall(glViewport(0, 0, _macApplication->getWindow()->getWidth(), _macApplication->getWindow()->getHeight()));
     meshManager.drawMeshes();
     PRINT_HERE();
 }

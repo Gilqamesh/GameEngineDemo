@@ -8,7 +8,12 @@ namespace NAMESPACE
 
 class VertexBuffer
 {
-GLuint GL_ID;
+GLuint      GL_ID;
+
+// debug only
+void        *_data;
+size_t      _max_size;
+size_t      _size;
 public:
     VertexBuffer();
     /*
@@ -36,6 +41,9 @@ public:
      *      - call bind() before calling 'update'
      */
     void update(const void *data, GLuint size);
+
+    inline GLsizeiptr getSize() { return (_size); }
+    inline const void *getData() { return (_data); }
 
     void bind();
     void unbind();

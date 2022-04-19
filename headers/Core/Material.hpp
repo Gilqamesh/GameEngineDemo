@@ -35,6 +35,7 @@ public:
     inline const Texture *getDiffuse() const { return (_diffuse); }
     inline const Texture *getSpecular() const { return (_specular); }
     inline const Texture *getEmission() const { return (_emission); }
+    inline const Shader *getShader() const { return (_shader); }
     inline float getShininess() const { return (_shininess); }
     inline const std::string &getName() const { return (_name); }
 

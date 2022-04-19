@@ -36,6 +36,7 @@ public:
     void setMat4(const std::string &name, const Matrix<GLfloat, 4, 4> &value);
 
     inline const std::string &getName() const { return (_shaderName); }
+    inline GLuint getId() const { return (GL_ID); }
 private:
     GLint getUniformLocation(const std::string &name);
     GLuint createShaderProgram(const std::string &vertexShaderSourceCode, const std::string &fragmentShaderSourceCode);

@@ -8,8 +8,12 @@ namespace NAMESPACE
     
 class IndexBuffer
 {
-GLuint GL_ID;
-GLuint _count;
+GLuint  GL_ID;
+
+// debug only
+void    *_data;
+size_t  _max_count;
+size_t  _count;
 public:
     IndexBuffer();
     /*
@@ -42,6 +46,7 @@ public:
     void unbind();
 
     inline GLuint getCount() const { return (_count); }
+    inline const void *getData() { return (_data); }
 };
 
 }

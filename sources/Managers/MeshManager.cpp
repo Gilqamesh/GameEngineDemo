@@ -24,13 +24,6 @@ void MeshManager::setMeshMaterial(Entity mesh, const Material &material)
     _meshes[mesh].setMaterial(material);
 }
 
-void MeshManager::configureMesh(Entity mesh)
-{
-    TRACE();
-    ASSERT(_meshes.count(mesh));
-    _meshes[mesh].configure();
-}
-
 void MeshManager::drawMeshes()
 {
     TRACE();
