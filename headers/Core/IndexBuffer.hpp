@@ -5,12 +5,23 @@
 
 namespace NAMESPACE
 {
+    
 class IndexBuffer
 {
 GLuint GL_ID;
 GLuint _count;
 public:
+    IndexBuffer();
+    /*
+     * Static version
+     * Cannot be modified
+     */
     IndexBuffer(const void *data, GLuint count);
+    /*
+     * Dynamic version
+     * Initialize it later and possibly multiple times
+     */
+    IndexBuffer(GLuint count);
     ~IndexBuffer();
 
     // to avoid destruction of OpenGL context
@@ -20,8 +31,15 @@ public:
     IndexBuffer(IndexBuffer &&other);
     IndexBuffer &operator=(IndexBuffer &&other);
 
-    void bind() const;
-    void unbind() const;
+    /*
+     * Caller responsibility:
+     *      - IBO has to be dynamically initialized
+     *      - call bind() before calling 'update'
+     */
+    void update(const void *data, GLuint count);
+
+    void bind();
+    void unbind();
 
     inline GLuint getCount() const { return (_count); }
 };

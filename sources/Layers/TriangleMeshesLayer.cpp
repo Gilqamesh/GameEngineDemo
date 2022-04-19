@@ -31,9 +31,10 @@ void TriangleMeshesLayer::onAttach()
     TriangleMeshFactory triangleMeshFactory;
     for (unsigned int i = 0; i < 1; ++i)
     {
-        Entity mesh = meshManager.createStaticMesh(&triangleMeshFactory, scale_matrix(Vector<GLfloat, 3>(100.0f, 100.0f, 100.0f)));
+        Entity mesh = meshManager.createMesh(&triangleMeshFactory, scale_matrix(Vector<GLfloat, 3>(100.0f, 100.0f, 100.0f)));
         meshes.insert(mesh);
-        meshManager.setStaticMeshMaterial(mesh, redTriangle);
+        meshManager.setMeshMaterial(mesh, redTriangle);
+        meshManager.configureMesh(mesh);
     }
 }
 

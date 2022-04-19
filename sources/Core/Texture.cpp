@@ -61,20 +61,20 @@ Texture &Texture::operator=(Texture &&other)
     return (*this);
 }
 
-void Texture::bind(GLint slot) const
+void Texture::bind(GLint slot)
 {
     TRACE();
 	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
 	GLCall(glBindTexture(GL_TEXTURE_2D, GL_ID));
 }
 
-void Texture::unbind() const
+void Texture::unbind()
 {
     TRACE();
 	GLCall(glBindTexture(GL_TEXTURE_2D, 0));
 }
 
-void Texture::setUniform(Shader *shader, const std::string &name, GLint slot) const
+void Texture::setUniform(Shader *shader, const std::string &name, GLint slot)
 {
     TRACE();
     bind(slot);

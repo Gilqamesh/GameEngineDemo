@@ -4,10 +4,19 @@
 namespace NAMESPACE
 {
 
+VertexBuffer::VertexBuffer()
+    : GL_ID(0)
+{
+    TRACE();
+}
+
 VertexBuffer::VertexBuffer(const void *data, GLuint size)
 {
     TRACE();
     GLCall(glGenBuffers(1, &GL_ID));
+    for (unsigned int i = 0; i < 9; ++i)
+        LOG(((float *)(data))[i]);
+    TERMINATE("");
     bind();
     GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_STATIC_DRAW));
     unbind();
@@ -44,13 +53,19 @@ VertexBuffer &VertexBuffer::operator=(VertexBuffer &&other)
     return (*this);
 }
 
-void VertexBuffer::bind() const
+void VertexBuffer::update(const void *data, GLuint size)
+{
+    TRACE();
+    GLCall(glBufferData(GL_ARRAY_BUFFER, size, data, GL_DYNAMIC_DRAW));
+}
+
+void VertexBuffer::bind()
 {
     TRACE();
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, GL_ID));
 }
 
-void VertexBuffer::unbind() const
+void VertexBuffer::unbind()
 {
     TRACE();
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));

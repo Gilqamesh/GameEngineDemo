@@ -5,9 +5,9 @@ namespace NAMESPACE
 {
 
 VertexArray::VertexArray()
+    : GL_ID(0)
 {
     TRACE();
-    GLCall(glGenVertexArrays(1, &GL_ID));
 }
 
 VertexArray::~VertexArray()
@@ -32,34 +32,33 @@ VertexArray &VertexArray::operator=(VertexArray &&other)
     return (*this);
 }
 
-void VertexArray::configure(const VertexBuffer &vb, const VertexLayout &layout, const IndexBuffer &ib) const
+void VertexArray::create()
 {
     TRACE();
-    bind();
-    vb.bind();
-    ib.bind();
-    const auto &elements = layout.getElements();
-
-    for (unsigned int i = 0, offset = 0; i < elements.size(); ++i)
-    {
-        const auto &element = elements[i];
-        GLCall(glEnableVertexAttribArray(i));
-        GLCall(glVertexAttribPointer(i, element._count, element._type, element._normalized,
-            layout.getStride(), (const void *)&offset));
-        offset += element._count * VertexElement::getSizeOfType(element._type);
-    }
-    unbind();
-    vb.unbind();
-    ib.unbind();
+    ASSERT(GL_ID == 0);
+    GLCall(glGenVertexArrays(1, &GL_ID));
 }
 
-void VertexArray::bind() const
+void VertexArray::pushVertexAttribute(const VertexAttribute &attribute, GLuint stride)
+{
+    TRACE();
+    GLCall(glEnableVertexAttribArray(attribute._index));
+    GLCall(glVertexAttribPointer(
+        attribute._index,
+        attribute._count,
+        attribute._type,
+        attribute._normalized,
+        stride,
+        (const void *)&attribute._offset));
+}
+
+void VertexArray::bind()
 {
     TRACE();
     GLCall(glBindVertexArray(GL_ID));
 }
 
-void VertexArray::unbind() const
+void VertexArray::unbind()
 {
     TRACE();
     GLCall(glBindVertexArray(0));

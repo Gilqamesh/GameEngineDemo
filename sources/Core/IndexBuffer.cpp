@@ -4,6 +4,12 @@
 namespace NAMESPACE
 {
 
+IndexBuffer::IndexBuffer()
+    : GL_ID(0)
+{
+
+}
+
 IndexBuffer::IndexBuffer(const void *data, GLuint count)
     : _count(count)
 {
@@ -11,6 +17,16 @@ IndexBuffer::IndexBuffer(const void *data, GLuint count)
     GLCall(glGenBuffers(1, &GL_ID));
     bind();
     GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(GLuint), data, GL_STATIC_DRAW));
+    unbind();
+}
+
+IndexBuffer::IndexBuffer(GLuint count)
+    : _count(count)
+{
+    TRACE();
+    GLCall(glGenBuffers(1, &GL_ID));
+    bind();
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW));
     unbind();
 }
 
@@ -37,13 +53,19 @@ IndexBuffer &IndexBuffer::operator=(IndexBuffer &&other)
     return (*this);
 }
 
-void IndexBuffer::bind() const
+void IndexBuffer::update(const void *data, GLuint count)
+{
+    TRACE();
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, count * sizeof(GLuint), data, GL_DYNAMIC_DRAW));
+}
+
+void IndexBuffer::bind()
 {
     TRACE();
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, GL_ID));
 }
 
-void IndexBuffer::unbind() const
+void IndexBuffer::unbind()
 {
     TRACE();
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));

@@ -4,59 +4,68 @@
 namespace NAMESPACE
 {
 
-Entity MeshManager::createStaticMesh(IMeshFactory *meshFactory, const Matrix<GLfloat, 4, 4> &modelMatrix)
+MeshManager::MeshManager()
 {
-    TRACE();
-    Entity entity = _coordinator.createEntity();
-    _staticMeshes.insert(std::pair<Entity, StaticMesh>(entity, meshFactory->createStaticMesh(modelMatrix)));
-
-    return (entity);
+    
 }
 
-Entity MeshManager::createDynamicMesh(IMeshFactory *meshFactory, const Matrix<GLfloat, 4, 4> &modelMatrix)
+Entity MeshManager::createMesh(IMeshFactory *meshFactory, const Matrix<GLfloat, 4, 4> &transform)
 {
     TRACE();
-    Entity entity = _coordinator.createEntity();
-    _dynamicMeshes.insert(std::pair<Entity, DynamicMesh>(entity, meshFactory->createDynamicMesh(modelMatrix)));
-
-    return (entity);
+    Entity mesh = _coordinator.createEntity();
+    _meshes[mesh] = meshFactory->createMesh(transform);
+    return (mesh);
 }
 
-void MeshManager::setStaticMeshMaterial(Entity entity, Material material)
+void MeshManager::setMeshMaterial(Entity mesh, const Material &material)
 {
     TRACE();
-    _staticMeshes.at(entity).setMaterial(material);
+    ASSERT(_meshes.count(mesh));
+    _meshes[mesh].setMaterial(material);
 }
 
-void MeshManager::setDynamicMeshMaterial(Entity entity, Material material)
+void MeshManager::configureMesh(Entity mesh)
 {
     TRACE();
-    _dynamicMeshes.at(entity).setMaterial(material);
+    ASSERT(_meshes.count(mesh));
+    _meshes[mesh].configure();
 }
 
 void MeshManager::drawMeshes()
 {
     TRACE();
-    for (auto &staticMesh : _staticMeshes)
+    for (auto &mesh : _meshes)
     {
-        staticMesh.second.draw();
-    }
-    for (auto &dynamicMesh : _dynamicMeshes)
-    {
-        dynamicMesh.second.draw();
+        mesh.second.draw();
     }
 }
 
-void MeshManager::destroyStaticMesh(Entity entity)
+void MeshManager::destroyMesh(Entity entity)
 {
     TRACE();
-    _staticMeshes.erase(entity);
+    _meshes.erase(entity);
+    _coordinator.destroyEntity(entity);
 }
 
-void MeshManager::destroyDynamicMesh(Entity entity)
+void MeshManager::updateVertexAttribute_Position(Entity mesh, VertexVector<PositionVertexAttribute> &data)
 {
     TRACE();
-    _dynamicMeshes.erase(entity);
+    auto &VertexData = _meshes[mesh].getVertexData();
+    VertexData.updateVBO_position(data);
+}
+
+void MeshManager::updateVertexAttribute_Normal(Entity mesh, VertexVector<NormalVertexAttribute> &data)
+{
+    TRACE();
+    auto &VertexData = _meshes[mesh].getVertexData();
+    VertexData.updateVBO_normal(data);
+}
+
+void MeshManager::updateVertexAttribute_Texture(Entity mesh, VertexVector<TextureVertexAttribute> &data)
+{
+    TRACE();
+    auto &VertexData = _meshes[mesh].getVertexData();
+    VertexData.updateVBO_texture(data);
 }
 
 }

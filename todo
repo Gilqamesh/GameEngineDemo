@@ -3,3 +3,4 @@ understand how to use dynamic meshes: how to update index buffer dynamically alo
 cache align on Matrix class
 monte carlo maybe for AI
 dynamic shader generation
+make VertexData's vertex attributes general with templating, maybe make use of VertexLayout

@@ -6,11 +6,13 @@
 namespace NAMESPACE
 {
 
-struct VertexElement
+struct VertexAttribute
 {
     GLuint  _type;
     GLuint  _count;
     GLubyte _normalized;
+    GLuint  _offset;
+    GLuint  _index;
 
     static GLuint getSizeOfType(GLuint type)
     {
@@ -25,10 +27,9 @@ struct VertexElement
     }
 };
 
-class VertexLayout
+class VertexLayout : public std::vector<VertexAttribute>
 {
-std::vector<VertexElement>  elements;
-GLuint                      stride;
+GLuint _stride; // Size of a Vertex in bytes
 public:
     VertexLayout();
 
@@ -42,26 +43,25 @@ public:
     template <>
     void push<GLfloat>(GLuint count)
     {
-        elements.push_back({ GL_FLOAT, count, GL_FALSE });
-        stride += count * VertexElement::getSizeOfType(GL_FLOAT);
+        push_back({ GL_FLOAT, count, GL_FALSE, _stride, (GLuint)size()});
+        _stride += count * VertexAttribute::getSizeOfType(GL_FLOAT);
     }
 
     template <>
     void push<GLuint>(GLuint count)
     {
-        elements.push_back({ GL_UNSIGNED_INT, count, GL_FALSE });
-        stride += count * VertexElement::getSizeOfType(GL_UNSIGNED_INT);
+        push_back({ GL_UNSIGNED_INT, count, GL_FALSE, _stride, (GLuint)size()});
+        _stride += count * VertexAttribute::getSizeOfType(GL_UNSIGNED_INT);
     }
 
     template <>
     void push<GLubyte>(GLuint count)
     {
-        elements.push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE });
-        stride += count * VertexElement::getSizeOfType(GL_UNSIGNED_BYTE);
+        push_back({ GL_UNSIGNED_BYTE, count, GL_TRUE, _stride, (GLuint)size()});
+        _stride += count * VertexAttribute::getSizeOfType(GL_UNSIGNED_BYTE);
     }
 
-    inline const std::vector<VertexElement> &getElements() const { return (elements); }
-    inline GLuint getStride() const { return (stride); }
+    inline GLuint getStride() const { return (_stride); }
 };
 
 }

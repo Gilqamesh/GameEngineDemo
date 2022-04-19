@@ -10,6 +10,7 @@ class VertexBuffer
 {
 GLuint GL_ID;
 public:
+    VertexBuffer();
     /*
      * Static version
      * Cannot be modified
@@ -29,8 +30,15 @@ public:
     VertexBuffer(VertexBuffer &&other);
     VertexBuffer &operator=(VertexBuffer &&other);
 
-    void bind() const;
-    void unbind() const;
+    /*
+     * Caller responsibility:
+     *      - VBO has to be dynamically initialized
+     *      - call bind() before calling 'update'
+     */
+    void update(const void *data, GLuint size);
+
+    void bind();
+    void unbind();
 };
 
 }

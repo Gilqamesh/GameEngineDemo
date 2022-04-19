@@ -2,7 +2,7 @@
 # define TRIANGLEMESHESLAYER_HPP
 
 # include "Interfaces/ILayer.hpp"
-# include "Core/Meshes/StaticMesh.hpp"
+# include "Core/Mesh.hpp"
 # include "Managers/ShaderManager.hpp"
 # include "Managers/TextureManager.hpp"
 # include "Managers/MaterialManager.hpp"

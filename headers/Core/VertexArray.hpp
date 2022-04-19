@@ -23,10 +23,20 @@ public:
     VertexArray(VertexArray &&other);
     VertexArray &operator=(VertexArray &&other);
 
-    void configure(const VertexBuffer &vb, const VertexLayout &layout, const IndexBuffer &ib) const;
+    /*
+     * Only call this once
+     */
+    void create();
 
-    void bind() const;
-    void unbind() const;
+    /*
+     * Caller's responsibility:
+     *      - prior to calling this function, bind() this object
+     *      - prior to calling this function, bind() the specific Buffer Object
+     */
+    void pushVertexAttribute(const VertexAttribute &attribute, GLuint stride);
+
+    void bind();
+    void unbind();
 };
 
 }
