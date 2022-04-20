@@ -1,5 +1,7 @@
 #include "Layers/TriangleMeshesLayer.hpp"
 #include "Factories/TriangleMeshFactory.hpp"
+#include "ECS/Components/PositionComponent.hpp"
+#include "ECS/Components/VelocityComponent.hpp"
 #include "Debug/Trace.hpp"
 #include "Core/Material.hpp"
 #include "Math/Utils.hpp"
@@ -28,12 +30,26 @@ void TriangleMeshesLayer::onAttach()
     Material redTriangle(shaderManager.getShader("Triangle"), "Red Triangle");
     redTriangle.setDiffuse(textureManager.getTexture("Red"));
     materialManager.addMaterial(redTriangle);
+
+    meshManager.registerComponent<PositionComponent>();
+    meshManager.registerComponent<VelocityComponent>();
+    movementSystem = meshManager.registerSystem<MovementSystem>();
+    movementSystem->setSystemSignature();
+
     TriangleMeshFactory triangleMeshFactory;
-    for (unsigned int i = 0; i < 1; ++i)
+    for (unsigned int i = 0; i < 1000; ++i)
     {
-        Entity mesh = meshManager.createMesh(&triangleMeshFactory, identity_matrix<GLfloat, 4, 4>());
+        Entity mesh = meshManager.createMesh(&triangleMeshFactory, scale_matrix(Vector<GLfloat, 3>(0.1f, 0.1f, 0.1f)));
         meshes.insert(mesh);
         meshManager.setMeshMaterial(mesh, redTriangle);
+        meshManager.addComponent<PositionComponent>(mesh, {
+            getRand(-0.5f, 0.5f), getRand(-0.5f, 0.5f), getRand(-0.5f, 0.5f)
+            // -0.5f, -0.5f, 0.0f
+        });
+        meshManager.addComponent<VelocityComponent>(mesh, {
+            getRand(-0.5f, 0.5f), getRand(-0.5f, 0.5f), getRand(-0.5f, 0.5f)
+            // 1.0f, 1.0f, 1.0f
+        });
     }
 }
 
@@ -53,7 +69,8 @@ void TriangleMeshesLayer::onEvent(IEvent &e)
 void TriangleMeshesLayer::onUpdate(float deltaTime)
 {
     TRACE();
-    (void)deltaTime;
+    meshManager.updateSystem<MovementSystem>(deltaTime);
+    // meshManager.print();
 }
 
 void TriangleMeshesLayer::onRender()
@@ -63,10 +80,9 @@ void TriangleMeshesLayer::onRender()
     TRACE();
     auto *shader = shaderManager.getShader("Triangle");
     shader->bind();
-    shader->setMat4("model", identity_matrix<GLfloat, 4, 4>());
-    shader->setMat4("view", identity_matrix<GLfloat, 4, 4>());
-    shader->setMat4("projection", identity_matrix<GLfloat, 4, 4>());
     // shader->setMat4("model", identity_matrix<GLfloat, 4, 4>());
+    shader->setMat4("projection", identity_matrix<GLfloat, 4, 4>());
+    shader->setMat4("model", identity_matrix<GLfloat, 4, 4>());
     // shader->setMat4("view", _camera->getProjection());
     // shader->setMat4("projection", projection_matrix_perspective(
     //     degToRad(60.0f),
@@ -74,11 +90,7 @@ void TriangleMeshesLayer::onRender()
     //     0.1f,
     //     100.0f
     // ));
-    shader->unbind();
-    PRINT_HERE();
-    GLCall(glViewport(0, 0, _macApplication->getWindow()->getWidth(), _macApplication->getWindow()->getHeight()));
-    meshManager.drawMeshes();
-    PRINT_HERE();
+    meshManager.drawMeshes(shader);
 }
 
 }

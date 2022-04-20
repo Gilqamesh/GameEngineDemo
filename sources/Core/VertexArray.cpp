@@ -40,26 +40,11 @@ void VertexArray::create()
     GLCall(glGenVertexArrays(1, &GL_ID));
 }
 
-void VertexArray::pushVertexAttribute(const VertexAttribute &attribute, GLuint stride)
+void VertexArray::pushVertexAttribute(const VertexLayout &layout, GLuint index)
 {
     TRACE();
-    GLCall(glEnableVertexAttribArray(attribute._index));
-    LOG("attribute._index: " << attribute._index);
-    LOG("attribute._count: " << attribute._count);
-    LOG("attribute._type: " << attribute._type);
-    printf("attribute._normalized: %d\n", attribute._normalized);
-    LOG("stride: " << stride);
-    LOG("attribute._offset " << attribute._offset);
-    GLCall(glVertexAttribPointer(
-        attribute._index,
-        attribute._count,
-        attribute._type,
-        attribute._normalized,
-        // 0,
-        stride,
-        0
-        // (const void *)&attribute._offset
-        ));
+    GLCall(glEnableVertexAttribArray(index));
+    GLCall(glVertexAttribPointer(index, layout._count, layout._type, layout._normalized, layout._stride, 0));
 }
 
 void VertexArray::bind()

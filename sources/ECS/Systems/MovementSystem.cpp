@@ -15,8 +15,11 @@ void MovementSystem::update(float dt)
     {
         PositionComponent &position = _coordinator->getComponent<PositionComponent>(entity);
         VelocityComponent &velocity = _coordinator->getComponent<VelocityComponent>(entity);
+        if (position.x + velocity.x * dt < -1 || position.x + velocity.x * dt > 1) velocity.x *= -1;
         position.x += velocity.x * dt;
+        if (position.y + velocity.y * dt < -1 || position.y + velocity.y * dt > 1) velocity.y *= -1;
         position.y += velocity.y * dt;
+        if (position.z + velocity.z * dt < -1 || position.z + velocity.z * dt > 1) velocity.z *= -1;
         position.z += velocity.z * dt;
     }
 }

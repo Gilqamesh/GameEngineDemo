@@ -7,7 +7,7 @@ class MovementSystem : public ISystem
 {
 public:
     MovementSystem(Coordinator *coordinator);
-    void update(float dt);
+    virtual void update(float dt) override;
     virtual void setSystemSignature() override;
 };
 

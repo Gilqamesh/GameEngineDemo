@@ -2,19 +2,22 @@
 # define VERTEXVECTOR_HPP
 
 # include "Interfaces/IVertexAttribute.hpp"
+# include "Core/VertexLayout.hpp"
 
 namespace NAMESPACE
 {
 
 template <class VertexAttribute>
-class VertexVector : public std::vector<VertexAttribute>
+class VertexVector
 {
+std::vector<VertexAttribute>    _vertexAttributes;
+VertexLayout                    _layout;
 public:
-    inline const void *getData() { return (this->data()); }
-    inline GLsizeiptr getSize() {
-        ASSERT(this->size());
-        return (this->size() * sizeof(this->operator[](0)));
-    }
+    VertexVector() : _layout(VertexAttribute::getLayout()) { }
+    inline void push_back(const VertexAttribute &vertexAttribute) { _vertexAttributes.push_back(vertexAttribute); }
+    inline const VertexLayout &getLayout() const { return (_layout); }
+    inline const void *getData() const { return (_vertexAttributes.data()); }
+    inline GLsizeiptr getSize() const { return (_vertexAttributes.size() * sizeof(VertexAttribute)); }
 };
 
 }

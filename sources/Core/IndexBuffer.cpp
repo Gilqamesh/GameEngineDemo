@@ -86,5 +86,16 @@ void IndexBuffer::unbind()
     GLCall(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0));
 }
 
+void IndexBuffer::release()
+{
+    TRACE();
+    ASSERT(GL_ID && _data);
+    GLCall(glDeleteBuffers(1, &GL_ID));
+    free(_data);
+    GL_ID = 0;
+    _data = nullptr;
+    _max_count = 0;
+    _count = 0;
+}
 
 }

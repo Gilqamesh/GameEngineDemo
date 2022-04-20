@@ -15,6 +15,7 @@ class MeshManager
 {
 Coordinator                                         _coordinator;
 std::unordered_map<Entity, Mesh, std::hash<int> >   _meshes;
+std::unordered_map<const char *, ISystem *>         _systems;
 public:
     /*
      * Register VertexAttributes for now
@@ -30,7 +31,7 @@ public:
 
     void configureMesh(Entity mesh);
 
-    void drawMeshes();
+    void drawMeshes(Shader *shader);
 
     void destroyMesh(Entity mesh);
 
@@ -76,7 +77,19 @@ public:
     template <typename T>
     T* registerSystem()
     {
-        return (_coordinator.registerSystem<T>());
+        const char *systemName = typeid(T).name();
+        ASSERT(_systems.count(systemName) == 0);
+        T* system = _coordinator.registerSystem<T>();
+        _systems[systemName] = system;
+        return (system);
+    }
+
+    template <typename T>
+    void updateSystem(float dt)
+    {
+        const char *systemName = typeid(T).name();
+        ASSERT(_systems.count(systemName));
+        _systems[systemName]->update(dt);
     }
 
     template <typename T>

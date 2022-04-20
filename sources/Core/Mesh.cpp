@@ -62,11 +62,11 @@ void Mesh::draw()
     // }
     // LOG("");
     _material.bind();
-    const auto *shader = _material.getShader();
-    LOG("shader->getName(): " << shader->getName());
-    LOG("shader->getId(): " << shader->getId());
-    LOG("_material.getDiffuse()->getName(): " << _material.getDiffuse()->getName());
-    LOG("_vertexData.getCountOfIndeces(): " << _vertexData.getCountOfIndeces());
+    // const auto *shader = _material.getShader();
+    // LOG("shader->getName(): " << shader->getName());
+    // LOG("shader->getId(): " << shader->getId());
+    // LOG("_material.getDiffuse()->getName(): " << _material.getDiffuse()->getName());
+    // LOG("_vertexData.getCountOfIndeces(): " << _vertexData.getCountOfIndeces());
     GLCall(glDrawElements(GL_TRIANGLES, _vertexData.getCountOfIndeces(), GL_UNSIGNED_INT, nullptr));
     _vertexData.unbind();
     _material.unbind();

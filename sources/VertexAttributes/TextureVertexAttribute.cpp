@@ -14,10 +14,10 @@ TextureVertexAttribute::TextureVertexAttribute(GLfloat x, GLfloat y)
 
 }
 
-void TextureVertexAttribute::push(VertexLayout &layout)
+VertexLayout TextureVertexAttribute::getLayout()
 {
     TRACE();
-    layout.push<GLfloat>(2);
+    return (VertexLayout(2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT)));
 }
 
 size_t TextureVertexAttribute::getSize()

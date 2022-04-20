@@ -45,6 +45,12 @@ public:
     inline GLsizeiptr getSize() { return (_size); }
     inline const void *getData() { return (_data); }
 
+    /*
+     * Delete IndexBuffer from the OpenGL context
+     * Reset the object's state
+     */
+    void release();
+
     void bind();
     void unbind();
 };

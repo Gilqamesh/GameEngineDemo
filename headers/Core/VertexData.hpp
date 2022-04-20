@@ -15,12 +15,16 @@ namespace NAMESPACE
 
 class VertexData
 {
-VertexLayout    _layout;
-VertexArray     _vertexArray;
-VertexBuffer    _vertexPositionBuffer;
-VertexBuffer    _vertexNormalBuffer;
-VertexBuffer    _vertexTextureBuffer;
-IndexBuffer     _indexBuffer;
+VertexArray                             _vertexArray;
+VertexBuffer                            _vertexPositionBuffer;
+VertexBuffer                            _vertexNormalBuffer;
+VertexBuffer                            _vertexTextureBuffer;
+IndexBuffer                             _indexBuffer;
+
+VertexVector<PositionVertexAttribute>   _vertexVectorPosition;
+VertexVector<NormalVertexAttribute>     _vertexVectorNormal;
+VertexVector<TextureVertexAttribute>    _vertexVectorTexture;
+std::vector<unsigned int>               _indices;
 public:
     VertexData();
     ~VertexData();
@@ -32,10 +36,14 @@ public:
     VertexData(VertexData &&other);
     VertexData &operator=(VertexData &&other);
 
-    inline void setVBO_position(VertexBuffer &&vertexPositionBuffer) { _vertexPositionBuffer = std::move(vertexPositionBuffer); }
-    inline void setVBO_normal(VertexBuffer &&vertexNormalBuffer) { _vertexNormalBuffer = std::move(vertexNormalBuffer); }
-    inline void setVBO_texture(VertexBuffer &&vertexTextureBuffer) { _vertexTextureBuffer = std::move(vertexTextureBuffer); }
-    inline void setIBO(IndexBuffer &&indexBuffer) { _indexBuffer = std::move(indexBuffer); }
+    void pushPositionAttribute(const PositionVertexAttribute &data);
+    void pushNormalAttribute(const NormalVertexAttribute &data);
+    void pushTextureAttribute(const TextureVertexAttribute &data);
+    void pushIndices(const std::vector<unsigned int> &indices);
+    void configurePositionAttribute();
+    void configureNormalAttribute();
+    void configureTextureAttribute();
+    void configureIndices();
 
     inline GLuint getCountOfIndeces() const { return (_indexBuffer.getCount()); }
     inline VertexBuffer &getPositionBuffer() { return (_vertexPositionBuffer); }
@@ -44,7 +52,7 @@ public:
     inline IndexBuffer &getIndexBuffer() { return (_indexBuffer); }
 
     /*
-     * Call it after all VBOs and the IBO are set
+     * Call it after all VBOs and the IBO are configured
      */
     void configureVAO();
 

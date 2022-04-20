@@ -30,7 +30,7 @@ Trace *Trace::getInstance()
 void Trace::add(const std::string &traceMsg)
 {
     traceInstanceMutex.lock();
-    if (traceInstance->size() > 20)
+    if (traceInstance->size() > 40)
         traceInstance->pop();
     traceInstance->push(traceMsg);
     traceInstanceMutex.unlock();

@@ -16,6 +16,7 @@ protected:
 public:
     ISystem(Coordinator *coordinator);
     virtual void setSystemSignature() = 0;
+    virtual void update(float dt) = 0;
 };
 
 #endif

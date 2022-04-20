@@ -9,19 +9,23 @@
 # include "Managers/MeshManager.hpp"
 # include "Applications/MacApplication.hpp"
 # include "Interfaces/ICamera.hpp"
+# include "ECS/Systems/MovementSystem.hpp"
 
 namespace NAMESPACE
 {
 
 class TriangleMeshesLayer : public ILayer
 {
-MacApplication *_macApplication;
-ICamera *_camera;
-ShaderManager shaderManager;
-TextureManager textureManager;
-MaterialManager materialManager;
-MeshManager meshManager;
+MacApplication  *_macApplication;
+ICamera         *_camera;
+
+ShaderManager                               shaderManager;
+TextureManager                              textureManager;
+MaterialManager                             materialManager;
+MeshManager                                 meshManager;
+
 std::unordered_set<Entity, std::hash<int> > meshes;
+MovementSystem *movementSystem;
 public:
     TriangleMeshesLayer(MacApplication *macApplication, ICamera *camera);
     virtual void onAttach() override;

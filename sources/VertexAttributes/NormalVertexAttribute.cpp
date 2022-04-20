@@ -14,10 +14,10 @@ NormalVertexAttribute::NormalVertexAttribute(GLfloat x, GLfloat y, GLfloat z)
     TRACE();
 }
 
-void NormalVertexAttribute::push(VertexLayout &layout)
+VertexLayout NormalVertexAttribute::getLayout()
 {
     TRACE();
-    layout.push<GLfloat>(3);
+    return (VertexLayout(3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT)));
 }
 
 size_t NormalVertexAttribute::getSize()

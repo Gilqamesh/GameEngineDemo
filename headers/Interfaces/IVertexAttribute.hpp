@@ -9,8 +9,8 @@ namespace NAMESPACE
 class IVertexAttribute
 {
 public:
-    void push(VertexLayout &layout);
     size_t getSize();
+    static VertexLayout getLayout();
 };
 
 }

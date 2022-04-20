@@ -7,6 +7,7 @@ using namespace NAMESPACE;
 
 int main()
 {
+    std::srand(42);
     // try
     // {
     //     CameraSimulator *cameraSimulator = new CameraSimulator();

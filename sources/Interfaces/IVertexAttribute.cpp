@@ -3,10 +3,10 @@
 namespace NAMESPACE
 {
 
-void IVertexAttribute::push(VertexLayout &layout)
+VertexLayout getLayout()
 {
-    (void)layout;
     ASSERT(false);
+    return (VertexLayout());
 }
 
 size_t IVertexAttribute::getSize()

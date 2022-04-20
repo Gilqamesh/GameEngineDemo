@@ -13,7 +13,7 @@ Vector<GLfloat, 2> _position; // x, y
 public:
     TextureVertexAttribute();
     TextureVertexAttribute(GLfloat x, GLfloat y);
-    void push(VertexLayout &layout);
+    static VertexLayout getLayout();
     size_t getSize();
 };
 

@@ -9,15 +9,15 @@ PositionVertexAttribute::PositionVertexAttribute()
 }
 
 PositionVertexAttribute::PositionVertexAttribute(GLfloat x, GLfloat y, GLfloat z)
-    : _coordinates{x, z, y}
+    : _coordinates{x, y, z}
 {
 
 }
 
-void PositionVertexAttribute::push(VertexLayout &layout)
+VertexLayout PositionVertexAttribute::getLayout()
 {
     TRACE();
-    layout.push<GLfloat>(3);
+    return (VertexLayout(3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT)));
 }
 
 size_t PositionVertexAttribute::getSize()

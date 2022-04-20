@@ -9,7 +9,7 @@ float _gravitationalConstant;
 public:
     GravitySystem(Coordinator *coordinator);
     virtual void setSystemSignature() override;
-    void update(float dt);
+    virtual void update(float dt) override;
     inline void setGravitationalConstant(float gravitationalConstant)
     {
         _gravitationalConstant = gravitationalConstant;

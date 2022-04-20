@@ -1,5 +1,6 @@
 #include "Managers/MeshManager.hpp"
 #include "Debug/Trace.hpp"
+#include "ECS/Components/PositionComponent.hpp"
 
 namespace NAMESPACE
 {
@@ -24,11 +25,14 @@ void MeshManager::setMeshMaterial(Entity mesh, const Material &material)
     _meshes[mesh].setMaterial(material);
 }
 
-void MeshManager::drawMeshes()
+void MeshManager::drawMeshes(Shader *shader)
 {
     TRACE();
     for (auto &mesh : _meshes)
     {
+        PositionComponent position = _coordinator.getComponent<PositionComponent>(mesh.first);
+        shader->bind();
+        shader->setMat4("view", translation_matrix(Vector<GLfloat, 3>(position.x, position.y, position.z)));
         mesh.second.draw();
     }
 }

@@ -38,7 +38,6 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
         TERMINATE("glfwCreateWindow() failed");
     }
     glfwMakeContextCurrent(window);
-    GLCall(glViewport(0, 0, windowProps.width, windowProps.height));
     if (glewInit() != GLEW_OK)
     {
         glfwTerminate();

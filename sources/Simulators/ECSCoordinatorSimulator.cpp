@@ -32,9 +32,9 @@ void ECSCoordinatorSimulator::main()
     {
         gravitySystem->update(dt);
         movementSystem->update(dt);
-    //     coordinator->print();
-    //     LOG("");
-    //     sleep(1);
+        // coordinator->print();
+        // LOG("");
+        // sleep(1);
     }
     std::cout << "Time taken: " << (std::clock() - clock) / (double)CLOCKS_PER_SEC << "s" << std::endl;
 

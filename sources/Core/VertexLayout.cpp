@@ -3,10 +3,10 @@
 namespace NAMESPACE
 {
 
-VertexLayout::VertexLayout()
-    : _stride(0)
+VertexLayout::VertexLayout(GLuint count, GLuint type, GLubyte normalized, GLuint stride)
+    : _count(count), _type(type), _normalized(normalized), _stride(stride)
 {
-    TRACE();
+
 }
 
 }

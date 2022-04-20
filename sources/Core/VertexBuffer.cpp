@@ -87,4 +87,15 @@ void VertexBuffer::unbind()
     GLCall(glBindBuffer(GL_ARRAY_BUFFER, 0));
 }
 
+void VertexBuffer::release()
+{
+    TRACE();
+    ASSERT(GL_ID && _data);
+    GLCall(glDeleteBuffers(1, &GL_ID));
+    GL_ID = 0;
+    free(_data);
+    _max_size = 0;
+    _size = 0;
+}
+
 }

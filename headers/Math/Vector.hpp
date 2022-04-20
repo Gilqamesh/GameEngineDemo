@@ -18,30 +18,29 @@ class Matrix;
 template <typename T, unsigned int LENGTH>
 class Vector
 {
-    private:
-        Matrix<T, 1, LENGTH>                    entries;
-	public:
-		Vector()                                                { }
-        Vector(T* v):                           entries(v)         { }
-        Vector(const Matrix<T, 1, LENGTH> &m):  entries(m)         { }
-        template <typename... Args>
-        Vector(const Args & ... args):          entries(args...)   { }
-		Vector(const Vector &v):                entries(v.entries)    { }
-		~Vector()                                               { }
-		Vector &operator=(const Vector &v)                      { if (this != &v) entries = v.entries; return (*this); }
+Matrix<T, 1, LENGTH>    entries;
+public:
+    Vector()                                                    { }
+    Vector(T* v):                           entries(v)          { }
+    Vector(const Matrix<T, 1, LENGTH> &m):  entries(m)          { }
+    template <typename... Args>
+    Vector(const Args & ... args):          entries(args...)    { }
+    Vector(const Vector &v):                entries(v.entries)  { }
+    ~Vector()                                                   { }
+    Vector &operator=(const Vector &v) { if (this != &v) entries = v.entries; return (*this); }
 
-        T*       data(void)         { return (entries.data()); }
-        const T* data(void) const   { return (entries.data()); }
+    T*       data(void)       { return (entries.data()); }
+    const T* data(void) const { return (entries.data()); }
 
-        size_t size() const { return (LENGTH); }
+    size_t size() const { return (LENGTH); }
 
-		Vector &operator+=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] + v[i]; return (*this); }
-		Vector &operator-=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] - v[i]; return (*this); }
-		Vector &operator*=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] * a;    return (*this); }
-		Vector &operator/=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] / a;    return (*this); }
+    Vector &operator+=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] + v[i]; return (*this); }
+    Vector &operator-=(const Vector &v) { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] - v[i]; return (*this); }
+    Vector &operator*=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] * a;    return (*this); }
+    Vector &operator/=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] / a;    return (*this); }
 
-        T       &operator[](unsigned int index)       { return (entries(0, index)); }
-        T const &operator[](unsigned int index) const { return (entries(0, index)); }
+    T       &operator[](unsigned int index)       { return (entries(0, index)); }
+    T const &operator[](unsigned int index) const { return (entries(0, index)); }
 };
 
 template <typename T, unsigned int LENGTH>

@@ -33,6 +33,7 @@ void MacApplication::run()
         float time = (float)glfwGetTime();
         float deltaTime = time - lastTime;
         lastTime = time;
+        LOG("FPS: " << 1 / deltaTime);
 
         if (minimized == false)
         {

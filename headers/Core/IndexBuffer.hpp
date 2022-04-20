@@ -42,6 +42,12 @@ public:
      */
     void update(const void *data, GLuint count);
 
+    /*
+     * Delete IndexBuffer from the OpenGL context
+     * Reset the object's state
+     */
+    void release();
+
     void bind();
     void unbind();
 
