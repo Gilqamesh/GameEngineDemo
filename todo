@@ -1,0 +1,18 @@
+quadtree collision detection
+cache align on Matrix class
+monte carlo maybe for AI
+dynamic shader generation
+refine VertexData + lock/unlock attributes
+use ModelManager for models and separate Texture/Material manager
+tie together the box with how the movement system works..
+    in general movement system should only misplace the entities and there should be another system that takes care of the collisions
+abstract mesh and model draw order, 1. draw opaques, 2. sort transparents, 3. draw transparents
+refine Material class, there can be more than 1 Texture for each type and also a lot more Texture types
+remove registerComponent from ObjectManager and let each system register its prerequired components..
+    if a component gets registered twice nothing happens
+store opacity in each model object, and in object coordinator map from Entity to distance from camera
+stop calling every base class an interface
+precompute angle between light sources and entities maybe?
+load models with material and attach material shouldn't take in an entity because it overrides the original model's material
+segfault upon quitting the application
+continuous edit & continue: make game layer a dll and have the platform layer check the dll and when it changes load the new dll
