@@ -4,7 +4,7 @@
 #include "Events/EventDispatcher.hpp"
 #include "Inputs/GLFWInput.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MacApplication::MacApplication()

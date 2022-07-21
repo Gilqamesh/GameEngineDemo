@@ -3,8 +3,9 @@
 #include "Debug/Trace.hpp"
 #include "Vendor/stb_image/stb_image.h"
 #include "Core/Shader.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Texture::Texture(const std::string &texturePath, const std::string &textureName)

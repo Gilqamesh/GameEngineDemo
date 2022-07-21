@@ -1,6 +1,6 @@
 #include "VertexAttributes/PositionVertexAttribute.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 PositionVertexAttribute::PositionVertexAttribute()

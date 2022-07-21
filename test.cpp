@@ -3,6 +3,8 @@
 #include <stack>
 #include <string>
 #include <vector>
+#include <unordered_map>
+#include <cmath>
 #define NODE_CAPACITY 20
 
 using namespace std;
@@ -79,10 +81,7 @@ public:
                 rectangleIndices.push_back(index);
                 return (true);
             }
-            else
-            {
-                subdivide(rectangles);
-            }
+            subdivide(rectangles);
         }
 
         northWest->insert(rectangles, index);
@@ -123,11 +122,11 @@ private:
 
     unsigned int checkIntersections(const vector<Rectangle>& rectangles, int level)
     {
-        cout << "Level " << level << ": ";
+        // cout << "Level " << level << ": ";
         unsigned int nOfIntersections = 0;
         for (unsigned int i = 0; i < rectangleIndices.size(); ++i)
         {
-            cout << rectangleIndices[i] << " ";
+            // cout << rectangleIndices[i] << " ";
             for (unsigned int j = i + 1; j < rectangleIndices.size(); ++j)
             {
                 if (rectangles[rectangleIndices[i]].doesIntersect(rectangles[rectangleIndices[j]]))
@@ -136,7 +135,7 @@ private:
                 }
             }
         }
-        cout << endl;
+        // cout << endl;
         if (northWest != nullptr)
         {
             nOfIntersections += northWest->checkIntersections(rectangles, level + 1);
@@ -169,20 +168,6 @@ public:
     }
 };
 
-#include <unordered_map>
-
-/*
- * Based on level we can tell how big the bound of the region is.
- * Based on region index we can tell where exactly it is located at.
- * 
- * 0                                                      []
- * 1               []                              []                   [o]                      []
- * 2 [o]      [o]           []          []                                                   [][][o][oo]
- * 3                   [o][][oo][]
- * 1 2 0, 2 0 0, 2 1 0, 2 14 0, 2 15 0, 2 15 1, 3 8 0, 3 10 0, 3 10 1
- */
-#include <cmath>
-
 class ImprovedQuadTree
 {
     vector<Rectangle> rectangles;
@@ -210,14 +195,14 @@ public:
         unsigned int nOfIntersections = 0;
         for (const auto& levels : levelsToRegions)
         {
-            cout << "Level: " << levels.first << " ";
+            // cout << "Level: " << levels.first << " ";
             for (const auto& regions : levels.second)
             {
                 const auto& region = regions.second;
                 // cout << "Region " << regions.first << ": ";
                 for (unsigned int i = 0; i < region.size(); ++i)
                 {
-                    cout << region[i] << " ";
+                    // cout << region[i] << " ";
                     for (unsigned int j = i + 1; j < region.size(); ++j)
                     {
                         if (rectangles[region[i]].doesIntersect(rectangles[region[j]]))
@@ -227,7 +212,7 @@ public:
                     }
                 }
             }
-            cout << endl;
+            // cout << endl;
         }
 
         return (nOfIntersections);
@@ -242,15 +227,8 @@ private:
             exit(1);
         }
 
-        /*
-          bound width: 1000
-          width, height: 250
-          regionIndex: 10
-          level: 2
-        */
-        
         int width = (int)_bound.width / (int)pow(2, level);
-        int height = width;
+        int height = (int)_bound.height / (int)pow(2, level);
         int topLeftY = regionIndex / (unsigned long)pow(2, level) * height;
         int topLeftX = (regionIndex % (unsigned long)pow(2, level)) * width;
         Rectangle curBound = {(float)topLeftX, (float)topLeftY, (float)width, (float)height};

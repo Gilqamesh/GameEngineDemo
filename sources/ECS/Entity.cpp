@@ -1,6 +1,6 @@
 #include "ECS/Entity.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Entity::Entity()

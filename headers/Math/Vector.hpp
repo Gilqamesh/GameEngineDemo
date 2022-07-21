@@ -8,7 +8,7 @@
 # include "pch.hpp"
 # include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>

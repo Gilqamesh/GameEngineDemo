@@ -3,7 +3,7 @@
 
 # include "Core/Material.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class MaterialManager

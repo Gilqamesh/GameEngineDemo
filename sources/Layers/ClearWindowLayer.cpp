@@ -1,7 +1,7 @@
 #include "Layers/ClearWindowLayer.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ClearWindowLayer::ClearWindowLayer(Vector<float, 3> color)

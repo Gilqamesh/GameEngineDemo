@@ -1,6 +1,6 @@
 #include "Events/WindowEvents/WindowResizeEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 WindowResizeEvent::WindowResizeEvent(unsigned int width, unsigned int height)

@@ -2,16 +2,16 @@
 # define PERSPECTIVECAMERALAYER_HPP
 
 # include "Interfaces/ILayer.hpp"
-# include "Applications/MacApplication.hpp"
 # include "Cameras/PerspectiveCamera.hpp"
+# include "Windows/MacWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class PerspectiveCameraLayer : public ILayer
 {
-MacWindow         *_macWindow;
-PerspectiveCamera *_camera;
+    MacWindow         *_macWindow;
+    PerspectiveCamera *_camera;
 public:
     PerspectiveCameraLayer(MacWindow *macWindow);
     virtual void onAttach() override;

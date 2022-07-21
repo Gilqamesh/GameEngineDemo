@@ -1,6 +1,6 @@
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MouseButtonPressedEvent::MouseButtonPressedEvent(int mouseCode)

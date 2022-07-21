@@ -1,6 +1,6 @@
 #include "ECS/Managers/ComponentManager.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ComponentManager::ComponentManager()

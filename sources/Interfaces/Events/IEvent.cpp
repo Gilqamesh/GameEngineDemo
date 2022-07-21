@@ -1,6 +1,6 @@
 #include "Interfaces/Events/IEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 IEvent::IEvent()

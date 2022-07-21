@@ -1,6 +1,6 @@
 #include "ECS/Components/MassComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 std::ostream &operator<<(std::ostream &os, const MassComponent &a)

@@ -4,7 +4,7 @@
 #include "Layers/BytecodeLayer.hpp"
 #include "VirtualMachines/StackMachine.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void BytecodeSimulator::main()

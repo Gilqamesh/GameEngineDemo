@@ -5,7 +5,7 @@
 # include "ECS/ComponentArray.hpp"
 # include "ECS/Types.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 /*

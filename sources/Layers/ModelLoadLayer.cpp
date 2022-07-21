@@ -15,7 +15,7 @@
 #include "Factories/CubeMeshFactory.hpp"
 #include "Factories/QuadMeshFactory.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ModelLoadLayer::ModelLoadLayer(MacWindow *macWindow, ICamera *camera)

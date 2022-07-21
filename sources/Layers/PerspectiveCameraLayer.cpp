@@ -1,11 +1,12 @@
 #include "Layers/PerspectiveCameraLayer.hpp"
 #include "Interfaces/Events/IEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 PerspectiveCameraLayer::PerspectiveCameraLayer(MacWindow *macWindow)
-    : ILayer("Perspective Camera Layer", LayerType::overlay), _macWindow(macWindow)
+    : ILayer("Perspective Camera Layer", LayerType::overlay),
+      _macWindow(macWindow)
 {
     _camera = new PerspectiveCamera(_macWindow, Vector<float, 3>(-25.0f, 5.0f, 5.0f), Vector<float, 3>(1.0f, -0.2f, 0.0f));
     _camera->setMoveSpeed(50.0f);

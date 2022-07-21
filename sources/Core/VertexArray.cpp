@@ -1,7 +1,7 @@
 #include "Core/VertexArray.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VertexArray::VertexArray()

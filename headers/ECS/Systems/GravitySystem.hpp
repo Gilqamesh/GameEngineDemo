@@ -3,7 +3,7 @@
 
 # include "ECS/Interfaces/ISystem.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class GravitySystem : public ISystem

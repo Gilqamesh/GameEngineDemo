@@ -1,17 +1,24 @@
 cmake_minimum_required(VERSION 3.12)
 
+# set(CMAKE_VERBOSE_MAKEFILE on)
+
 set(PROJECT_NAME "GameEngine")
 set(SRC_DIR "sources")
 file(GLOB_RECURSE SRC_FILES ${SRC_DIR}/*.cpp)
-set(GLEW_PATH "C:\\Users\\Gilqamesh\\Desktop\\glew-2.1.0")
-set(GLFW_PATH "C:\\Users\\Gilqamesh\\Desktop\\glfw-3.3.6")
-set(ASSIMP_PATH "C:\\Users\\Gilqamesh\\Desktop\\assimp-3.1.1")
+set(GLEW_PATH "/Users/edavid/.brew/Cellar/glew/2.2.0_1")
+set(GLFW_PATH "/Users/edavid/.brew/Cellar/glfw/3.3.7")
+set(ASSIMP_PATH "/Users/edavid/.brew/Cellar/assimp/5.2.4")
 include_directories(${GLFW_PATH}/include)
 include_directories(${GLEW_PATH}/include)
 include_directories(${ASSIMP_PATH}/include)
 include_directories(headers)
 
-set(LINK_FLAGS ${GLFW_PATH}/Win32/src/Debug/glfw3.lib ${GLEW_PATH}/bin32/lib/Debug/glew32d.lib ${ASSIMP_PATH}/Win32/code/Debug/assimpd.lib)
+if (MSVC)
+    set(OPEN_GL_LINK opengl32)
+else()
+    set(OPEN_GL_LINK -framework\ OpenGl)
+endif()
+set(LINK_FLAGS ${GLFW_PATH}/lib/libglfw.dylib ${GLEW_PATH}/lib/libGLEW.dylib ${ASSIMP_PATH}/lib/libassimp.dylib)
 
 # set the project name
 project(${PROJECT_NAME})
@@ -34,7 +41,8 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_precompile_headers(${PROJECT_NAME} PUBLIC headers/pch.hpp)
 
 # linking
-target_link_libraries(${PROJECT_NAME} ${LINK_FLAGS} opengl32)
+set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "${OPEN_GL_LINK}")
+target_link_libraries(${PROJECT_NAME} ${LINK_FLAGS})
 
 # put both exe and dll into a single build directory
 set(BUILD_DIR "build")

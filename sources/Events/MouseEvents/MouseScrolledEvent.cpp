@@ -1,6 +1,6 @@
 #include "Events/MouseEvents/MouseScrolledEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MouseScrolledEvent::MouseScrolledEvent(float offsetX, float offsetY)

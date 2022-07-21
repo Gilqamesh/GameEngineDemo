@@ -4,7 +4,7 @@
 #include "ECS/Components/PositionComponent.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 RotationSystem::RotationSystem(Coordinator *coordinator)

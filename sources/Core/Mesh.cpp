@@ -1,7 +1,7 @@
 #include "Core/Mesh.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Mesh::Mesh()

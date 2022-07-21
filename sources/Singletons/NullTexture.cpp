@@ -1,14 +1,15 @@
 #include "Singletons/NullTexture.hpp"
 #include "Debug/Trace.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 NullTexture *NullTexture::thisInstance = nullptr;
 std::mutex NullTexture::thisInstanceMutex;
 
 NullTexture::NullTexture()
-    : Texture("C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/NullTexture.png", "NullTexture")
+    : Texture(getTextureDir() + "NullTexture.png", "NullTexture")
 {
     TRACE();
 

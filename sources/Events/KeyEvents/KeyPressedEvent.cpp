@@ -1,6 +1,6 @@
 #include "Events/KeyEvents/KeyPressedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 KeyPressedEvent::KeyPressedEvent(int keycode, unsigned int repeatCount)

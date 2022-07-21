@@ -1,6 +1,6 @@
 #include "VertexAttributes/TextureVertexAttribute.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 TextureVertexAttribute::TextureVertexAttribute()

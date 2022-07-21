@@ -1,7 +1,7 @@
 #include "Managers/MaterialManager.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MaterialManager::~MaterialManager()

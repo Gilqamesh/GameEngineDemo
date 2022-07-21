@@ -9,7 +9,7 @@
 # include "Inputs/GLFWInput.hpp"
 # include "Windows/MacWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class PerspectiveCamera : public ICamera

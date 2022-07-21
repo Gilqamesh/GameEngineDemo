@@ -1,6 +1,6 @@
 #include "ECS/Components/PositionComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 PositionComponent::PositionComponent(float x, float y, float z)

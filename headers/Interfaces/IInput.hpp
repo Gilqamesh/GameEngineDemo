@@ -4,7 +4,7 @@
 # include "pch.hpp"
 # include "Math/Vector.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class IInput

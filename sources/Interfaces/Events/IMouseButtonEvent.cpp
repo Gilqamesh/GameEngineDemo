@@ -1,6 +1,6 @@
 #include "Interfaces/Events/IMouseButtonEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 IMouseButtonEvent::IMouseButtonEvent(int mouseCode)

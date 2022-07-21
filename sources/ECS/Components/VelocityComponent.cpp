@@ -1,6 +1,6 @@
 #include "ECS/Components/VelocityComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VelocityComponent::VelocityComponent(float x, float y, float z)

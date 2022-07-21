@@ -1,15 +1,16 @@
 #ifndef EXCEPTION
 # define EXCEPTION
 
-# include "pch.hpp"
+# include <string>
+# include <exception>
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
-class Exception : public runtime_error
+class Exception : public std::runtime_error
 {
 public:
-    Exception(const string& msg);
+    Exception(const std::string& msg);
     ~Exception() noexcept;
 };
 

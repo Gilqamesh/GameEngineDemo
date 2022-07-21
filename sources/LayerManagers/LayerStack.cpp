@@ -1,7 +1,7 @@
 #include "LayerManagers/LayerStack.hpp"
 #include "Interfaces/ILayer.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 LayerStack::LayerStack()

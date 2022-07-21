@@ -1,6 +1,6 @@
 #include "ECS/Components/EnergyComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 std::ostream &operator<<(std::ostream &os, const EnergyComponent& a)

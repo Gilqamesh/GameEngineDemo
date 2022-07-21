@@ -1,7 +1,8 @@
 #include "Debug/OpenGL.hpp"
 #include "Debug/Trace.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void GLClearError(void)

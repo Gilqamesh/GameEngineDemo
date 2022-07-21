@@ -3,7 +3,7 @@
 
 # include "Interfaces/Events/IMouseButtonEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class MouseButtonReleasedEvent : public IMouseButtonEvent

@@ -2,9 +2,8 @@
 # define STACKMACHINE_HPP
 
 # include "pch.hpp"
-# include <stack>
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 enum OpType

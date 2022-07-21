@@ -3,7 +3,7 @@
 #include "Math/Utils.hpp"
 #include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 PerspectiveCamera::PerspectiveCamera(

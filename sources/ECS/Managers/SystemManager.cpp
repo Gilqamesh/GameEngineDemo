@@ -1,6 +1,6 @@
 #include "ECS/Managers/SystemManager.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 SystemManager::SystemManager(Coordinator *coordinator)

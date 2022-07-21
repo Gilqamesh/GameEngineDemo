@@ -4,7 +4,7 @@
 # include "pch.hpp"
 # include "Interfaces/Events/IEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class EventDispatcher

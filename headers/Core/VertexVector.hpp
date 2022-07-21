@@ -4,7 +4,7 @@
 # include "Interfaces/IVertexAttribute.hpp"
 # include "Core/VertexLayout.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 template <class VertexAttribute>

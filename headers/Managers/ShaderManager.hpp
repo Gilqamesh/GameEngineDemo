@@ -3,7 +3,7 @@
 
 # include "Core/Shader.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class ShaderManager

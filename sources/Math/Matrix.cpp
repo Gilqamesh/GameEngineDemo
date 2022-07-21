@@ -1,6 +1,6 @@
 #include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 

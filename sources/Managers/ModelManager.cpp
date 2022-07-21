@@ -3,8 +3,7 @@
 #include "ECS/Components/PositionComponent.hpp"
 #include "ECS/Components/RotationalComponent.hpp"
 
-
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ModelManager::ModelManager()
@@ -69,6 +68,7 @@ Entity ModelManager::createModel(const std::string &name, const Matrix<GLfloat, 
 Model *ModelManager::getModel(Entity model)
 {
     TRACE();
+    ASSERT(_modelEntities.count(model));
     return (_modelEntities.at(model));
 }
 

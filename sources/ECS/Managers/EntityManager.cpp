@@ -1,6 +1,6 @@
 #include "ECS/Managers/EntityManager.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 EntityManager::EntityManager()

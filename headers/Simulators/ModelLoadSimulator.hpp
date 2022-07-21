@@ -2,14 +2,15 @@
 # define MODELLOADSIMULATOR_HPP
 
 # include "pch.hpp"
+# include "Interfaces/ISimulator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
-class ModelLoadSimulator
+class ModelLoadSimulator : public ISimulator
 {
 public:
-    void main();
+    virtual void main() override;
 };
 
 }

@@ -1,8 +1,7 @@
 #include "Core/Shader.hpp"
-#include "Debug/Trace.hpp"
-#include "Debug/Log.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Shader::Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath, const std::string &shaderName)

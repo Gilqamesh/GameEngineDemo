@@ -3,7 +3,7 @@
 
 # include "Interfaces/ILayer.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class ClearWindowLayer : public ILayer

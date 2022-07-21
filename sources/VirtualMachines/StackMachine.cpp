@@ -1,8 +1,7 @@
 #include "VirtualMachines/StackMachine.hpp"
-#include "Debug/Log.hpp"
-#include "Debug/Exception.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Operand::Operand(OpType type)
@@ -35,7 +34,7 @@ StackMachine::StackMachine()
 
 StackMachine::~StackMachine()
 {
-    delete _memory;
+    delete [] _memory;
 }
 
 void StackMachine::interpret(const vector<char>& bytecode)

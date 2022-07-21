@@ -16,3 +16,6 @@ precompute angle between light sources and entities maybe?
 load models with material and attach material shouldn't take in an entity because it overrides the original model's material
 segfault upon quitting the application
 continuous edit & continue: make game layer a dll and have the platform layer check the dll and when it changes load the new dll
+rename MacApplication since it isnt OS specific at all
+rename Factories to primitives or something
+have an api to simply put a geometric shape on the screen from a primitives library

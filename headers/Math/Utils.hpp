@@ -3,7 +3,7 @@
 
 # include "pch.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 # define PI 3.14159265358979323f
@@ -20,7 +20,7 @@ inline float radToDeg(float rad)
 
 inline float getRand(float low, float high)
 {
-    return (std::rand() / (float)RAND_MAX * (high - low));
+    return (low + static_cast<float>(rand()) / RAND_MAX * (high - low));
 }
 
 }

@@ -5,7 +5,7 @@
 # include "Texture.hpp"
 # include "Shader.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 /*

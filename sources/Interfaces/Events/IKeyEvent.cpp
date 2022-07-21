@@ -1,6 +1,6 @@
 #include "Interfaces/Events/IKeyEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 IKeyEvent::IKeyEvent(int keycode)

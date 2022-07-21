@@ -5,7 +5,7 @@
 # include "Managers/ObjectCoordinator.hpp"
 # include "Windows/MacWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 struct RectangleElement

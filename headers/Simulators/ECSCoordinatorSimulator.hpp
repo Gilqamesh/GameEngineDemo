@@ -2,14 +2,15 @@
 # define ECSCOORDINATORSIMULATOR_HPP
 
 # include "pch.hpp"
+# include "Interfaces/ISimulator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
-class ECSCoordinatorSimulator
+class ECSCoordinatorSimulator : public ISimulator
 {
 public:
-    void main();
+    virtual void main() override;
 };
 
 }

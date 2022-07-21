@@ -1,6 +1,6 @@
 #include "Interfaces/IVertexAttribute.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VertexLayout getLayout()

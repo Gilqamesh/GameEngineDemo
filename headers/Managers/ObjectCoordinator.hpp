@@ -14,7 +14,7 @@
 # include "ECS/Components/Light/PointLightSourceComponent.hpp"
 # include "ECS/Components/Light/SpotLightSourceComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 // goal: make this class as user friendly as possible

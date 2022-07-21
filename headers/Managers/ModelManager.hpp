@@ -9,7 +9,7 @@
 # include "ECS/Components/ModelMatrixComponent.hpp"
 # include "Interfaces/IMeshFactory.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class ModelManager

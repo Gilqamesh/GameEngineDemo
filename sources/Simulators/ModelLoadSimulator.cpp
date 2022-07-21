@@ -3,8 +3,9 @@
 #include "Layers/ClearWindowLayer.hpp"
 #include "Layers/PerspectiveCameraLayer.hpp"
 #include "Layers/ModelLoadLayer.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void ModelLoadSimulator::main()

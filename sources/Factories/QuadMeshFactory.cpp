@@ -2,7 +2,7 @@
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Mesh QuadMeshFactory::createMesh()
@@ -10,10 +10,10 @@ Mesh QuadMeshFactory::createMesh()
     TRACE();
 
     VertexData vertexData;
-    PositionVertexAttribute positionA(-0.5f, -0.5f, 0.5f);  // bottom left
-    PositionVertexAttribute positionB(-0.5f, 0.5f, 0.5f);   // top left
-    PositionVertexAttribute positionC(0.5f, -0.5f, 0.5f);   // bottom right
-    PositionVertexAttribute positionD(0.5f, 0.5f, 0.5f);    // top right
+    PositionVertexAttribute positionA(-0.5f, -0.5f, 0.0f);  // bottom left
+    PositionVertexAttribute positionB(-0.5f, 0.5f, 0.0f);   // top left
+    PositionVertexAttribute positionC(0.5f, -0.5f, 0.0f);   // bottom right
+    PositionVertexAttribute positionD(0.5f, 0.5f, 0.0f);    // top right
 
     vertexData.pushPositionAttribute(positionA);
     vertexData.pushPositionAttribute(positionB);

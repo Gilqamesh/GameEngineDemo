@@ -5,7 +5,7 @@
 # include "ECS/Entity.hpp"
 # include "ECS/Managers/ComponentManager.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 /*

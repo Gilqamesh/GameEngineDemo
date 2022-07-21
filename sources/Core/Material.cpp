@@ -4,7 +4,7 @@
 #include "Debug/Trace.hpp"
 #include "Debug/OpenGL.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Material::Material()

@@ -6,7 +6,7 @@
 #include "ECS/Coordinator.hpp"
 #include "Math/Vector.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 EnergySystem::EnergySystem(Coordinator *coordinator)

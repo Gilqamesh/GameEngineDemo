@@ -4,7 +4,7 @@
 # include "pch.hpp"
 # include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 struct ModelMatrixComponent

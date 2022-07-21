@@ -1,20 +1,21 @@
 #include "Simulators/BytecodeSimulator.hpp"
-#include "Debug/Log.hpp"
-#include "Math/Vector.hpp"
+#include "Simulators/QuadTreeSimulator.hpp"
+#include "Log.hpp"
 
-using namespace NAMESPACE;
+using namespace GilqEngine;
 
-int main()
+int main(void)
 {
     TRACE();
-    std::srand(42);
+    srand(42);
 
     try
     {
-        std::unique_ptr<BytecodeSimulator> simulator = std::make_unique<BytecodeSimulator>();
+        // std::make_unique<BytecodeSimulator>();
+        unique_ptr<QuadTreeSimulator> simulator = make_unique<QuadTreeSimulator>();
         simulator->main(); 
     }
-    catch (const std::exception& e)
+    catch (const exception& e)
     {
         LOG(e.what());
     }

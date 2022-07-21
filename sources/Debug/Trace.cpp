@@ -1,6 +1,6 @@
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Trace *Trace::traceInstance = nullptr;

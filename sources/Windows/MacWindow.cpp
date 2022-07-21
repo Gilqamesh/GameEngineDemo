@@ -11,8 +11,9 @@
 #include "Events/ApplicationEvents/AppRenderEvent.hpp"
 #include "Events/ApplicationEvents/AppTickEvent.hpp"
 #include "Events/ApplicationEvents/AppUpdateEvent.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MacWindow::MacWindowProps::MacWindowProps()

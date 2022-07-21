@@ -3,7 +3,7 @@
 #include "Debug/Trace.hpp"
 #include "Math/Utils.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Mesh SphereMeshFactory::createMesh()

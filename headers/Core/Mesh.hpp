@@ -5,7 +5,7 @@
 # include "Core/Material.hpp"
 # include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class Mesh

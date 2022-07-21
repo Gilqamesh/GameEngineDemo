@@ -1,6 +1,6 @@
 #include "Core/VertexData.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VertexData::VertexData()

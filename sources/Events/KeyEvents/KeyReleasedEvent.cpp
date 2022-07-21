@@ -1,6 +1,6 @@
 #include "Events/KeyEvents/KeyReleasedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 KeyReleasedEvent::KeyReleasedEvent(int keycode)

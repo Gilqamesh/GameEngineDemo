@@ -4,7 +4,7 @@
 #include "ECS/Coordinator.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 DirectionalLightSourceSystem::DirectionalLightSourceSystem(Coordinator *coordinator)

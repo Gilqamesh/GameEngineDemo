@@ -10,7 +10,7 @@
 # include "VertexAttributes/NormalVertexAttribute.hpp"
 # include "VertexAttributes/TextureVertexAttribute.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class VertexData

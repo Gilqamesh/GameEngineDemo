@@ -2,7 +2,7 @@
 #include "Core/Shader.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void ILightSource::setShaderUniforms(const std::string &prefix, Shader *shader)

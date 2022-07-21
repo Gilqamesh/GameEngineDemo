@@ -1,7 +1,7 @@
 #include "Managers/ShaderManager.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ShaderManager::~ShaderManager()

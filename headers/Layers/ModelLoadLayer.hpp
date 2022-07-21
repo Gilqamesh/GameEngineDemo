@@ -7,7 +7,7 @@
 # include "Managers/ObjectCoordinator.hpp"
 # include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class ModelLoadLayer : public ILayer

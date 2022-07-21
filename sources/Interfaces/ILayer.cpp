@@ -1,7 +1,7 @@
 #include "Interfaces/ILayer.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ILayer::ILayer(const std::string &name, LayerType layerType)

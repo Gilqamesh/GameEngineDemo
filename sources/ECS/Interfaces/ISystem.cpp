@@ -1,6 +1,6 @@
 #include "ECS/Interfaces/ISystem.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ISystem::ISystem(Coordinator *coordinator)

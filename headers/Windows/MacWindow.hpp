@@ -3,7 +3,7 @@
 
 # include "Interfaces/IWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class MacWindow : public IWindow

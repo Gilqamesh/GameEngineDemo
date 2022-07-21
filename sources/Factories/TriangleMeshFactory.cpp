@@ -2,7 +2,7 @@
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Mesh TriangleMeshFactory::createMesh()

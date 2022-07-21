@@ -1,6 +1,6 @@
 #include "ECS/Components/MomentumComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MomentumComponent::MomentumComponent(float x, float y, float z)

@@ -3,7 +3,7 @@
 
 # include "Interfaces/ILayerManager.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class LayerStack : public ILayerManager

@@ -1,7 +1,6 @@
 #include "Debug/Exception.hpp"
-#include "Debug/Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Exception::Exception(const string& msg)

@@ -3,7 +3,7 @@
 
 # include "ECS/Interfaces/ILightSource.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 struct SpotLightSourceComponent : public ILightSource

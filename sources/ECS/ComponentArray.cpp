@@ -1,6 +1,6 @@
 #include "ECS/ComponentArray.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 

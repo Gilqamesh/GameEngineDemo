@@ -3,7 +3,7 @@
 #include "Core/Shader.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 PointLightSourceSystem::PointLightSourceSystem(Coordinator *coordinator)

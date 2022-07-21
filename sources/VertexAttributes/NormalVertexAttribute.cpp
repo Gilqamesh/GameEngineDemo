@@ -1,6 +1,6 @@
 #include "VertexAttributes/NormalVertexAttribute.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 NormalVertexAttribute::NormalVertexAttribute()

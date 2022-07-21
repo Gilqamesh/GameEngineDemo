@@ -9,10 +9,8 @@
 # include "Interfaces/IMeshFactory.hpp"
 # include "Managers/MaterialManager.hpp"
 # include "Managers/TextureManager.hpp"
-# include "Math/Matrix.hpp"
-# include "Math/Vector.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class Model

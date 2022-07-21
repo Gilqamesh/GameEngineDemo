@@ -2,7 +2,7 @@
 #include "Debug/Trace.hpp"
 #include "Core/Shader.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void DirectionalLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n)

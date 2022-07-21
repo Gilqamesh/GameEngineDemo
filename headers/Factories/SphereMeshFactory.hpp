@@ -3,7 +3,7 @@
 
 # include "Interfaces/IMeshFactory.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class SphereMeshFactory : public IMeshFactory

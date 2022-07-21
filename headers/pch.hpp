@@ -1,11 +1,9 @@
 #ifndef PCH_HPP
 # define PCH_HPP
 
-/*
-This file should serve as a precompiled header, so only put stuff here that will not change
-*/
-
-# define NAMESPACE idk
+/**
+ * This file should serve as a precompiled header, so only put stuff here that will not change
+ */
 
 # define G_RELEASE
 // # define G_DEBUG
@@ -17,6 +15,16 @@ This file should serve as a precompiled header, so only put stuff here that will
 #if defined(G_RELEASE)
 # define NDEBUG
 #endif
+
+# if defined(_WIN32)
+#  define WINDOWS
+#  include <Windows.h>
+# elif defined(__APPLE__) || defined(__linux__)
+#  define LINUX
+#  include <unistd.h>
+# else
+#  error OS IS NOT SUPPORTED
+# endif
 
 # include <iostream>
 # include <fstream>
@@ -32,9 +40,9 @@ This file should serve as a precompiled header, so only put stuff here that will
 # include <bitset>
 # include <csignal>
 # include <memory>
-# include "Debug/Log.hpp"
 # include "Debug/Trace.hpp"
 # include "Debug/OpenGL.hpp"
+# include "Debug/Exception.hpp"
 # include <unordered_set>
 # include <exception>
 # include <unordered_map>
@@ -46,9 +54,6 @@ This file should serve as a precompiled header, so only put stuff here that will
 # include <cstdint>
 # include <list>
 # include <cassert>
-# include "Debug/OpenGL.hpp"
-# include "Debug/Trace.hpp"
-# include "Debug/Log.hpp"
 # include "Math/Matrix.hpp"
 # include "Math/Quaternion.hpp"
 # include "Math/Utils.hpp"

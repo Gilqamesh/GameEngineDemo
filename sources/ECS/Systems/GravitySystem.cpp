@@ -2,7 +2,7 @@
 #include "ECS/Components/VelocityComponent.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 GravitySystem::GravitySystem(Coordinator *coordinator)

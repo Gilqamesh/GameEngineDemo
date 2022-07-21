@@ -4,7 +4,7 @@
 # include "Interfaces/IVertexAttribute.hpp"
 # include "Math/Vector.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class TextureVertexAttribute : public IVertexAttribute

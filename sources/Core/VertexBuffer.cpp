@@ -1,7 +1,7 @@
 #include "Core/VertexBuffer.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VertexBuffer::VertexBuffer()

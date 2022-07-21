@@ -4,7 +4,7 @@
 #include "ECS/Components/MomentumComponent.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MomentumSystem::MomentumSystem(Coordinator *coordinator)

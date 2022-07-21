@@ -4,7 +4,7 @@
 # include "ECS/Types.hpp"
 # include "pch.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class EntityManager;

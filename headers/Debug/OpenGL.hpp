@@ -1,10 +1,9 @@
 #ifndef OPENGL_HPP
 # define OPENGL_HPP
 
-# include "pch.hpp"
 # include "Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 # if defined(G_RELEASE)

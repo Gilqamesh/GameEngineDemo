@@ -4,7 +4,7 @@
 # include "Interfaces/IInput.hpp"
 # include "Windows/MacWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 /*

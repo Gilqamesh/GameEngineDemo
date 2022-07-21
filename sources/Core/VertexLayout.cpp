@@ -1,6 +1,6 @@
 #include "Core/VertexLayout.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 VertexLayout::VertexLayout(GLuint count, GLuint type, GLubyte normalized, GLuint stride)

@@ -3,7 +3,7 @@
 
 # include "pch.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 # define MAX_COMPONENTS UINT8_MAX

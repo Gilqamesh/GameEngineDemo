@@ -1,7 +1,7 @@
 #include "Managers/ObjectCoordinator.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 ObjectCoordinator::ObjectCoordinator()
@@ -166,6 +166,7 @@ void ObjectCoordinator::drawObjects(
     }
 }
 
+// Is not worked out.
 void ObjectCoordinator::drawObjects(void)
 {
     TRACE();

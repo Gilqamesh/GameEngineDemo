@@ -1,6 +1,6 @@
 #include "Events/MouseEvents/MouseMovedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 MouseMovedEvent::MouseMovedEvent(float x, float y)

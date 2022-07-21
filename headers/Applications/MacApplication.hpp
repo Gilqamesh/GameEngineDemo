@@ -8,7 +8,7 @@
 # include "Events/WindowEvents/WindowResizeEvent.hpp"
 # include "Events/KeyEvents/KeyPressedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class MacApplication : public IApplication

@@ -6,7 +6,7 @@
 # include "Core/VertexLayout.hpp"
 # include "IndexBuffer.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class VertexArray

@@ -1,6 +1,6 @@
 #include "Interfaces/IWindow.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 IWindow::IWindow()

@@ -4,12 +4,8 @@
 #include "ECS/Systems/DisplacementSystem.hpp"
 #include "ECS/Systems/GravitySystem.hpp"
 #include "ECS/Coordinator.hpp"
-#include "Debug/Trace.hpp"
-#include <vector>
-#include <ctime>
-#include "Debug/Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void ECSCoordinatorSimulator::main()

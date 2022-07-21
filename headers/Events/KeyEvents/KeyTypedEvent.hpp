@@ -3,7 +3,7 @@
 
 # include "Interfaces/Events/IKeyEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class KeyTypedEvent : public IKeyEvent

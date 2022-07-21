@@ -4,7 +4,7 @@
 #include "ECS/Components/ModelMatrixComponent.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 DisplacementSystem::DisplacementSystem(Coordinator *coordinator)

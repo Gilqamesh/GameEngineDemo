@@ -1,7 +1,7 @@
 #include "Core/Model.hpp"
-#include "Debug/Trace.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Model::Model()

@@ -1,8 +1,9 @@
 #include "Simulators/CameraSimulator.hpp"
 #include "Applications/MacApplication.hpp"
 #include "Layers/PerspectiveCameraLayer.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 void CameraSimulator::main()

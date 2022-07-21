@@ -3,7 +3,7 @@
 
 # include "pch.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 enum class EventType

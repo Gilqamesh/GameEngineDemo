@@ -1,6 +1,6 @@
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 Coordinator::Coordinator()

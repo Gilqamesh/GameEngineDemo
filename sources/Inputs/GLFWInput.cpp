@@ -1,7 +1,7 @@
 #include "Inputs/GLFWInput.hpp"
 #include "Debug/Trace.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 GLFWInput *GLFWInput::thisInstance = nullptr;

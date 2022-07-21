@@ -1,6 +1,6 @@
 #include "Events/KeyEvents/KeyTypedEvent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 KeyTypedEvent::KeyTypedEvent(int keycode)

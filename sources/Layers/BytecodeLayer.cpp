@@ -3,8 +3,9 @@
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
 #include "Factories/QuadMeshFactory.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
+#include "Log.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 BytecodeLayer::BytecodeLayer(MacWindow *window)
@@ -16,19 +17,19 @@ BytecodeLayer::BytecodeLayer(MacWindow *window)
 
 void BytecodeLayer::loadShaders(void)
 {
-    _objectCoordinator.addShader("C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/Triangle/vs.glsl",
-                                 "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/Triangle/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "Triangle/vs.glsl",
+                                 getShaderDir() + "Triangle/fs.glsl",
                                  "BoxShader");
-    _objectCoordinator.addShader("C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/LightSource/vs.glsl",
-                                 "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/LightSource/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "LightSource/vs.glsl",
+                                 getShaderDir() + "LightSource/fs.glsl",
                                  "LightShader");
 }
 
 void BytecodeLayer::loadTextures(void)
 {
-    _objectCoordinator.addTexture("C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/Add.png",
+    _objectCoordinator.addTexture(getTextureDir() + "Add.png",
                                   "AddTexture");
-    _objectCoordinator.addTexture("C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/ShowTopValue.png",
+    _objectCoordinator.addTexture(getTextureDir() + "ShowTopValue.png",
                                   "ShowTopValueTexture");
 }
 

@@ -1,9 +1,11 @@
 #ifndef TRACE_HPP
 # define TRACE_HPP
 
-# include "pch.hpp"
+# include <string>
+# include <iostream>
+# include <queue>
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 /*

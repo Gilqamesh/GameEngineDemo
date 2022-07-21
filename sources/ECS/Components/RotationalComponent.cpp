@@ -1,6 +1,6 @@
 #include "ECS/Components/RotationalComponent.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 RotationalComponent::RotationalComponent(float angle, float speed, const Vector<float, 3> &axis)

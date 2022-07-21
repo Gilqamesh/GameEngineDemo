@@ -6,7 +6,7 @@
 #include "ECS/Components/RotationalComponent.hpp"
 #include "ECS/Coordinator.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 BoundaryBoxSystem::BoundaryBoxSystem(Coordinator *coordinator)

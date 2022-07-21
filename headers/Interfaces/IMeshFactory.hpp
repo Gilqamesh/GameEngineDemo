@@ -5,7 +5,7 @@
 # include "Core/Mesh.hpp"
 # include "Math/Matrix.hpp"
 
-namespace NAMESPACE
+namespace GilqEngine
 {
 
 class IMeshFactory
