@@ -28,12 +28,21 @@ public:
      */
     void insertData(Entity entity, T component)
     {
-        // "Entity already exists in component."
         ASSERT(entityToData.count(entity) == 0);
 
         entityToData[entity] = currentSize;
         dataToEntity[currentSize] = entity;
         data[currentSize++] = component;
+    }
+
+    /*
+     * Sets existing data on an entity
+     */
+    void setData(Entity entity, T component)
+    {
+        ASSERT(entityToData.count(entity));
+
+        data[entityToData[entity]] = component;
     }
 
     /*
@@ -75,6 +84,14 @@ public:
     {
         if (entityToData.count(entity))
             removeData(entity);
+    }
+
+    /*
+     * Check if entity exists in the component array
+     */
+    bool hasEntity(Entity entity) const
+    {
+        return (entityToData.count(entity) > 0);
     }
 
     /*

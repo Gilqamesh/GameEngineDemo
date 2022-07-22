@@ -94,6 +94,13 @@ public:
         return (_componentManager.getComponentId<T>());
     }
 
+    template <typename T>
+    ComponentArray<T> *getComponents(void)
+    {
+        TRACE();
+        return (_componentManager.getComponents<T>());
+    }
+
     /*
      * Tests if entity has a component of type T
      */

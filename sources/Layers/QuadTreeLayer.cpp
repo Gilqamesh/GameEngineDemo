@@ -1,7 +1,11 @@
 #include "Layers/QuadTreeLayer.hpp"
 #include "Factories/QuadMeshFactory.hpp"
 #include "Log.hpp"
-#include "QuadTree.hpp"
+#include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
+#include "ECS/Components/VelocityComponent.hpp"
+#include "ECS/Components/PositionComponent.hpp"
+#include "ECS/Systems/CollisionSystem.hpp"
+#include "ECS/Systems/DisplacementSystem.hpp"
 
 namespace GilqEngine
 {
@@ -27,8 +31,7 @@ void QuadTreeLayer::onAttach()
     float maxWidth = _window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 6;
-    vector<Rectangle> rectangles;
+    unsigned int numberOfInsertions = 300;
     vector<string> modelNames = {
         "BlackRectangleModel", 
         "RedRectangleModel",
@@ -51,53 +54,43 @@ void QuadTreeLayer::onAttach()
     {
         float upperLeftX = getRand(low, maxWidth);
         float upperLeftY = getRand(low, maxHeight);
-        float width = getRand(low, maxWidth);
-        // float width = 10.0f;
+        // float width = getRand(low, maxWidth);
+        float width = 20.0f;
         if (upperLeftX + width > maxWidth)
             width = maxWidth - upperLeftX;
-        float height = getRand(low, maxHeight);
-        // float height = 10.0f;
+        // float height = getRand(low, maxHeight);
+        float height = 20.0f;
         if (upperLeftY + height > maxHeight)
             height = maxHeight - upperLeftY;
-        rectangles.push_back({upperLeftX, upperLeftY, width, height});
         string modelName = modelNames[rand() % modelNames.size()];
-        LOG("Rectangle index: " << index << " " << rectangles[index] << " " << modelName);
         // Top
-        _objectCoordinator.createModel(modelName, "RectangleShader",
+        Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader",
             rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(width, 1.0f, 1.0f) *
-            translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY));
-        // Bottom
-        _objectCoordinator.createModel(modelName, "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(width, 1.0f, 1.0f) *
-            translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height));
+            scale_matrix(width, 1.0f, height) *
+            translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
+        // Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader",
+        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
+        //     scale_matrix(width, 1.0f, 1.0f) *
+        //     translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY));
+        // // Bottom
+        // _objectCoordinator.createModel(modelName, "RectangleShader",
+        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
+        //     scale_matrix(width, 1.0f, 1.0f) *
+        //     translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height));
         // // Left
-        _objectCoordinator.createModel(modelName, "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(1.0f, 1.0f, height) *
-            translation_matrix(upperLeftX, 0.0f, upperLeftY + height / 2.0f));
-        // // // Right
-        _objectCoordinator.createModel(modelName, "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(1.0f, 1.0f, height) *
-            translation_matrix(upperLeftX + width, 0.0f, upperLeftY + height / 2.0f));
+        // _objectCoordinator.createModel(modelName, "RectangleShader",
+        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
+        //     scale_matrix(1.0f, 1.0f, height) *
+        //     translation_matrix(upperLeftX, 0.0f, upperLeftY + height / 2.0f));
+        // // Right
+        // _objectCoordinator.createModel(modelName, "RectangleShader",
+        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
+        //     scale_matrix(1.0f, 1.0f, height) *
+        //     translation_matrix(upperLeftX + width, 0.0f, upperLeftY + height / 2.0f));
+        _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX + width / 2.0f, upperLeftY + height / 2.0f, width, height});
+        _objectCoordinator.attachComponent<VelocityComponent>(rectangle, {getRand(-20.0f, 20.0f), 0.0f, getRand(-20.0f, 20.0f)});
+        _objectCoordinator.attachComponent<PositionComponent>(rectangle, {upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f});
     }
-
-    Rectangle bound({0.0f, 0.0f, maxWidth, maxHeight});
-    QuadTree qt(bound);
-    ImprovedQuadTree iqt(bound);
-    for (auto const& rectangle : rectangles)
-    {
-        qt.insert(rectangle);
-        iqt.insert(rectangle);
-    }
-    LOG("Normal quadtree:");
-    unsigned int qtIntersections = qt.checkIntersections();
-    LOG("Intersections: " << qtIntersections);
-    LOG("Improved quadtree:");
-    unsigned int iqtIntersections = iqt.checkIntersections();
-    LOG("Intersections: " << iqtIntersections);
 }
 
 void QuadTreeLayer::onDetach()
@@ -112,6 +105,7 @@ void QuadTreeLayer::onEvent(IEvent &e)
 
 void QuadTreeLayer::onUpdate(float deltaTime)
 {
+    LOG(deltaTime);
     _objectCoordinator.onUpdate(deltaTime);
 }
 
@@ -188,7 +182,8 @@ void QuadTreeLayer::loadModels(void)
 
 void QuadTreeLayer::registerSystems(void)
 {
-
+    _objectCoordinator.registerSystem<CollisionSystem>();
+    _objectCoordinator.registerSystem<DisplacementSystem>();
 }
 
 }

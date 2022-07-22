@@ -374,8 +374,8 @@ public:
 private:
     bool insert(uint32_t rectangleIndex)
     {
-        float cellWidth = (float)_bound.width / (UINT8_MAX + 1);
-        float cellHeight = (float)_bound.height / (UINT8_MAX + 1);
+        float cellWidth = (float)_bound.width / 256.0f;
+        float cellHeight = (float)_bound.height / 256.0f;
         Rectangle rectangle = _rectangles[rectangleIndex];
         // Bounds checking
         if (rectangle.topLeftX < _bound.topLeftX)
@@ -386,11 +386,11 @@ private:
         {
             rectangle.topLeftY = _bound.topLeftY;
         }
-        if (rectangle.topLeftX + rectangle.width > _bound.topLeftX + _bound.width)
+        if (rectangle.topLeftX + rectangle.width >= _bound.topLeftX + _bound.width)
         {
             rectangle.width = _bound.topLeftX + _bound.width - rectangle.topLeftX - 1;
         }
-        if (rectangle.topLeftY + rectangle.height > _bound.topLeftY + _bound.height)
+        if (rectangle.topLeftY + rectangle.height >= _bound.topLeftY + _bound.height)
         {
             rectangle.height = _bound.topLeftY + _bound.height - rectangle.topLeftY - 1;
         }
@@ -403,15 +403,15 @@ private:
         uint16_t botRight = ((uint16_t)((rectangle.topLeftY + rectangle.height -_bound.topLeftY) / cellHeight) << 8)
             + (uint16_t)((rectangle.topLeftX + rectangle.width -_bound.topLeftX) / cellWidth);
 
+        // LOG(_rectangles[rectangleIndex]);
         // LOG(topLeft);
         // LOG(topRight);
         // LOG(botLeft);
         // LOG(botRight);
 
-        // bounds are not correct, botleft - topleft is 256 instead of 0 in this test case, it should be 1 at most
-        for (uint16_t y = 0; y <= botLeft - topLeft; ++y)
+        for (uint16_t y = 0; y <= (botLeft - topLeft) / 256; ++y)
         {
-            for (uint16_t x = topLeft; x <= topRight; ++x)
+            for (uint16_t x = topLeft + y * 256; x <= topRight; ++x)
             {
                 _grids[x + y].push_back(rectangleIndex);
             }
@@ -438,7 +438,7 @@ int main()
     srand(42);
     int low = 0;
     int high = 100000;
-    unsigned int numberOfInsertions = 1000;
+    unsigned int numberOfInsertions = 100000;
     ImprovedQuadTree qt({low, low, high, high});
     QuadTree qt1({low, low, high, high});
     Grid grid({low, low, high, high});

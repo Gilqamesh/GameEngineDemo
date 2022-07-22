@@ -2,7 +2,6 @@
 # define MODELMATRIXCOMPONENT_HPP
 
 # include "pch.hpp"
-# include "Math/Matrix.hpp"
 
 namespace GilqEngine
 {

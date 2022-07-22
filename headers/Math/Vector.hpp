@@ -54,12 +54,6 @@ std::ostream &operator<<(std::ostream &os, const Vector<T, LENGTH> &v)
     return (os);
 }
 
-/*
-3
-3 6 -> (3 * 1 + 6) / 2
-4.5 7 -> (4.5 * 2 + 7) / 3
-*/
-
 template <typename T, unsigned int LENGTH>
 Vector<T, LENGTH> average(const std::vector<Vector<T, LENGTH>> &vectors)
 {

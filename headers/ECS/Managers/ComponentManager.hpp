@@ -93,6 +93,18 @@ public:
     }
 
     /*
+     * Returns the component array of T type
+     */
+    template <typename T>
+    ComponentArray<T> *getComponents(void)
+    {
+        TRACE();
+        const char *componentType = typeid(T).name();
+        ASSERT(NameToArr.count(componentType));
+        return (static_cast<ComponentArray<T> *>(NameToArr[componentType]));
+    }
+
+    /*
      * Updates all component arrays when entity is destroyed
      */
     void entityDestroyed(Entity entity)
