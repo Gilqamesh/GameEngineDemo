@@ -5,13 +5,30 @@ cmake_minimum_required(VERSION 3.12)
 set(PROJECT_NAME "GameEngine")
 set(SRC_DIR "sources")
 file(GLOB_RECURSE SRC_FILES ${SRC_DIR}/*.cpp)
-set(GLEW_PATH "/Users/edavid/.brew/Cellar/glew/2.2.0_1")
 set(GLFW_PATH "/Users/edavid/.brew/Cellar/glfw/3.3.7")
-set(ASSIMP_PATH "/Users/edavid/.brew/Cellar/assimp/5.2.4")
+set(GLEW_PATH "/Users/edavid/.brew/Cellar/glew/2.2.0_1")
+# set(ASSIMP_PATH "/Users/edavid/.brew/Cellar/assimp/5.2.4")
 include_directories(${GLFW_PATH}/include)
 include_directories(${GLEW_PATH}/include)
 include_directories(${ASSIMP_PATH}/include)
 include_directories(headers)
+
+# installing dependencies
+set(ASSIMP_URL "https://github.com/assimp/assimp.git")
+set(DEPENDENCIES_DIR "dependencies")
+set(ASSIMP_PATH ${DEPENDENCIES_DIR}/Assimp)
+
+include(ExternalProject)
+if (NOT EXISTS "${ASSIMP_PATH}")
+    ExternalProject_Add(Assimp
+    DOWNLOAD_COMMAND git clone --depth 1 --branch "v5.2.4" ${ASSIMP_URL} ${ASSIMP_PATH})
+    # ExternalProject_Add(Assimp )
+endif()
+
+# add_custom_command(
+#     OUTPUT "${MY_EXTRACTED_FILE}"
+#     COMMAND command to unpack
+#     DEPENDS "${DEPENDENCIES_DIR}")
 
 if (MSVC)
     set(OPEN_GL_LINK opengl32)

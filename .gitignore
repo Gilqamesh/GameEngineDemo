@@ -1,1 +1,7 @@
 .vscode
+
+build/*
+!build/.gitkeep
+
+dependencies/*
+!dependencies/.gitkeep
