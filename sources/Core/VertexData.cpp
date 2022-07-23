@@ -102,6 +102,7 @@ void VertexData::configureIndices()
     _indexBuffer = IndexBuffer(_indices.data(), (GLuint)_indices.size());
 }
 
+// This method should push attributes only that has been configured via 'configure' methods prior to this call
 void VertexData::configureVAO()
 {
     TRACE();

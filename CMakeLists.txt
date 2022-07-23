@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.12)
 
-set(CMAKE_VERBOSE_MAKEFILE on)
+# set(CMAKE_VERBOSE_MAKEFILE on)
 
 set(PROJECT_NAME "GameEngine")
 set(SRC_DIR "sources")

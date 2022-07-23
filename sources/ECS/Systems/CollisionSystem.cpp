@@ -30,6 +30,7 @@ void CollisionSystem::onUpdate(float dt)
         quadTree.insert(rectangleComponents, entity);
     }
     LOG(quadTree.checkIntersections(rectangleComponents, velocityComponents));
+    _coordinator->print();
 }
 
 void CollisionSystem::onRender(Shader *shader)
@@ -131,20 +132,23 @@ uint32 QuadTree::checkIntersections(
     ComponentArray<VelocityComponent> *velocityComponents,
     int level)
 {
+    static vector<unordered_set<uint16>> collidedPairs(300, unordered_set<uint16>());
     uint32 nOfIntersections = 0;
     for (uint16 i = 0; i < _rectangleIndices.size(); ++i)
     {
         for (uint16 j = i + 1; j < _rectangleIndices.size(); ++j)
         {
-            if (rectangleComponents->getData(_rectangleIndices[i]).doesIntersect(rectangleComponents->getData(_rectangleIndices[j])))
+            if (collidedPairs[_rectangleIndices[i]].count(_rectangleIndices[j]) == 0 &&
+                rectangleComponents->getData(_rectangleIndices[i]).doesIntersect(rectangleComponents->getData(_rectangleIndices[j])))
             {
+                collidedPairs[_rectangleIndices[i]].insert(_rectangleIndices[j]);
+                collidedPairs[_rectangleIndices[j]].insert(_rectangleIndices[i]);
                 VelocityComponent velocity1 = velocityComponents->getData(_rectangleIndices[i]);
                 VelocityComponent velocity2 = velocityComponents->getData(_rectangleIndices[j]);
 
                 velocityComponents->setData(_rectangleIndices[i], velocity2);
                 velocityComponents->setData(_rectangleIndices[j], velocity1);
                 ++nOfIntersections;
-                break ;
             }
         }
     }

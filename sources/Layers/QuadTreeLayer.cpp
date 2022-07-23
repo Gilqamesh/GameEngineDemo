@@ -31,11 +31,11 @@ void QuadTreeLayer::onAttach()
     float maxWidth = _window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 300;
+    unsigned int numberOfInsertions = 1;
     vector<string> modelNames = {
-        "BlackRectangleModel", 
+        "BlackRectangleModel",
         "RedRectangleModel",
-        "GreenRectangleModel", 
+        "GreenRectangleModel",
         "BlueRectangleModel",
         "YellowRectangleModel"
     };
@@ -68,28 +68,9 @@ void QuadTreeLayer::onAttach()
             rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
             scale_matrix(width, 1.0f, height) *
             translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
-        // Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader",
-        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        //     scale_matrix(width, 1.0f, 1.0f) *
-        //     translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY));
-        // // Bottom
-        // _objectCoordinator.createModel(modelName, "RectangleShader",
-        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        //     scale_matrix(width, 1.0f, 1.0f) *
-        //     translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height));
-        // // Left
-        // _objectCoordinator.createModel(modelName, "RectangleShader",
-        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        //     scale_matrix(1.0f, 1.0f, height) *
-        //     translation_matrix(upperLeftX, 0.0f, upperLeftY + height / 2.0f));
-        // // Right
-        // _objectCoordinator.createModel(modelName, "RectangleShader",
-        //     rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        //     scale_matrix(1.0f, 1.0f, height) *
-        //     translation_matrix(upperLeftX + width, 0.0f, upperLeftY + height / 2.0f));
-        _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX + width / 2.0f, upperLeftY + height / 2.0f, width, height});
+        _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX, upperLeftY, width, height});
         _objectCoordinator.attachComponent<VelocityComponent>(rectangle, {getRand(-20.0f, 20.0f), 0.0f, getRand(-20.0f, 20.0f)});
-        _objectCoordinator.attachComponent<PositionComponent>(rectangle, {upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f});
+        _objectCoordinator.attachComponent<PositionComponent>(rectangle, {upperLeftX, 0.0f, upperLeftY});
     }
 }
 
@@ -111,7 +92,7 @@ void QuadTreeLayer::onUpdate(float deltaTime)
 
 void QuadTreeLayer::onRender()
 {
-    Vector<float, 3> camPosition(0.0f, 0.0f, _window->getHeight());
+    Vector<float, 3> camPosition(0.0f, 0.0f, (float)_window->getHeight());
     _objectCoordinator.drawObjects(
         camPosition,
         look_at(camPosition,
@@ -120,7 +101,7 @@ void QuadTreeLayer::onRender()
         projection_matrix_ortho(0.0f,
                                 (float)_window->getWidth(),
                                 0.0f,
-                                (float)_window->getHeight(),
+                                -(float)_window->getHeight(),
                                 -100.0f, 100.0f));
 }
 

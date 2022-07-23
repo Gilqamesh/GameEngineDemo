@@ -19,6 +19,7 @@ VertexArray                             _vertexArray;
 VertexBuffer                            _vertexPositionBuffer;
 VertexBuffer                            _vertexNormalBuffer;
 VertexBuffer                            _vertexTextureBuffer;
+
 IndexBuffer                             _indexBuffer;
 
 VertexVector<PositionVertexAttribute>   _vertexVectorPosition;
