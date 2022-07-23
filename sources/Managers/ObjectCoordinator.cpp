@@ -110,12 +110,6 @@ Entity ObjectCoordinator::createModel(
     return (model);
 }
 
-const Vector<float, 3> &ObjectCoordinator::getAveragePoint(const std::string &modelName)
-{
-    TRACE();
-    return (_modelManager.getAveragePoint(modelName));
-}
-
 void ObjectCoordinator::onUpdate(float deltaTime)
 {
     TRACE();

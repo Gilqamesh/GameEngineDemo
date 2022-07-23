@@ -120,11 +120,4 @@ void ModelManager::clearModelEntities()
     _initialModelMatrices.clear();
 }
 
-const Vector<float, 3> &ModelManager::getAveragePoint(const std::string &modelName)
-{
-    TRACE();
-    ASSERT(_loadedModels.count(modelName));
-    return (_loadedModels[modelName]->getAveragePoint());
-}
-
 }

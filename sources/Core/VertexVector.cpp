@@ -1,3 +1,0 @@
-#include "Core/VertexVector.hpp"
-
-

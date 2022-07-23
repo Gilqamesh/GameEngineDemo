@@ -1,7 +1,7 @@
 #include "Layers/BytecodeLayer.hpp"
 #include "Events/EventDispatcher.hpp"
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
-#include "Factories/QuadMeshFactory.hpp"
+#include "Factories/QuadMeshFactory3D.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
 #include "Log.hpp"
 
@@ -17,11 +17,11 @@ BytecodeLayer::BytecodeLayer(MacWindow *window)
 
 void BytecodeLayer::loadShaders(void)
 {
-    _objectCoordinator.addShader(getShaderDir() + "Triangle/vs.glsl",
-                                 getShaderDir() + "Triangle/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "3D/Triangle/vs.glsl",
+                                 getShaderDir() + "3D/Triangle/fs.glsl",
                                  "BoxShader");
-    _objectCoordinator.addShader(getShaderDir() + "LightSource/vs.glsl",
-                                 getShaderDir() + "LightSource/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "3D/LightSource/vs.glsl",
+                                 getShaderDir() + "3D/LightSource/fs.glsl",
                                  "LightShader");
 }
 
@@ -46,7 +46,7 @@ void BytecodeLayer::loadMaterials(void)
 
 void BytecodeLayer::loadModels(void)
 {
-    QuadMeshFactory quadMeshFactory;
+    QuadMeshFactory3D quadMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "AddModel", "AddMaterial");
     _objectCoordinator.loadModel(&quadMeshFactory, "ShowTopValueModel", "ShowTopValueMaterial");

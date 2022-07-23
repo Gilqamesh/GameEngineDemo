@@ -19,6 +19,7 @@ public:
     inline const void *getData() const { return (_vertexAttributes.data()); }
     inline GLuint getSize() const { return ((GLuint)(_vertexAttributes.size() * sizeof(VertexAttribute))); }
     inline const std::vector<VertexAttribute> &getVertexAttributes() const { return (_vertexAttributes); }
+    inline void clear() { _vertexAttributes.clear(); }
 };
 
 }

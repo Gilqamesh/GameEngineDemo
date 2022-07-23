@@ -10,7 +10,7 @@ Mesh BoundingRectangleMeshFactory::createMesh()
 
     VertexData vertexData;
     float w = 0.001f;
-    vector<PositionVertexAttribute> positions = {
+    vector<PositionVertexAttribute3D> positions = {
         {-0.5f, 0.5f, 0.0f}, {0.5f, 0.5f, 0.0f}, {-0.5f, 0.5f - w, 0.0f},
         {0.5f, 0.5f - w, 0.0f}, {-0.5f + w, 0.5f - w, 0.0f}, {-0.5f, -0.5f, 0.0f},
         {-0.5f + w, -0.5f, 0.0f}, {0.5f - w, 0.5f - w, 0.0f}, {0.5f - w, -0.5f, 0.0f},
@@ -35,7 +35,7 @@ Mesh BoundingRectangleMeshFactory::createMesh()
         i < 12;
         ++i)
     {
-        vertexData.pushPositionAttribute(positions[i]);
+        vertexData.pushPositionAttribute3D(positions[i]);
         vertexData.pushNormalAttribute(normals[i]);
         vertexData.pushTextureAttribute(textures[i]);
     }

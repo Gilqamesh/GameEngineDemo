@@ -123,11 +123,6 @@ public:
         const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
         float opacity = 1.0f);
 
-    /*
-     * Returns the average vertex of the model
-     */
-    const Vector<float, 3> &getAveragePoint(const std::string &modelName);
-
     // ************************************************************************** //
     //                                 Own Methods                                //
     // ************************************************************************** //

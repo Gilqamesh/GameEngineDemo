@@ -33,7 +33,7 @@ Mesh SphereMeshFactory::createMesh()
             // vertices.push_back(x * zr0);
             // vertices.push_back(y * zr0);
             // vertices.push_back(z0);
-            vertexData.pushPositionAttribute({x * zr0, y * zr0, z0});
+            vertexData.pushPositionAttribute3D({x * zr0, y * zr0, z0});
             vertexData.pushNormalAttribute({0.0f, 0.0f, 1.0f}); // doesn't matter for now
             vertexData.pushTextureAttribute({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
             indices.push_back(indicator);
@@ -42,7 +42,7 @@ Mesh SphereMeshFactory::createMesh()
             // vertices.push_back(x * zr1);
             // vertices.push_back(y * zr1);
             // vertices.push_back(z1);
-            vertexData.pushPositionAttribute({x * zr1, y * zr1, z1});
+            vertexData.pushPositionAttribute3D({x * zr1, y * zr1, z1});
             vertexData.pushNormalAttribute({0.0f, 0.0f, 1.0f}); // doesn't matter for now
             vertexData.pushTextureAttribute({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
             indices.push_back(indicator);

@@ -64,8 +64,6 @@ public:
      */
     void clearModelEntities();
 
-    const Vector<float, 3> &getAveragePoint(const std::string &modelName);
-
     template <typename T>
     void registerComponent()
     {

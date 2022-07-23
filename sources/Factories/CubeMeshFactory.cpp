@@ -63,7 +63,7 @@ Mesh CubeMeshFactory::createMesh()
 
     for (unsigned int i = 0; i < indices.size(); ++i)
     {
-        vertexData.pushPositionAttribute(v[indices[i]]);
+        vertexData.pushPositionAttribute3D(v[indices[i]]);
         vertexData.pushIndices({i});
     }
 

@@ -29,12 +29,6 @@ Model::Model(IMeshFactory *meshFactory, const std::string &name)
 {
     TRACE();
     _meshes.push_back(meshFactory->createMesh());
-    auto &vertexData = _meshes[0].getVertexData();
-    auto &positions = vertexData.getVertexVectorPosition();
-    std::vector<Vector<float, 3>> vertices;
-    for (auto &position : positions.getVertexAttributes())
-        vertices.push_back(position._coordinates);
-    _averagePoint = average(vertices);
 }
 
 Model::Model(Model &&other)
@@ -45,8 +39,7 @@ Model::Model(Model &&other)
     _materialManager(other._materialManager),
     _textureManager(other._textureManager),
     _shader(other._shader),
-    _loaded(other._loaded),
-    _averagePoint(other._averagePoint)
+    _loaded(other._loaded)
 {
     TRACE();
     other._path = "";
@@ -55,7 +48,6 @@ Model::Model(Model &&other)
     other._textureManager = nullptr;
     other._shader = nullptr;
     other._loaded = false;
-    other._averagePoint = Vector<float, 3>();
 }
 
 Model &Model::operator=(Model &&other)
@@ -71,7 +63,6 @@ Model &Model::operator=(Model &&other)
         _textureManager = other._textureManager;
         _shader = other._shader;
         _loaded = other._loaded;
-        _averagePoint = other._averagePoint;
 
         other._path = "";
         other._name = "";
@@ -79,7 +70,6 @@ Model &Model::operator=(Model &&other)
         other._textureManager = nullptr;
         other._shader = nullptr;
         other._loaded = false;
-        other._averagePoint = Vector<float, 3>();
     }
     return (*this);
 }
@@ -125,16 +115,6 @@ void Model::loadModel(const std::string &path)
     _directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
-    std::vector<Vector<float, 3>> allVertices;
-    for (auto &mesh : _meshes)
-    {
-        auto const &vertexData = mesh.getVertexData();
-        auto const &vertexVectorPos = vertexData.getVertexVectorPosition();
-        auto const &vertices = vertexVectorPos.getVertexAttributes();
-        for (auto vertex : vertices)
-            allVertices.push_back(vertex._coordinates);
-    }
-    _averagePoint = average(allVertices);
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene)
@@ -161,7 +141,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
     // process vertex positions, normals and texture coordinates
     for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
     {
-        _vertexData.pushPositionAttribute({
+        _vertexData.pushPositionAttribute3D({
             mesh->mVertices[i].x,
             mesh->mVertices[i].y,
             mesh->mVertices[i].z
@@ -249,7 +229,6 @@ Texture *Model::loadTexture(aiMaterial* mat, aiTextureType type)
         if (originalPath.find_last_of("/") != std::string::npos)
             originalPath = originalPath.substr(originalPath.find_last_of("/") + 1);
         std::string texturePath(_directory + "/" + originalPath);
-        // std::string texturePath(_directory + "/" + std::string(str.C_Str()));
         if (_textureManager->exists(texturePath) == true)
             return (_textureManager->getTexture(texturePath));
         LOG("Loading texture " << texturePath << "...");

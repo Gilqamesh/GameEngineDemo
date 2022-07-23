@@ -13,7 +13,8 @@
 #include "ECS/Systems/EnergySystem.hpp"
 #include "ECS/Systems/BoundaryBoxSystem.hpp"
 #include "Factories/CubeMeshFactory.hpp"
-#include "Factories/QuadMeshFactory.hpp"
+#include "Factories/QuadMeshFactory3D.hpp"
+#include "Log.hpp"
 
 namespace GilqEngine
 {
@@ -66,7 +67,7 @@ void ModelLoadLayer::onAttach()
             getRand(-20.0f, 20.0f), getRand(-40.0f, 40.0f), getRand(-20.0f, 20.0f)
         });
         _objectCoordinator.attachComponent<RotationalComponent>(sphere, {
-            0.0f, getRand(10.0f, 50.0f), _objectCoordinator.getAveragePoint("Backpack Model")
+            0.0f, getRand(10.0f, 50.0f), Vector<float, 3>()
         });
         _objectCoordinator.attachComponent<MassComponent>(sphere, {
             scale * 10.0f
@@ -180,13 +181,13 @@ void ModelLoadLayer::loadShaders()
 {
     TRACE();
     _objectCoordinator.addShader(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/Triangle/vs.glsl",
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/Triangle/fs.glsl",
+        getShaderDir() + "3D/TriangleLight/vs.glsl",
+        getShaderDir() + "3D/TriangleLight/fs.glsl",
         "Triangle Shader"
     );
     _objectCoordinator.addShader(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/LightSource/vs.glsl",
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/shaders/LightSource/fs.glsl",
+        getShaderDir() + "3D/LightSource/vs.glsl",
+        getShaderDir() + "3D/LightSource/fs.glsl",
         "LightSource Shader"
     );
 }
@@ -261,7 +262,7 @@ void ModelLoadLayer::loadModels()
     _objectCoordinator.loadModel(&cubeMeshFactory, "Red Box Model", "Red Material");
     _objectCoordinator.loadModel(&cubeMeshFactory, "White Box Model", "White Material");
     _objectCoordinator.loadModel(&cubeMeshFactory, "Window Box Model", "Window Material");
-    QuadMeshFactory quadMeshFactory;
+    QuadMeshFactory3D quadMeshFactory;
     _objectCoordinator.loadModel(&quadMeshFactory, "Dirt Model", "Dirt Material");
 }
 

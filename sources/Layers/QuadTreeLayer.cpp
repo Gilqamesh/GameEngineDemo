@@ -1,5 +1,5 @@
 #include "Layers/QuadTreeLayer.hpp"
-#include "Factories/QuadMeshFactory.hpp"
+#include "Factories/QuadMeshFactory3D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
 #include "ECS/Components/VelocityComponent.hpp"
@@ -107,8 +107,8 @@ void QuadTreeLayer::onRender()
 
 void QuadTreeLayer::loadShaders(void)
 {
-    _objectCoordinator.addShader(getShaderDir() + "TriangleNormal/vs.glsl",
-                                 getShaderDir() + "TriangleNormal/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "3D/TriangleNormal/vs.glsl",
+                                 getShaderDir() + "3D/TriangleNormal/fs.glsl",
                                  "RectangleShader");
 }
 
@@ -151,7 +151,7 @@ void QuadTreeLayer::loadMaterials(void)
 
 void QuadTreeLayer::loadModels(void)
 {
-    QuadMeshFactory quadMeshFactory;
+    QuadMeshFactory3D quadMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "BlackRectangleModel", "BlackMaterial");
     _objectCoordinator.loadModel(&quadMeshFactory, "RedRectangleModel", "RedMaterial");

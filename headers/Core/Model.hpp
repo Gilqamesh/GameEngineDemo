@@ -23,7 +23,6 @@ MaterialManager     *_materialManager;
 TextureManager      *_textureManager;
 Shader              *_shader;
 bool                _loaded;
-Vector<float, 3>    _averagePoint;
 public:
     Model();
     Model(const std::string &path, const std::string &name);
@@ -41,7 +40,6 @@ public:
 
     inline const std::string &getName() const { return (_name); }
     inline Shader *getShader() const { return (_shader); }
-    inline const Vector<float, 3> &getAveragePoint() const { return (_averagePoint); }
 
     inline bool loaded() const { return (_loaded); }
 

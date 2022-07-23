@@ -12,7 +12,9 @@ class Texture
 {
 GLuint GL_ID;
 std::string _name;
+Vector<float, 4> _color;
 public:
+    Texture(const Vector<float, 4>& color, const std::string &textureName);
     Texture(const std::string &texturePath, const std::string &textureName);
     ~Texture();
 
