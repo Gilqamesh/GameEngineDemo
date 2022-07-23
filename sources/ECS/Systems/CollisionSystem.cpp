@@ -1,5 +1,4 @@
 #include "ECS/Systems/CollisionSystem.hpp"
-#include "ECS/Systems/"
 #include "ECS/Coordinator.hpp"
 #include "ECS/Components/PositionComponent.hpp"
 #include "Log.hpp"
