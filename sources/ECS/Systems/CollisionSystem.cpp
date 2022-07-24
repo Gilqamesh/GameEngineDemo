@@ -132,7 +132,7 @@ uint32 QuadTree::checkIntersections(
     ComponentArray<VelocityComponent> *velocityComponents,
     int level)
 {
-    static vector<unordered_set<uint16>> collidedPairs(300, unordered_set<uint16>());
+    static vector<unordered_set<uint32>> collidedPairs(300, unordered_set<uint32>());
     uint32 nOfIntersections = 0;
     for (uint16 i = 0; i < _rectangleIndices.size(); ++i)
     {

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.12)
+cmake_minimum_required(VERSION 3.22)
 
 # set(CMAKE_VERBOSE_MAKEFILE on)
 
@@ -42,12 +42,6 @@ include_directories(build/${ASSIMP_PATH}/src/${ASSIMP_PATH}/include)
 include_directories(build/${GLFW_PATH}/src/${GLFW_PATH}/include)
 include_directories(build/${GLEW_PATH}/src/${GLEW_PATH}/include)
 
-if (MSVC)
-    set(OPEN_GL_LINK opengl32)
-else()
-    set(OPEN_GL_LINK -framework\ OpenGl)
-endif()
-
 # set the project name
 project(${PROJECT_NAME})
 
@@ -69,13 +63,35 @@ add_executable(${PROJECT_NAME} ${SRC_FILES})
 target_precompile_headers(${PROJECT_NAME} PUBLIC headers/pch.hpp)
 
 # linking
-set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "${OPEN_GL_LINK}")
-file(GLOB GLEW_LIB "build/${GLEW_PATH}/src/${GLEW_PATH}-build/lib/libGLEW.dylib")
-file(GLOB GLFW_LIB "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/libglfw.dylib")
-file(GLOB ASSIMP_LIB "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/libassimp.dylib")
+if (MSVC)
+    set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS opengl32.lib)
+    file(GLOB GLEW_LIB "build/${GLEW_PATH}/src/${GLEW_PATH}-build/lib/Debug/glew32d.lib")
+    file(GLOB GLFW_LIB "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/Debug/glfw3dll.lib")
+    file(GLOB ASSIMP_LIB "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/Debug/assimpd.lib")
+else()
+    set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS "-framework OpenGl")
+    file(GLOB GLEW_LIB "build/${GLEW_PATH}/src/${GLEW_PATH}-build/lib/libGLEW.dylib")
+    file(GLOB GLFW_LIB "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/libglfw.dylib")
+    file(GLOB ASSIMP_LIB "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/libassimp.dylib")
+endif()
 target_link_libraries(${PROJECT_NAME} ${GLEW_LIB} ${GLFW_LIB} ${ASSIMP_LIB})
 
 # put both exe and dll into a single build directory
-set(BUILD_DIR "build")
-set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
-set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${BUILD_DIR})
+if (MSVC)
+    set(BUILD_DIR "Debug")
+    file(GLOB GLEW_DLL "build/${GLEW_PATH}/src/${GLEW_PATH}-build/bin/Debug/glew32d.dll")
+    file(GLOB GLFW_DLL "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/Debug/glfw3.dll")
+    file(GLOB ASSIMP_DLL "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/Debug/assimpd.dll")
+else()
+    set(BUILD_DIR "build")
+    file(GLOB GLEW_DLL "build/${GLEW_PATH}/src/${GLEW_PATH}-build/lib/libGLEW.dylib")
+    file(GLOB GLFW_DLL "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/libglfw.dylib")
+    file(GLOB ASSIMP_DLL "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/libassimp.dylib")
+endif()
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLFW_DLL} ${BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${ASSIMP_DLL} ${BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLEW_DLL} ${BUILD_DIR})
+
+# set_target_properties(${PROJECT_NAME} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BUILD_DIR})
+# set_target_properties(${PROJECT_NAME} PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${BUILD_DIR})

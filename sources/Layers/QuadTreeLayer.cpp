@@ -27,8 +27,8 @@ void QuadTreeLayer::onAttach()
     registerSystems();
 
     float low = 0.0f;
-    float maxHeight = _window->getHeight();
-    float maxWidth = _window->getWidth();
+    float maxHeight = (float)_window->getHeight();
+    float maxWidth = (float)_window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
     unsigned int numberOfInsertions = 1;

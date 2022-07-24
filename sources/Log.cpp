@@ -11,10 +11,11 @@ std::string getPwd(void)
     {
         called = true;
 # if defined(WINDOWS)
-        DWORD GetCurrentDirectory(
-        [in]  DWORD  nBufferLength,
-        [out] LPTSTR lpBuffer
-        );
+        char buf[MAX_PATH];
+        if (GetCurrentDirectory(MAX_PATH, buf) == 0)
+            TERMINATE("Something went wrong in 'GetCurrentDirectory'");
+        exePath = buf;
+        exePath = exePath.substr(0, exePath.find_last_of("\\"));
 # elif defined (LINUX)
         char buf[PATH_MAX];
         readlink("/proc/self/exe", buf, PATH_MAX);

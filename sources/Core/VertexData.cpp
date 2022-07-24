@@ -77,7 +77,7 @@ void VertexData::pushTextureAttribute(const TextureVertexAttribute &data)
 void VertexData::pushIndices(const std::vector<unsigned int> &indices)
 {
     TRACE();
-    _nOfIndices += indices.size();
+    _nOfIndices += (uint32)indices.size();
     _indices.insert(_indices.end(), indices.begin(), indices.end());
 }
 

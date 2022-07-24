@@ -207,13 +207,13 @@ template <typename T>
 Matrix<T, 4, 4> normal_matrix(const Matrix<T, 4, 4>& m) { return (transpose(inverse(m))); }
 
 template <typename T>
-Matrix<T, 4, 4> projection_matrix_perspective(const T &fov, const T &aspect, const T &near, const T &far)
+Matrix<T, 4, 4> projection_matrix_perspective(T fov, T aspect, T Near, T Far)
 {
     return (Matrix<T, 4, 4>(
         static_cast<T>(1) / (aspect * tan(fov / static_cast<T>(2))),    static_cast<T>(0),                                      static_cast<T>(0),                                   static_cast<T>(0),
         static_cast<T>(0),                                              static_cast<T>(1) / tan(fov / static_cast<T>(2)),       static_cast<T>(0),                                   static_cast<T>(0),
-        static_cast<T>(0),                                              static_cast<T>(0),                                      -(far + near) / (far - near),                       -static_cast<T>(1),
-        static_cast<T>(0),                                              static_cast<T>(0),                                      -(static_cast<T>(2) * far * near) / (far - near),    static_cast<T>(0)
+        static_cast<T>(0),                                              static_cast<T>(0),                                      -(Far + Near) / (Far - Near),                       -static_cast<T>(1),
+        static_cast<T>(0),                                              static_cast<T>(0),                                      -(static_cast<T>(2) * Far * Near) / (Far - Near),    static_cast<T>(0)
     ));
 }
 

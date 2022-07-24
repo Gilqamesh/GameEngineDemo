@@ -25,7 +25,7 @@ ModelLoadLayer::ModelLoadLayer(MacWindow *macWindow, ICamera *camera)
     _camera(camera),
     _projection(projection_matrix_perspective(
         degToRad(85.0f),
-        (GLfloat)_macWindow->getWidth() / (GLfloat)_macWindow->getHeight(),
+        (float)_macWindow->getWidth() / (float)_macWindow->getHeight(),
         0.1f,
         1000.0f
     ))

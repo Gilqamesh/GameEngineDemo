@@ -29,7 +29,7 @@ VertexVector<NormalVertexAttribute>     _vertexVectorNormal;
 VertexVector<TextureVertexAttribute>    _vertexVectorTexture;
 std::vector<unsigned int>               _indices;
 
-unsigned int _nOfIndices;
+uint32 _nOfIndices;
 public:
     VertexData();
     ~VertexData();
