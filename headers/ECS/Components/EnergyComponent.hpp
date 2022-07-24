@@ -12,7 +12,7 @@ public:
     float joules;
 };
 
-std::ostream &operator<<(std::ostream &os, const EnergyComponent& a);
+ostream &operator<<(ostream &os, const EnergyComponent& a);
 
 }
 

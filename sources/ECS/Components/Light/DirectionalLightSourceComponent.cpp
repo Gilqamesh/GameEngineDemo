@@ -8,12 +8,12 @@ namespace GilqEngine
 void DirectionalLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n)
 {
     TRACE();
-    std::string prefix("directional_light[" + std::to_string(n) + "].");
+    string prefix("directional_light[" + to_string(n) + "].");
     ILightSource::setShaderUniforms(prefix, shader);
     shader->setFloat3(prefix + "direction", _direction);
 }
 
-std::ostream &operator<<(std::ostream &os, const DirectionalLightSourceComponent &a)
+ostream &operator<<(ostream &os, const DirectionalLightSourceComponent &a)
 {
     TRACE();
     os << "{color: " << a._color << ", ambient: " << a._ambientStrength << ", diffuse: "

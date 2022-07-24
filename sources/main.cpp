@@ -11,9 +11,9 @@ int main(void)
 
     try
     {
-        // std::make_unique<BytecodeSimulator>();
+        // make_unique<BytecodeSimulator>();
         unique_ptr<QuadTreeSimulator> simulator = make_unique<QuadTreeSimulator>();
-        simulator->main(); 
+        simulator->main();
     }
     catch (const exception& e)
     {

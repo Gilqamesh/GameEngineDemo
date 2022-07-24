@@ -23,8 +23,8 @@ PerspectiveCamera::PerspectiveCamera(
     _rotationalSpeed = rotationalSpeed;
     _positionalSpeed = positionalSpeed;
 
-    _pitch = radToDeg(std::asin(_front[1]));
-    _yaw = radToDeg(std::acos(_front[0] / std::cos(degToRad(_pitch))));
+    _pitch = radToDeg(asin(_front[1]));
+    _yaw = radToDeg(acos(_front[0] / cos(degToRad(_pitch))));
     _zoom = 45.0f;
     _window = window;
     _input = GLFWInput::getInstance(window->getWindow());
@@ -87,9 +87,9 @@ bool PerspectiveCamera::onMouseMove(MouseMovedEvent &e)
     if (_pitch >  90.0f) _pitch = 90.0f;
     if (_pitch < -90.0f) _pitch = -90.0f;
 
-    _front[0] = std::cos(degToRad(_yaw)) * std::cos(degToRad(_pitch));
-    _front[1] = std::sin(degToRad(_pitch));
-    _front[2] = std::sin(degToRad(_yaw)) * std::cos(degToRad(_pitch));
+    _front[0] = cos(degToRad(_yaw)) * cos(degToRad(_pitch));
+    _front[1] = sin(degToRad(_pitch));
+    _front[2] = sin(degToRad(_yaw)) * cos(degToRad(_pitch));
     _front = normalize(_front);
     _right = normalize(cross_product(_front, _worldUp));
     _up = normalize(cross_product(_right, _front));

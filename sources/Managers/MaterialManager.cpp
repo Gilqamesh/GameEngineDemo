@@ -10,20 +10,20 @@ MaterialManager::~MaterialManager()
     clear();
 }
 
-void MaterialManager::addMaterial(const std::string &materialName)
+void MaterialManager::addMaterial(const string &materialName)
 {
     TRACE();
     if (exists(materialName) == true)
-        throw std::runtime_error("Material " + materialName + " already exists in MaterialManager");
+        throw runtime_error("Material " + materialName + " already exists in MaterialManager");
 
     _materials[materialName] = Material(materialName);
 }
 
-void MaterialManager::deleteMaterial(const std::string &materialName)
+void MaterialManager::deleteMaterial(const string &materialName)
 {
     TRACE();
     if (exists(materialName) == false)
-        throw std::runtime_error("Material " + materialName + " does not exist in MaterialManager");
+        throw runtime_error("Material " + materialName + " does not exist in MaterialManager");
 
     _materials.erase(materialName);
 }
@@ -34,16 +34,16 @@ void MaterialManager::clear()
     _materials.clear();
 }
 
-Material &MaterialManager::getMaterial(const std::string &materialName)
+Material &MaterialManager::getMaterial(const string &materialName)
 {
     TRACE();
     if (exists(materialName) == false)
-        throw std::runtime_error("Material " + materialName + " does not exist in MaterialManager");
+        throw runtime_error("Material " + materialName + " does not exist in MaterialManager");
 
     return (_materials[materialName]);
 }
 
-bool MaterialManager::exists(const std::string &materialName) const
+bool MaterialManager::exists(const string &materialName) const
 {
     TRACE();
     return (_materials.count(materialName));

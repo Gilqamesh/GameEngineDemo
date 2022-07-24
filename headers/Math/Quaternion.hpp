@@ -54,12 +54,12 @@ Quaternion<T> inverse(const Quaternion<T> &q) { return (conjugate(q) / (q[0] * q
 // Vector<T, 3> rotate(const Vector<T, 3> &v, const Vector<T, 3> &axis, T angle)
 // {
 //     Vector<T, 3> u(unit(axis));
-//     Quaternion q = std::cos(angle / 2.0) + u * std::sin(angle / 2.0);
+//     Quaternion q = cos(angle / 2.0) + u * sin(angle / 2.0);
 //     return (q * v * inverse(q));
 // }
 
 template <typename T>
-std::ostream &operator<<(std::ostream &os, const Quaternion<T> &q)
+ostream &operator<<(ostream &os, const Quaternion<T> &q)
 {
     os << q[0] << ", " << q[1] << ", " << q[2] << ", " << q[3];
     return (os);

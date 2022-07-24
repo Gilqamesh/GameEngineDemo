@@ -61,6 +61,15 @@ public:
     }
 
     /*
+     * Updates existing component on an entity
+     */
+    template <typename T>
+    void updateComponent(Entity entity, T component)
+    {
+        _componentManager.updateComponent(entity, component);
+    }
+
+    /*
      * Removes a component of type T from an entity
      */
     template <typename T>
@@ -94,13 +103,6 @@ public:
         return (_componentManager.getComponentId<T>());
     }
 
-    template <typename T>
-    ComponentArray<T> *getComponents(void)
-    {
-        TRACE();
-        return (_componentManager.getComponents<T>());
-    }
-
     /*
      * Tests if entity has a component of type T
      */
@@ -116,11 +118,11 @@ public:
     /*
      * Register system of type T
      */
-    template <typename T>
-    T *registerSystem()
+    template <typename T, typename... Args>
+    T *registerSystem(const Args& ... args)
     {
         TRACE();
-        return (_systemManager.registerSystem<T>());
+        return (_systemManager.registerSystem<T>(args ...));
     }
 
     /*

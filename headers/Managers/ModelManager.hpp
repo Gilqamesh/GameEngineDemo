@@ -15,10 +15,10 @@ namespace GilqEngine
 class ModelManager
 {
 Coordinator                                                         *_coordinator;
-std::unordered_map<Entity, Model *, std::hash<int> >                _modelEntities;
-std::unordered_map<Entity, ModelMatrixComponent, std::hash<int> >   _initialModelMatrices;
-std::unordered_map<std::string, Model *>                            _loadedModels;
-std::unordered_map<const char *, ISystem *>                         _systems;
+unordered_map<Entity, Model *, hash<int> >                _modelEntities;
+unordered_map<Entity, ModelMatrixComponent, hash<int> >   _initialModelMatrices;
+unordered_map<string, Model *>                            _loadedModels;
+unordered_map<const char *, ISystem *>                         _systems;
 MaterialManager                                                     *_materialManager;
 TextureManager                                                      *_textureManager;
 public:
@@ -31,15 +31,15 @@ public:
     inline void setMaterialManager(MaterialManager *materialManager) { _materialManager = materialManager; }
     inline void setTextureManager(TextureManager *textureManager) { _textureManager = textureManager; }
 
-    void loadModel(const std::string &path, const std::string &name);
-    void loadModel(IMeshFactory *meshFactory, const std::string &name, const std::string &materialName);
-    // void destroyModel(const std::string name);
+    void loadModel(const string &path, const string &name);
+    void loadModel(IMeshFactory *meshFactory, const string &name, const string &materialName);
+    // void destroyModel(const string name);
 
     /*
      * Creates an already loaded model
      * 'modelMatrix' is initial model matrix for the Model
      */
-    Entity createModel(const std::string &name, const Matrix<GLfloat, 4, 4> &modelMatrix);
+    Entity createModel(const string &name, const Matrix<GLfloat, 4, 4> &modelMatrix);
 
     Model *getModel(Entity model);
 
@@ -106,13 +106,13 @@ public:
         return (_coordinator->getComponentId<T>());
     }
 
-    template <typename T>
-    T* registerSystem()
+    template <typename T, typename... Args>
+    T* registerSystem(const Args& ... args)
     {
         TRACE();
         const char *systemName = typeid(T).name();
         ASSERT(_systems.count(systemName) == 0);
-        T* system = _coordinator->registerSystem<T>();
+        T* system = _coordinator->registerSystem<T>(args ...);
         _systems[systemName] = system;
         return (system);
     }

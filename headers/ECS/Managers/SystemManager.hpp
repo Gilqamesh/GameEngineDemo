@@ -11,8 +11,8 @@ class Coordinator;
 
 class SystemManager
 {
-std::unordered_map<const char *, ComponentSignature> nameToSignature; /* system name to its component signature */
-std::unordered_map<const char *, ISystem *> nameToSystems; /* system name to the sytem instance */
+unordered_map<const char *, ComponentSignature> nameToSignature; /* system name to its component signature */
+unordered_map<const char *, ISystem *> nameToSystems; /* system name to the sytem instance */
 Coordinator *_coordinator; /* reference to the coordinator so that each system has access to it */
 public:
     SystemManager(Coordinator *coordinator);
@@ -21,14 +21,14 @@ public:
     /*
      * Register system of type T to the manager
      */
-    template <typename T>
-    T *registerSystem()
+    template <typename T, typename... Args>
+    T *registerSystem(const Args& ... args)
     {
         TRACE();
         const char *systemName = typeid(T).name();
         // System already exists in the manager
         ASSERT(nameToSystems.count(systemName) == 0);
-        nameToSystems[systemName] = new T(_coordinator);
+        nameToSystems[systemName] = new T(_coordinator, args ...);
         nameToSystems[systemName]->registerComponents();
         nameToSystems[systemName]->setSystemSignature();
         return (static_cast<T *>(nameToSystems[systemName]));

@@ -11,7 +11,7 @@ Mesh::Mesh()
 
 Mesh::Mesh(Mesh &&other)
     // invoke the copy move operator for each OpenGL context objects
-    : _vertexData(std::move(other._vertexData)),
+    : _vertexData(move(other._vertexData)),
     _material(other._material)
 {
     TRACE();
@@ -23,7 +23,7 @@ Mesh &Mesh::operator=(Mesh &&other)
     if (this != &other)
     {
         // invoke the move assignment operator for each OpenGL context objects
-        _vertexData = std::move(other._vertexData);
+        _vertexData = move(other._vertexData);
         _material = other._material;
     }
     return (*this);

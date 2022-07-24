@@ -14,7 +14,7 @@ struct MacWindowProps
     MacWindowProps();
     int                 width;
     int                 height;
-    std::string         title;
+    string         title;
     eventCallbackFn     eventCallback;
     bool                VSync;
     double              previousMouseX;

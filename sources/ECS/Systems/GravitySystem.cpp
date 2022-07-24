@@ -1,5 +1,5 @@
 #include "ECS/Systems/GravitySystem.hpp"
-#include "ECS/Components/VelocityComponent.hpp"
+#include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Coordinator.hpp"
 
 namespace GilqEngine
@@ -17,7 +17,7 @@ void GravitySystem::onUpdate(float dt)
     TRACE();
     for (auto entity : entities)
     {
-        VelocityComponent &velocity = _coordinator->getComponent<VelocityComponent>(entity);
+        VelocityComponent3D &velocity = _coordinator->getComponent<VelocityComponent3D>(entity);
         velocity.v[1] -= _gravitationalConstant * dt;
     }
 }
@@ -32,14 +32,14 @@ void GravitySystem::setSystemSignature()
 {
     TRACE();
     ComponentSignature gravitySystemSignature;
-    gravitySystemSignature.set(_coordinator->getComponentId<VelocityComponent>(), true);
+    gravitySystemSignature.set(_coordinator->getComponentId<VelocityComponent3D>(), true);
     _coordinator->setSystemSignature<GravitySystem>(gravitySystemSignature);
 }
 
 void GravitySystem::registerComponents()
 {
     TRACE();
-    _coordinator->registerComponent<VelocityComponent>();
+    _coordinator->registerComponent<VelocityComponent3D>();
 }
 
 }

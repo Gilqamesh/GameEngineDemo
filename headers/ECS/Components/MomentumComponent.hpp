@@ -16,7 +16,7 @@ public:
     Vector<float, 3> p;
 };
 
-std::ostream &operator<<(std::ostream &os, const MomentumComponent &a);
+ostream &operator<<(ostream &os, const MomentumComponent &a);
 
 }
 

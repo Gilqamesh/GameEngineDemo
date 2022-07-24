@@ -8,7 +8,7 @@ namespace GilqEngine
 Mesh CubeMeshFactory::createMesh()
 {
     TRACE();
-    std::vector<Vector<GLfloat, 4>>         preVertices{
+    vector<Vector<GLfloat, 4>>         preVertices{
         {-0.5f, -0.5f, -0.5f, 1.0f},
         {0.5f, -0.5f, -0.5f, 1.0f},
         {-0.5f, -0.5f, 0.5f, 1.0f},
@@ -18,7 +18,7 @@ Mesh CubeMeshFactory::createMesh()
         {-0.5f, 0.5f, 0.5f, 1.0f},
         {0.5f, 0.5f, 0.5f, 1.0f}
     };
-    std::vector<Vector<GLfloat, 4>>         preNormals{
+    vector<Vector<GLfloat, 4>>         preNormals{
         {0.0f, -1.0f, 0.0f, 1.0f},
         {0.0f, 1.0f, 0.0f, 1.0f},
         {1.0f, 0.0f, 0.0f, 1.0f},
@@ -26,13 +26,13 @@ Mesh CubeMeshFactory::createMesh()
         {0.0f, 0.0f, 1.0f, 1.0f},
         {0.0f, 0.0f, -1.0f, 1.0f}
     };
-    std::vector<Vector<GLfloat, 2>>         t{
+    vector<Vector<GLfloat, 2>>         t{
         {0.0f, 0.0f},
         {1.0f, 0.0f},
         {0.0f, 1.0f},
         {1.0f, 1.0f}
     };
-    std::vector<unsigned int> indices{
+    vector<unsigned int> indices{
         0, 1, 2,
         1, 2, 3,
         4, 5, 6,
@@ -49,8 +49,8 @@ Mesh CubeMeshFactory::createMesh()
         2, 4, 6
     };
 
-    std::vector<Vector<GLfloat, 3>>         v;
-    std::vector<Vector<GLfloat, 3>>         n;
+    vector<Vector<GLfloat, 3>>         v;
+    vector<Vector<GLfloat, 3>>         n;
     VertexData                              vertexData;
     for (auto &vertex : preVertices)
     {
@@ -67,7 +67,7 @@ Mesh CubeMeshFactory::createMesh()
         vertexData.pushIndices({i});
     }
 
-    std::vector<NormalVertexAttribute>      normals{
+    vector<NormalVertexAttribute>      normals{
         n[0], n[0], n[0],
         n[0], n[0], n[0],
         n[1], n[1], n[1],
@@ -85,7 +85,7 @@ Mesh CubeMeshFactory::createMesh()
     };
     for (const auto &normal : normals)
         vertexData.pushNormalAttribute(normal);
-    std::vector<TextureVertexAttribute>     textures{
+    vector<TextureVertexAttribute>     textures{
         t[0], t[1], t[2],
         t[1], t[2], t[3],
         t[1], t[0], t[3],
@@ -111,7 +111,7 @@ Mesh CubeMeshFactory::createMesh()
     vertexData.configureVAO();
 
     Mesh mesh;
-    mesh.setVertexData(std::move(vertexData));
+    mesh.setVertexData(move(vertexData));
     return (mesh);
 }
 

@@ -8,13 +8,13 @@ namespace GilqEngine
 
 class LayerStack : public ILayerManager
 {
-std::vector<ILayer *> layers;
+vector<ILayer *> layers;
 unsigned int numberOfRegularLayers;
 public:
-    typedef typename std::vector<ILayer *>::iterator                iterator;
-    typedef typename std::vector<ILayer *>::const_iterator          const_iterator;
-    typedef typename std::vector<ILayer *>::reverse_iterator        reverse_iterator;
-    typedef typename std::vector<ILayer *>::const_reverse_iterator  const_reverse_iterator;
+    typedef typename vector<ILayer *>::iterator                iterator;
+    typedef typename vector<ILayer *>::const_iterator          const_iterator;
+    typedef typename vector<ILayer *>::reverse_iterator        reverse_iterator;
+    typedef typename vector<ILayer *>::const_reverse_iterator  const_reverse_iterator;
 
     LayerStack();
     ~LayerStack();

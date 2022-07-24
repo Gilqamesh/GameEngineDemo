@@ -5,11 +5,12 @@
 //                              Vector Class                                  //
 // ************************************************************************** //
 
-# include "pch.hpp"
 # include "Math/Matrix.hpp"
 
 namespace GilqEngine
 {
+
+using namespace std;
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix;
@@ -43,7 +44,7 @@ public:
 };
 
 template <typename T, unsigned int LENGTH>
-std::ostream &operator<<(std::ostream &os, const Vector<T, LENGTH> &v)
+ostream &operator<<(ostream &os, const Vector<T, LENGTH> &v)
 {
     for (unsigned int i = 0; i < LENGTH; ++i)
     {
@@ -55,7 +56,7 @@ std::ostream &operator<<(std::ostream &os, const Vector<T, LENGTH> &v)
 }
 
 template <typename T, unsigned int LENGTH>
-Vector<T, LENGTH> average(const std::vector<Vector<T, LENGTH>> &vectors)
+Vector<T, LENGTH> average(const vector<Vector<T, LENGTH>> &vectors)
 {
     // using running average to avoid under/overflow
     Vector<T, LENGTH> result;
@@ -108,6 +109,38 @@ Vector<T, 3> rotate(const Vector<T, 3> &v, const T &angle, const Vector<T, 3> &a
 
     // Rodrigues' rotation formula
     return (Vector<T, 3>(cos(angle) * v + sin(angle) * cross_product(e, v) + (1 - cos(angle)) * dot_product(e, v) * e));
+}
+
+enum DIRECTION
+{
+    UP,
+    RIGHT,
+    DOWN,
+    LEFT
+};
+
+template <typename T>
+DIRECTION vectorDirection(Vector<T, 2> v)
+{
+    Vector<T, 2> directions[4] = {
+        {static_cast<T>(0), static_cast<T>(1)},
+        {static_cast<T>(1), static_cast<T>(0)},
+        {static_cast<T>(0), static_cast<T>(-1)},
+        {static_cast<T>(-1), static_cast<T>(0)}
+    };
+
+    T maxDotProduct = static_cast<T>(-1);
+    DIRECTION direction;
+    for (int i = 0; i < 4; ++i)
+    {
+        if (dot_product(v, directions[i]) > maxDotProduct)
+        {
+            direction = static_cast<DIRECTION>(i);
+            maxDotProduct = dot_product(v, directions[i]);
+        }
+    }
+
+    return (direction);
 }
 
 template <typename T, unsigned int LENGTH>

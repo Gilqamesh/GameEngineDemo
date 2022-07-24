@@ -16,10 +16,10 @@ enum class LayerType
 
 class ILayer
 {
-std::string _name;
-LayerType   layerType;
+string     _name;
+LayerType  layerType;
 public:
-    ILayer(const std::string &name, LayerType layerType);
+    ILayer(const string &name, LayerType layerType);
     virtual ~ILayer() = default;
     virtual void onAttach() = 0; /* Controlled by application, should initialize objects on the layer */
     virtual void onDetach() = 0; /* Controlled by application, should deinitialize objects on the layer */
@@ -28,7 +28,7 @@ public:
     virtual void onRender() = 0; /* Render layer */
 
     inline LayerType getType() { return (layerType); }
-    inline const std::string &getName() { return (_name); }
+    inline const string &getName() { return (_name); }
 };
 
 }

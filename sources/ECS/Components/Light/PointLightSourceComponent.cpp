@@ -8,7 +8,7 @@ namespace GilqEngine
 void PointLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n)
 {
     TRACE();
-    std::string prefix("point_light[" + std::to_string(n) + "].");
+    string prefix("point_light[" + to_string(n) + "].");
     ILightSource::setShaderUniforms(prefix, shader);
     shader->setFloat3(prefix + "position", _position);
     shader->setFloat(prefix + "attenuation_constant", _attenuationFactor_constant);
@@ -16,7 +16,7 @@ void PointLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n
     shader->setFloat(prefix + "attenuation_quadratic", _attenuationFactor_quadratic);
 }
 
-std::ostream &operator<<(std::ostream &os, const PointLightSourceComponent &a)
+ostream &operator<<(ostream &os, const PointLightSourceComponent &a)
 {
     TRACE();
     os << "{color: " << a._color << ", ambient: " << a._ambientStrength << ", diffuse: "

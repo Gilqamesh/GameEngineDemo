@@ -1,7 +1,7 @@
 #include "ECS/Systems/RotationSystem.hpp"
 #include "ECS/Components/RotationalComponent.hpp"
 #include "ECS/Components/ModelMatrixComponent.hpp"
-#include "ECS/Components/PositionComponent.hpp"
+#include "ECS/Components/PositionComponent3D.hpp"
 #include "ECS/Coordinator.hpp"
 
 namespace GilqEngine
@@ -38,7 +38,7 @@ void RotationSystem::setSystemSignature()
     ComponentSignature rotationSystemSignature;
     rotationSystemSignature.set(_coordinator->getComponentId<RotationalComponent>(), true);
     rotationSystemSignature.set(_coordinator->getComponentId<ModelMatrixComponent>(), true);
-    rotationSystemSignature.set(_coordinator->getComponentId<PositionComponent>(), true);
+    rotationSystemSignature.set(_coordinator->getComponentId<PositionComponent3D>(), true);
     _coordinator->setSystemSignature<RotationSystem>(rotationSystemSignature);
 }
 
@@ -47,7 +47,7 @@ void RotationSystem::registerComponents()
     TRACE();
     _coordinator->registerComponent<RotationalComponent>();
     _coordinator->registerComponent<ModelMatrixComponent>();
-    _coordinator->registerComponent<PositionComponent>();
+    _coordinator->registerComponent<PositionComponent3D>();
 }
 
 }

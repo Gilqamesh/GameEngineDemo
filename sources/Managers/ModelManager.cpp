@@ -1,7 +1,8 @@
 #include "Managers/ModelManager.hpp"
 #include "Debug/Trace.hpp"
-#include "ECS/Components/PositionComponent.hpp"
+#include "ECS/Components/PositionComponent3D.hpp"
 #include "ECS/Components/RotationalComponent.hpp"
+#include "Log.hpp"
 
 namespace GilqEngine
 {
@@ -22,7 +23,7 @@ ModelManager::~ModelManager()
     delete _coordinator;
 }
 
-void ModelManager::loadModel(const std::string &path, const std::string &name)
+void ModelManager::loadModel(const string &path, const string &name)
 {
     TRACE();
     ASSERT(_loadedModels.count(name) == 0);
@@ -34,8 +35,8 @@ void ModelManager::loadModel(const std::string &path, const std::string &name)
 
 void ModelManager::loadModel(
     IMeshFactory *meshFactory,
-    const std::string &name,
-    const std::string &materialName)
+    const string &name,
+    const string &materialName)
 {
     TRACE();
     ASSERT(_loadedModels.count(name) == 0);
@@ -46,7 +47,7 @@ void ModelManager::loadModel(
 }
 
 // Todo: remove entities that are associated with this model
-// void destroyModel(const std::string name)
+// void destroyModel(const string name)
 // {
 //     TRACE();
 //     ASSERT(_loadedModels.count(name));
@@ -54,7 +55,7 @@ void ModelManager::loadModel(
 //     _loadedModels.erase(name);
 // }
 
-Entity ModelManager::createModel(const std::string &name, const Matrix<GLfloat, 4, 4> &modelMatrix)
+Entity ModelManager::createModel(const string &name, const Matrix<GLfloat, 4, 4> &modelMatrix)
 {
     TRACE();
     ASSERT(_loadedModels.count(name));

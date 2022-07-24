@@ -14,8 +14,8 @@ namespace GilqEngine
  */
 class EntityManager
 {
-std::array<ComponentSignature, MAX_ENTITIES> entityComponentSignature; /* the array is indexed by the entity id, each element holds the components of an entity */
-std::array<Entity, MAX_ENTITIES> availableEntitiesQueue; /* available entities to distribute held by the entity manager */
+array<ComponentSignature, MAX_ENTITIES> entityComponentSignature; /* the array is indexed by the entity id, each element holds the components of an entity */
+array<Entity, MAX_ENTITIES> availableEntitiesQueue; /* available entities to distribute held by the entity manager */
 EntityId availableEntitiesQueueIndex;
 public:
     /*

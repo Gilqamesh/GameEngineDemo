@@ -5,7 +5,7 @@
 namespace GilqEngine
 {
 
-void ILightSource::setShaderUniforms(const std::string &prefix, Shader *shader)
+void ILightSource::setShaderUniforms(const string &prefix, Shader *shader)
 {
     TRACE();
     shader->setFloat4(prefix + "color", _color);

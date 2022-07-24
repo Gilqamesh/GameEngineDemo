@@ -27,7 +27,7 @@ VertexVector<PositionVertexAttribute2D> _vertexVectorPosition2D;
 VertexVector<PositionVertexAttribute3D> _vertexVectorPosition3D;
 VertexVector<NormalVertexAttribute>     _vertexVectorNormal;
 VertexVector<TextureVertexAttribute>    _vertexVectorTexture;
-std::vector<unsigned int>               _indices;
+vector<unsigned int>                    _indices;
 
 uint32 _nOfIndices;
 public:
@@ -45,7 +45,7 @@ public:
     void pushPositionAttribute3D(const PositionVertexAttribute3D &data);
     void pushNormalAttribute(const NormalVertexAttribute &data);
     void pushTextureAttribute(const TextureVertexAttribute &data);
-    void pushIndices(const std::vector<unsigned int> &indices);
+    void pushIndices(const vector<unsigned int> &indices);
     void pushIndex(unsigned int index);
 
     /*

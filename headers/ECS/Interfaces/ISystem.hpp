@@ -15,7 +15,7 @@ class ISystem
 {
 friend class SystemManager;
 protected:
-    unordered_set<Entity, std::hash<int>> entities; /* list of entities that needs to be updated by the system */
+    unordered_set<Entity, hash<int>> entities; /* list of entities that needs to be updated by the system */
     Coordinator *_coordinator; /* reference to the coordinator so that the system can update entity component data */
 public:
     ISystem(Coordinator *coordinator);

@@ -7,13 +7,11 @@ Coordinator::Coordinator()
     : _systemManager(this)
 {
     TRACE();
-
 }
 
 Coordinator::~Coordinator()
 {
-    TRACE();
-    
+    TRACE();    
 }
 
 Entity Coordinator::createEntity()

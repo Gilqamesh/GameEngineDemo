@@ -13,7 +13,7 @@ Vector<float, 3> _direction;
 void setShaderUniforms(Shader *shader, unsigned int n);
 };
 
-std::ostream &operator<<(std::ostream &os, const DirectionalLightSourceComponent &a);
+ostream &operator<<(ostream &os, const DirectionalLightSourceComponent &a);
 
 }
 

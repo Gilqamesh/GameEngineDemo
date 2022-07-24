@@ -17,7 +17,7 @@ float            _diffuseStrength;
 float            _specularStrength;
 
 void setShaderUniforms(
-    const std::string &prefix,
+    const string &prefix,
     Shader *shader);
 };
 

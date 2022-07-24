@@ -4,6 +4,7 @@ namespace GilqEngine
 {
 
 VertexData::VertexData()
+    : _nOfIndices(0)
 {
     TRACE();
     _vertexArray.create();
@@ -16,16 +17,17 @@ VertexData::~VertexData()
 
 VertexData::VertexData(VertexData &&other)
     // invoke the copy move operator for each OpenGL context objects
-    : _vertexArray(std::move(other._vertexArray)),
-    _vertexPositionBuffer(std::move(other._vertexPositionBuffer)),
-    _vertexNormalBuffer(std::move(other._vertexNormalBuffer)),
-    _vertexTextureBuffer(std::move(other._vertexTextureBuffer)),
-    _indexBuffer(std::move(other._indexBuffer)),
+    : _vertexArray(move(other._vertexArray)),
+    _vertexPositionBuffer(move(other._vertexPositionBuffer)),
+    _vertexNormalBuffer(move(other._vertexNormalBuffer)),
+    _vertexTextureBuffer(move(other._vertexTextureBuffer)),
+    _indexBuffer(move(other._indexBuffer)),
     _vertexVectorPosition2D(other._vertexVectorPosition2D),
     _vertexVectorPosition3D(other._vertexVectorPosition3D),
     _vertexVectorNormal(other._vertexVectorNormal),
     _vertexVectorTexture(other._vertexVectorTexture),
-    _indices(other._indices)
+    _indices(other._indices),
+    _nOfIndices(other._nOfIndices)
 {
     TRACE();
 }
@@ -36,16 +38,17 @@ VertexData &VertexData::operator=(VertexData &&other)
     if (this != &other)
     {
         // invoke the move assignment operator for each OpenGL context objects
-        _vertexArray = std::move(other._vertexArray);
-        _vertexPositionBuffer = std::move(other._vertexPositionBuffer);
-        _vertexNormalBuffer = std::move(other._vertexNormalBuffer);
-        _vertexTextureBuffer = std::move(other._vertexTextureBuffer);
-        _indexBuffer = std::move(other._indexBuffer);
+        _vertexArray = move(other._vertexArray);
+        _vertexPositionBuffer = move(other._vertexPositionBuffer);
+        _vertexNormalBuffer = move(other._vertexNormalBuffer);
+        _vertexTextureBuffer = move(other._vertexTextureBuffer);
+        _indexBuffer = move(other._indexBuffer);
         _vertexVectorPosition2D = other._vertexVectorPosition2D;
         _vertexVectorPosition3D = other._vertexVectorPosition3D;
         _vertexVectorNormal = other._vertexVectorNormal;
         _vertexVectorTexture = other._vertexVectorTexture;
         _indices = other._indices;
+        _nOfIndices = other._nOfIndices;
     }
     return (*this);
 }
@@ -74,7 +77,7 @@ void VertexData::pushTextureAttribute(const TextureVertexAttribute &data)
     _vertexVectorTexture.push_back(data);
 }
 
-void VertexData::pushIndices(const std::vector<unsigned int> &indices)
+void VertexData::pushIndices(const vector<unsigned int> &indices)
 {
     TRACE();
     _nOfIndices += (uint32)indices.size();

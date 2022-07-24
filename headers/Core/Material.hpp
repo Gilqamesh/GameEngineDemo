@@ -22,10 +22,10 @@ Texture     *_diffuse;
 Texture     *_specular;
 Texture     *_emission;
 float       _shininess;
-std::string _name;
+string _name;
 public:
     Material();
-    Material(const std::string &name);
+    Material(const string &name);
 
     Material(const Material &other);
     Material &operator=(const Material &other);
@@ -35,14 +35,14 @@ public:
     inline Texture *getSpecular() const { return (_specular); }
     inline Texture *getEmission() const { return (_emission); }
     inline float getShininess() const { return (_shininess); }
-    inline const std::string &getName() const { return (_name); }
+    inline const string &getName() const { return (_name); }
 
     inline void setAmbient(Texture *ambient) { this->_ambient = ambient; }
     inline void setDiffuse(Texture *diffuse) { this->_diffuse = diffuse; }
     inline void setSpecular(Texture *specular) { this->_specular = specular; }
     inline void setEmission(Texture *emission) { this->_emission = emission; }
     inline void setShininess(float shininess) { this->_shininess = shininess; }
-    inline void setName(const std::string &name) { _name = name; }
+    inline void setName(const string &name) { _name = name; }
 
     /*
      * Does not bind 'shader'

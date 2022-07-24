@@ -8,7 +8,7 @@ namespace GilqEngine
 void SpotLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n)
 {
     TRACE();
-    std::string prefix("spot_light[" + std::to_string(n) + "].");
+    string prefix("spot_light[" + to_string(n) + "].");
     ILightSource::setShaderUniforms(prefix, shader);
     shader->setFloat3(prefix + "position", _position);
     shader->setFloat3(prefix + "direction", _direction);
@@ -19,7 +19,7 @@ void SpotLightSourceComponent::setShaderUniforms(Shader *shader, unsigned int n)
     shader->setFloat(prefix + "attenuation_quadratic", _attenuationFactor_quadratic);
 }
 
-std::ostream &operator<<(std::ostream &os, const SpotLightSourceComponent &a)
+ostream &operator<<(ostream &os, const SpotLightSourceComponent &a)
 {
     TRACE();
     os << "{color: " << a._color << ", ambient: " << a._ambientStrength << ", diffuse: "

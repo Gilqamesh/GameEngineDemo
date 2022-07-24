@@ -4,12 +4,12 @@
 namespace GilqEngine
 {
 
-Shader::Shader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath, const std::string &shaderName)
+Shader::Shader(const string &vertexShaderPath, const string &fragmentShaderPath, const string &shaderName)
     : _shaderName(shaderName)
 {
     TRACE();
-    std::string vertexShaderSourceCode = parseShader(vertexShaderPath);
-    std::string fragmentShaderSourceCode = parseShader(fragmentShaderPath);
+    string vertexShaderSourceCode = parseShader(vertexShaderPath);
+    string fragmentShaderSourceCode = parseShader(fragmentShaderPath);
     GL_ID = createShaderProgram(vertexShaderSourceCode, fragmentShaderSourceCode);
 }
 
@@ -51,49 +51,49 @@ void Shader::unbind()
     GLCall(glUseProgram(0));
 }
 
-void Shader::setInt(const std::string &name, GLint value)
+void Shader::setInt(const string &name, GLint value)
 {
     TRACE();
     GLCall(glUniform1i(getUniformLocation(name), value));
 }
 
-void Shader::setIntArr(const std::string &name, int *value, unsigned int size)
+void Shader::setIntArr(const string &name, int *value, unsigned int size)
 {
     TRACE();
     GLCall(glUniform1iv(getUniformLocation(name), size, value));
 }
 
-void Shader::setFloat(const std::string &name, GLfloat value)
+void Shader::setFloat(const string &name, GLfloat value)
 {
     TRACE();
     GLCall(glUniform1f(getUniformLocation(name), value));
 }
 
-void Shader::setFloat2(const std::string &name, const Vector<GLfloat, 2> &value)
+void Shader::setFloat2(const string &name, const Vector<GLfloat, 2> &value)
 {
     TRACE();
     GLCall(glUniform2f(getUniformLocation(name), value[0], value[1]));
 }
 
-void Shader::setFloat3(const std::string &name, const Vector<GLfloat, 3> &value)
+void Shader::setFloat3(const string &name, const Vector<GLfloat, 3> &value)
 {
     TRACE();
     GLCall(glUniform3f(getUniformLocation(name), value[0], value[1], value[2]));
 }
 
-void Shader::setFloat4(const std::string &name, const Vector<GLfloat, 4> &value)
+void Shader::setFloat4(const string &name, const Vector<GLfloat, 4> &value)
 {
     TRACE();
     GLCall(glUniform4f(getUniformLocation(name), value[0], value[1], value[2], value[3]));
 }
 
-void Shader::setMat4(const std::string &name, const Matrix<GLfloat, 4, 4> &value)
+void Shader::setMat4(const string &name, const Matrix<GLfloat, 4, 4> &value)
 {
     TRACE();
     GLCall(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value.data()));
 }
 
-GLint Shader::getUniformLocation(const std::string &name)
+GLint Shader::getUniformLocation(const string &name)
 {
     TRACE();
     if (uniformLocationCache.count(name))
@@ -107,7 +107,7 @@ GLint Shader::getUniformLocation(const std::string &name)
     return (location);
 }
 
-GLuint Shader::createShaderProgram(const std::string &vertexShaderSourceCode, const std::string &fragmentShaderSourceCode)
+GLuint Shader::createShaderProgram(const string &vertexShaderSourceCode, const string &fragmentShaderSourceCode)
 {
     TRACE();
     GLCall(GLuint program = glCreateProgram());
@@ -125,7 +125,7 @@ GLuint Shader::createShaderProgram(const std::string &vertexShaderSourceCode, co
     return (program);
 }
 
-GLuint Shader::compileShader(GLuint shaderType, const std::string &sourceCode)
+GLuint Shader::compileShader(GLuint shaderType, const string &sourceCode)
 {
     TRACE();
     GLCall(GLuint shader = glCreateShader(shaderType));
@@ -151,15 +151,15 @@ GLuint Shader::compileShader(GLuint shaderType, const std::string &sourceCode)
     return (shader);
 }
 
-std::string Shader::parseShader(const std::string &shaderPath)
+string Shader::parseShader(const string &shaderPath)
 {
     TRACE();
-    std::ifstream ifs(shaderPath);
+    ifstream ifs(shaderPath);
     if (!ifs)
-        throw std::runtime_error("Could not open shader file for parsing: " + shaderPath + " " + _shaderName);
+        throw runtime_error("Could not open shader file for parsing: " + shaderPath + " " + _shaderName);
 
-    std::string line;
-    std::stringstream ss;
+    string line;
+    stringstream ss;
     while (getline(ifs, line))
         ss << line << "\n";
 

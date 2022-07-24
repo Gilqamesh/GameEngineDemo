@@ -16,7 +16,7 @@ struct RotationalComponent
     Vector<float, 3>    axis;
 };
 
-std::ostream &operator<<(std::ostream &os, const RotationalComponent &a);
+ostream &operator<<(ostream &os, const RotationalComponent &a);
 
 }
 

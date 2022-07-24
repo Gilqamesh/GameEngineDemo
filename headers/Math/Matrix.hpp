@@ -5,11 +5,12 @@
 //                              Matrix Class                                  //
 // ************************************************************************** //
 
-# include "pch.hpp"
 # include "Vector.hpp"
 
 namespace GilqEngine
 {
+
+using namespace std;
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix;
@@ -27,7 +28,7 @@ template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix
 {
     private:
-        std::array<T, ROWS * COLUMNS>                   entries;
+        array<T, ROWS * COLUMNS>                   entries;
     public:
         Matrix():                                       entries()           { }
         Matrix(T* a)
@@ -53,7 +54,7 @@ class Matrix
         {
             for (unsigned int r = ROWS - 1; r > 0; --r)
                 for (unsigned int c = 0; c < r; ++c)
-                    std::swap((*this)(r, c), (*this)(c, r));
+                    swap((*this)(r, c), (*this)(c, r));
             return (*this);
         }
 
@@ -186,21 +187,33 @@ Matrix<T, 4, 4> scale_matrix(T a, T b, T c)
 template <typename T>
 Matrix<T, 4, 4> translation_matrix(const Vector<T, 3> &v)
 {
-    Matrix<T, 4, 4>    res;
+    Matrix<T, 4, 4>    result;
 
     for (unsigned int r = 0; r < 3; ++r)
         for (unsigned int c = 0; c < 4; ++c)
-            res(r, c) = r == c;
+            result(r, c) = r == c;
     for (unsigned int r = 0; r < 3; ++r)
-        res(3, r) = v[r];
-    res(3, 3) = 1;
-    return (res);
+        result(3, r) = v[r];
+    result(3, 3) = 1;
+    return (result);
 }
 
 template <typename T>
 Matrix<T, 4, 4> translation_matrix(T a, T b, T c)
 {
     return (translation_matrix(Vector<T, 3>(a, b, c)));
+}
+
+template <typename T>
+Matrix<T, 4, 4> translation_matrix(const Vector<T, 2> &v)
+{
+    return (translation_matrix(Vector<T, 3>(v[0], v[1], static_cast<T>(0))));
+}
+
+template <typename T>
+Matrix<T, 4, 4> translation_matrix(T a, T b)
+{
+    return (translation_matrix(Vector<T, 3>(a, b, static_cast<T>(0))));
 }
 
 template <typename T>
@@ -244,7 +257,7 @@ Matrix<T, 4, 4> look_at(const Vector<T, 3> &eye, const Vector<T, 3> &target, con
 }
 
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
-std::ostream            &operator<<(std::ostream &os, const Matrix<T, ROWS, COLUMNS> &m)
+ostream            &operator<<(ostream &os, const Matrix<T, ROWS, COLUMNS> &m)
 {
     for (unsigned int r = 0; r < ROWS; ++r)
     {
@@ -254,7 +267,7 @@ std::ostream            &operator<<(std::ostream &os, const Matrix<T, ROWS, COLU
             if (c < COLUMNS - 1)
                 os << ",\t";
         }
-        os << std::endl;
+        os << endl;
     }
     return (os);
 }

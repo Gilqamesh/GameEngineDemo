@@ -14,7 +14,7 @@ namespace GilqEngine
 class GLFWInput : public IInput
 {
 static GLFWInput *thisInstance;
-static std::mutex thisInstanceMutex;
+static mutex thisInstanceMutex;
 static GLFWwindow *currentWindow;
 public:
     ~GLFWInput();

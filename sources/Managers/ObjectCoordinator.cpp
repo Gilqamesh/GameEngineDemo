@@ -20,64 +20,66 @@ ObjectCoordinator::ObjectCoordinator()
 ObjectCoordinator::~ObjectCoordinator()
 {
     TRACE();
-    for (auto _system : _registeredSystems)
-        delete _system;
-    _registeredSystems.clear();
 }
 
-void ObjectCoordinator::addMaterial(const std::string &materialName)
+void ObjectCoordinator::addMaterial(const string &materialName)
 {
     TRACE();
     _materialManager.addMaterial(materialName);
 }
 
-void ObjectCoordinator::setAmbient(const std::string &materialName, const std::string &textureName)
+void ObjectCoordinator::setAmbient(const string &materialName, const string &textureName)
 {
     TRACE();
     Material &material = _materialManager.getMaterial(materialName);
     material.setAmbient(_textureManager.getTexture(textureName));
 }
 
-void ObjectCoordinator::setDiffuse(const std::string &materialName, const std::string &textureName)
+void ObjectCoordinator::setDiffuse(const string &materialName, const string &textureName)
 {
     TRACE();
     Material &material = _materialManager.getMaterial(materialName);
     material.setDiffuse(_textureManager.getTexture(textureName));
 }
 
-void ObjectCoordinator::setSpecular(const std::string &materialName, const std::string &textureName)
+void ObjectCoordinator::setSpecular(const string &materialName, const string &textureName)
 {
     TRACE();
     Material &material = _materialManager.getMaterial(materialName);
     material.setSpecular(_textureManager.getTexture(textureName));
 }
 
-void ObjectCoordinator::setEmission(const std::string &materialName, const std::string &textureName)
+void ObjectCoordinator::setEmission(const string &materialName, const string &textureName)
 {
     TRACE();
     Material &material = _materialManager.getMaterial(materialName);
     material.setEmission(_textureManager.getTexture(textureName));
 }
 
-void ObjectCoordinator::addShader(const std::string &vsPath, const std::string &fsPath, const std::string &shaderName)
+void ObjectCoordinator::addShader(const string &vsPath, const string &fsPath, const string &shaderName)
 {
     TRACE();
     _shaderManager.addShader(vsPath, fsPath, shaderName);
 }
 
-void ObjectCoordinator::addTexture(const std::string &texturePath, const std::string &textureName)
+void ObjectCoordinator::addTexture(const string &texturePath, const string &textureName)
 {
     TRACE();
     _textureManager.addTexture(texturePath, textureName);
 }
 
-Texture *ObjectCoordinator::getTexture(const std::string &textureName)
+void ObjectCoordinator::addTexture(const char *texturePath, const string &textureName)
 {
-    TRACE();
-    return (_textureManager.getTexture(textureName));
+    addTexture(string(texturePath), textureName);
 }
 
-void ObjectCoordinator::loadModel(const std::string &modelPath, const std::string &modelName)
+void ObjectCoordinator::addTexture(const Vector<float, 4>& color, const string &textureName)
+{
+    TRACE();
+    _textureManager.addTexture(color, textureName);
+}
+
+void ObjectCoordinator::loadModel(const string &modelPath, const string &modelName)
 {
     TRACE();
     _modelManager.loadModel(modelPath, modelName);
@@ -85,16 +87,16 @@ void ObjectCoordinator::loadModel(const std::string &modelPath, const std::strin
 
 void ObjectCoordinator::loadModel(
     IMeshFactory *meshFactory,
-    const std::string &modelName,
-    const std::string &materialName)
+    const string &modelName,
+    const string &materialName)
 {
     TRACE();
     _modelManager.loadModel(meshFactory, modelName, materialName);
 }
 
 Entity ObjectCoordinator::createModel(
-    const std::string &modelName,
-    const std::string &shaderName,
+    const string &modelName,
+    const string &shaderName,
     const Matrix<float, 4, 4> &modelMatrix,
     float opacity)
 {
@@ -102,11 +104,11 @@ Entity ObjectCoordinator::createModel(
     Entity model = _modelManager.createModel(modelName, modelMatrix);
     _modelManager.setModelShader(model, _shaderManager.getShader(shaderName));
     if (opacity < 0.0f || opacity > 1.0f)
-        throw std::out_of_range("Opacity needs to be in the range [0, 1]");
+        throw Exception("Opacity needs to be in the range [0, 1]");
     if (opacity < 1.0f)
-        _transparentObjects[model] = opacity;
+        _transparentObjects.push_back({model, opacity});
     else
-        _opaqueObjects[model] = opacity;
+        _opaqueObjects.push_back(model);
     return (model);
 }
 
@@ -120,7 +122,7 @@ void ObjectCoordinator::onUpdate(float deltaTime)
     }
 }
 
-void ObjectCoordinator::drawObjects(
+void ObjectCoordinator::drawObjects3D(
     const Vector<float, 3> &cameraPosition,
     const Matrix<float, 4, 4> &view,
     const Matrix<float, 4, 4> &projection)
@@ -128,14 +130,14 @@ void ObjectCoordinator::drawObjects(
     TRACE();
     for (auto &object : _opaqueObjects)
     {
-        Model *model = _modelManager.getModel(object.first);
+        Model *model = _modelManager.getModel(object);
         Shader *shader = model->getShader();
         shader->bind();
         shader->setFloat("u_alpha", 1.0f);
-        shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object.first).m);
+        shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object).m);
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
-        shader->setMat4("normalMatrix", normal_matrix(_modelManager.getComponent<ModelMatrixComponent>(object.first).m));
+        shader->setMat4("normalMatrix", normal_matrix(_modelManager.getComponent<ModelMatrixComponent>(object).m));
         shader->setFloat3("viewPos", cameraPosition);
         _directionalLightSourceSystem->onRender(shader);
         _pointLightSourceSystem->onRender(shader);
@@ -147,7 +149,7 @@ void ObjectCoordinator::drawObjects(
         Model *model = _modelManager.getModel(object.first);
         Shader *shader = model->getShader();
         shader->bind();
-        shader->setFloat("u_alpha", _transparentObjects[object.first]);
+        shader->setFloat("u_alpha", object.second);
         shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object.first).m);
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
@@ -160,24 +162,18 @@ void ObjectCoordinator::drawObjects(
     }
 }
 
-// Is not worked out.
-void ObjectCoordinator::drawObjects(void)
+// u_alpha not used currently in 2D shader
+void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
 {
     TRACE();
     for (auto &object : _opaqueObjects)
     {
-        Model *model = _modelManager.getModel(object.first);
+        Model *model = _modelManager.getModel(object);
         Shader *shader = model->getShader();
         shader->bind();
         shader->setFloat("u_alpha", 1.0f);
-        shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object.first).m);
-        shader->setMat4("view", identity_matrix<float, 4, 4>());
-        shader->setMat4("projection", identity_matrix<float, 4, 4>());
-        shader->setMat4("normalMatrix", normal_matrix(_modelManager.getComponent<ModelMatrixComponent>(object.first).m));
-        shader->setFloat3("viewPos", Vector<float, 3>(0.0f, 0.0f, 0.0f));
-        _directionalLightSourceSystem->onRender(shader);
-        _pointLightSourceSystem->onRender(shader);
-        _spotLightSourceSystem->onRender(shader);
+        shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object).m);
+        shader->setMat4("projection", projection);
         model->draw();
     }
     for (auto &object : _transparentObjects)
@@ -185,15 +181,9 @@ void ObjectCoordinator::drawObjects(void)
         Model *model = _modelManager.getModel(object.first);
         Shader *shader = model->getShader();
         shader->bind();
-        shader->setFloat("u_alpha", _transparentObjects[object.first]);
+        shader->setFloat("u_alpha", object.second);
         shader->setMat4("model", _modelManager.getComponent<ModelMatrixComponent>(object.first).m);
-        shader->setMat4("view", identity_matrix<float, 4, 4>());
-        shader->setMat4("projection", identity_matrix<float, 4, 4>());
-        shader->setMat4("normalMatrix", normal_matrix(_modelManager.getComponent<ModelMatrixComponent>(object.first).m));
-        shader->setFloat3("viewPos", Vector<float, 3>(0.0f, 0.0f, 0.0f));
-        _directionalLightSourceSystem->onRender(shader);
-        _pointLightSourceSystem->onRender(shader);
-        _spotLightSourceSystem->onRender(shader);
+        shader->setMat4("projection", projection);
         model->draw();
     }
 }

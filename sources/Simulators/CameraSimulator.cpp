@@ -18,7 +18,7 @@ void CameraSimulator::main()
         delete app;
         delete perspectiveCameraLayer;
     }
-    catch (std::exception &e)
+    catch (exception &e)
     {
         LOG(e.what());
     }

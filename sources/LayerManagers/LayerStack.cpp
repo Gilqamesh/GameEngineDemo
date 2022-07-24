@@ -13,7 +13,7 @@ LayerStack::LayerStack()
 LayerStack::~LayerStack()
 {
     TRACE();
-    for (std::vector<ILayer *>::iterator it = begin(); it != end(); ++it)
+    for (vector<ILayer *>::iterator it = begin(); it != end(); ++it)
         (*it)->onDetach();
 }
 
@@ -35,7 +35,7 @@ void LayerStack::popLayer(ILayer *layer)
     TRACE();
     if (layer->getType() == LayerType::overlay)
     {
-        std::vector<ILayer *>::iterator it = std::find(layers.begin(), layers.begin() + numberOfRegularLayers, layer);
+        vector<ILayer *>::iterator it = find(layers.begin(), layers.begin() + numberOfRegularLayers, layer);
         if (it != layers.begin() + numberOfRegularLayers)
         {
             layers.erase(it);
@@ -44,7 +44,7 @@ void LayerStack::popLayer(ILayer *layer)
     }
     else if (layer->getType() == LayerType::regular)
     {
-        std::vector<ILayer *>::iterator it = std::find(layers.begin() + numberOfRegularLayers, layers.end(), layer);
+        vector<ILayer *>::iterator it = find(layers.begin() + numberOfRegularLayers, layers.end(), layer);
         if (it != layers.end())
         {
             layers.erase(it);

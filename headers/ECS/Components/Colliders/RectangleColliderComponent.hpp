@@ -26,7 +26,7 @@ struct RectangleColliderComponent
     }
 };
 
-std::ostream &operator<<(std::ostream &os, const RectangleColliderComponent &a);
+ostream &operator<<(ostream &os, const RectangleColliderComponent &a);
 
 }
 

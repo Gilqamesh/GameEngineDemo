@@ -5,7 +5,7 @@ namespace GilqEngine
 {
 
 GLFWInput *GLFWInput::thisInstance = nullptr;
-std::mutex GLFWInput::thisInstanceMutex;
+mutex GLFWInput::thisInstanceMutex;
 GLFWwindow *GLFWInput::currentWindow = nullptr;
 
 GLFWInput::GLFWInput()

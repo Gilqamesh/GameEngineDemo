@@ -18,7 +18,7 @@ Material::Material()
     _shininess = 0.5f;
 }
 
-Material::Material(const std::string &name)
+Material::Material(const string &name)
     : _name(name)
 {
     TRACE();

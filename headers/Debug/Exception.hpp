@@ -7,10 +7,10 @@
 namespace GilqEngine
 {
 
-class Exception : public std::runtime_error
+class Exception : public runtime_error
 {
 public:
-    Exception(const std::string& msg);
+    Exception(const string& msg);
     ~Exception() noexcept;
 };
 

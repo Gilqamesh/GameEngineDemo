@@ -3,10 +3,10 @@
 namespace GilqEngine
 {
 
-std::string getPwd(void)
+string getPwd(void)
 {
     static bool called;
-    static std::string exePath;
+    static string exePath;
     if (called == false)
     {
         called = true;
@@ -28,17 +28,17 @@ std::string getPwd(void)
     return (exePath);
 }
 
-std::string getTextureDir(void)
+string getTextureDir(void)
 {
     return (getPwd() + "/resources/textures/");
 }
 
-std::string getShaderDir(void)
+string getShaderDir(void)
 {
     return (getPwd() + "/resources/shaders/");
 }
 
-std::string getModelDir(void)
+string getModelDir(void)
 {
     return (getPwd() + "/resources/models/");
 }

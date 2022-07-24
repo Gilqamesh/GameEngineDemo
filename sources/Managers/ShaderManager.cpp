@@ -14,25 +14,25 @@ void ShaderManager::addShader(Shader *shader)
 {
     TRACE();
     if (exists(shader->getName()) == true)
-        throw std::runtime_error("Shader " + shader->getName() + " already exists in the ShaderManager");
+        throw runtime_error("Shader " + shader->getName() + " already exists in the ShaderManager");
 
     _shaders[shader->getName()] = shader;
 }
 
-void ShaderManager::addShader(const std::string &vertexShaderPath, const std::string &fragmentShaderPath, const std::string &shaderName)
+void ShaderManager::addShader(const string &vertexShaderPath, const string &fragmentShaderPath, const string &shaderName)
 {
     TRACE();
     if (exists(shaderName) == true)
-        throw std::runtime_error("Shader " + shaderName + " already exists in the ShaderManager");
+        throw runtime_error("Shader " + shaderName + " already exists in the ShaderManager");
 
     _shaders[shaderName] = new Shader(vertexShaderPath, fragmentShaderPath, shaderName);
 }
 
-void ShaderManager::deleteShader(const std::string &shaderName)
+void ShaderManager::deleteShader(const string &shaderName)
 {
     TRACE();
     if (exists(shaderName) == false)
-        throw std::runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
+        throw runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
 
     delete _shaders[shaderName];
     _shaders.erase(shaderName);
@@ -47,16 +47,16 @@ void ShaderManager::clear()
     _shaders.clear();
 }
 
-Shader *ShaderManager::getShader(const std::string &shaderName)
+Shader *ShaderManager::getShader(const string &shaderName)
 {
     TRACE();
     if (exists(shaderName) == false)
-        throw std::runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
+        throw runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
 
     return (_shaders[shaderName]);
 }
 
-bool ShaderManager::exists(const std::string &shaderName) const
+bool ShaderManager::exists(const string &shaderName) const
 {
     TRACE();
     return (_shaders.count(shaderName));

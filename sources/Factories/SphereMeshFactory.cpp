@@ -10,8 +10,8 @@ Mesh SphereMeshFactory::createMesh()
 {
     TRACE();
     int lats = 10, longs = 10;
-    // std::vector<GLfloat> vertices;
-    std::vector<GLuint> indices;
+    // vector<GLfloat> vertices;
+    vector<GLuint> indices;
     VertexData vertexData;
     int indicator = 0;
     for(int i = 0; i <= lats; i++)
@@ -58,7 +58,7 @@ Mesh SphereMeshFactory::createMesh()
     vertexData.configureVAO();
     
     Mesh mesh;
-    mesh.setVertexData(std::move(vertexData));
+    mesh.setVertexData(move(vertexData));
     return (mesh);
 }
 

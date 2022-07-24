@@ -14,8 +14,8 @@ bool GLLogCall(const char* function, const char* file, int line)
 {
     while (GLenum error = glGetError())
     {
-        Trace::getInstance()->printHistory(std::cerr);
-        LOG_E("[OpenGL Error] (0x" << std::hex << error << std::dec << "): " << function << " " << file << ": " << (line));
+        Trace::getInstance()->printHistory(cerr);
+        LOG_E("[OpenGL Error] (0x" << hex << error << dec << "): " << function << " " << file << ": " << (line));
         return (false);
     }
     return (true);

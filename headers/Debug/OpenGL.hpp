@@ -20,7 +20,7 @@ namespace GilqEngine
 // }
 #  define ASSERT(x) {\
     if(!(x)) {\
-        Trace::getInstance()->printHistory(std::cerr);\
+        Trace::getInstance()->printHistory(cerr);\
         assert(x);\
         raise(SIGINT);\
     }\

@@ -8,19 +8,21 @@
 namespace GilqEngine
 {
 
+using namespace std;
+
 /*
 * singleton class
 * thread-safe
 */
-class Trace : public std::queue<std::string>
+class Trace : public queue<string>
 {
 static Trace *traceInstance;
-static std::mutex traceInstanceMutex;
+static mutex traceInstanceMutex;
 public:
     ~Trace();
     static Trace *getInstance();
-    static void add(const std::string &traceMsg);
-    void printHistory(std::ostream &os);
+    static void add(const string &traceMsg);
+    void printHistory(ostream &os);
 private:
 Trace();
 };
@@ -28,8 +30,8 @@ Trace();
 # if defined(G_RELEASE)
 #  define TRACE()
 # elif defined (G_DEBUG)
-#  define TRACE() (Trace::getInstance()->add("File: " + std::string(__FILE__) + ", function: " \
-    + std::string(__FUNCTION__) + ", line: " + std::to_string(__LINE__)))
+#  define TRACE() (Trace::getInstance()->add("File: " + string(__FILE__) + ", function: " \
+    + string(__FUNCTION__) + ", line: " + to_string(__LINE__)))
 # endif
 
 }

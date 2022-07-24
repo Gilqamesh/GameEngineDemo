@@ -3,7 +3,7 @@
 namespace GilqEngine
 {
 
-std::ostream &operator<<(std::ostream &os, const RectangleColliderComponent &a)
+ostream &operator<<(ostream &os, const RectangleColliderComponent &a)
 {
     os << a.topLeftX << " " << a.topLeftY << " " << a.width << " " << a.height;
 

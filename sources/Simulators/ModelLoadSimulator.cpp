@@ -26,7 +26,7 @@ void ModelLoadSimulator::main()
         delete modelLoadLayer;
         delete clearWindowLayer;
     }
-    catch (std::exception &e)
+    catch (exception &e)
     {
         LOG(e.what());
     }

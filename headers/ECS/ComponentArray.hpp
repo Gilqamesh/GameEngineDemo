@@ -14,9 +14,9 @@ namespace GilqEngine
 template <typename T>
 class ComponentArray : public IComponentArray
 {
-std::array<T, MAX_ENTITIES>        data; /* packed component data for entities */
-std::unordered_map<Entity, size_t, std::hash<int> > entityToData; /* maps entity id to 'data' index */
-std::unordered_map<size_t, Entity> dataToEntity; /* maps 'data' index to entity id */
+array<T, MAX_ENTITIES>        data; /* packed component data for entities */
+unordered_map<Entity, size_t, hash<int> > entityToData; /* maps entity id to 'data' index */
+unordered_map<size_t, Entity> dataToEntity; /* maps 'data' index to entity id */
 size_t                             currentSize; /* size of valid entries in 'data' */
 public:
     ComponentArray()
@@ -36,9 +36,9 @@ public:
     }
 
     /*
-     * Sets existing data on an entity
+     * Updates existing component on an entity
      */
-    void setData(Entity entity, T component)
+    void updateComponent(Entity entity, T component)
     {
         ASSERT(entityToData.count(entity));
 
@@ -100,8 +100,8 @@ public:
     virtual void print() const override
     {
         for (size_t i = 0; i < currentSize; ++i)
-            std::cout << "[Entity id: " << dataToEntity.at(i) << ", data: " << data.at(i) << "], ";
-        std::cout << std::endl;
+            cout << "[Entity id: " << dataToEntity.at(i) << ", data: " << data.at(i) << "], ";
+        cout << endl;
     }
 };
 

@@ -15,18 +15,18 @@ namespace GilqEngine
 
 class Model
 {
-std::vector<Mesh>   _meshes;
-std::string         _path;
-std::string         _name;
-std::string         _directory;
+vector<Mesh>   _meshes;
+string         _path;
+string         _name;
+string         _directory;
 MaterialManager     *_materialManager;
 TextureManager      *_textureManager;
 Shader              *_shader;
 bool                _loaded;
 public:
     Model();
-    Model(const std::string &path, const std::string &name);
-    Model(IMeshFactory *meshFactory, const std::string &name);
+    Model(const string &path, const string &name);
+    Model(IMeshFactory *meshFactory, const string &name);
 
     Model(const Model &other) = delete;
     Model &operator=(const Model &other) = delete;
@@ -38,7 +38,7 @@ public:
     inline void setMaterialManager(MaterialManager *materialManager) { _materialManager = materialManager; }
     inline void setTextureManager(TextureManager *textureManager) { _textureManager = textureManager; }
 
-    inline const std::string &getName() const { return (_name); }
+    inline const string &getName() const { return (_name); }
     inline Shader *getShader() const { return (_shader); }
 
     inline bool loaded() const { return (_loaded); }
@@ -46,13 +46,13 @@ public:
     /*
      * Sets material for all meshes in the model
      */
-    void setMaterial(const std::string &materialName);
+    void setMaterial(const string &materialName);
 
     void draw();
 
     void load();
 private:
-    void loadModel(const std::string &path);
+    void loadModel(const string &path);
     void processNode(aiNode *node, const aiScene *scene);
     Mesh processMesh(aiMesh *mesh, const aiScene *scene);
     Texture *loadTexture(aiMaterial* mat, aiTextureType type);

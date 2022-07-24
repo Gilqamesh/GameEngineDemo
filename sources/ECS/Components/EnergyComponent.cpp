@@ -3,7 +3,7 @@
 namespace GilqEngine
 {
 
-std::ostream &operator<<(std::ostream &os, const EnergyComponent& a)
+ostream &operator<<(ostream &os, const EnergyComponent& a)
 {
     TRACE();
     os << "{" << a.joules << "}";

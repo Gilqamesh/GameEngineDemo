@@ -25,10 +25,15 @@ ShaderManager           _shaderManager;
 TextureManager          _textureManager;
 ModelManager            _modelManager;
 
-std::list<ISystem *>   _registeredSystems;
+list<ISystem *>         _registeredSystems;
 
-std::unordered_map<Entity, float, std::hash<int>> _opaqueObjects;
-std::unordered_map<Entity, float, std::hash<int>> _transparentObjects;
+// Try this until we need to destroy entities, although even then we might want to store entities
+// contiguously and have a second array that indexes into it
+vector<Entity>              _opaqueObjects;
+vector<pair<Entity, float>> _transparentObjects;
+
+// unordered_map<Entity, float, hash<int>> _opaqueObjects;
+// unordered_map<Entity, float, hash<int>> _transparentObjects;
 
 DirectionalLightSourceSystem *_directionalLightSourceSystem;
 PointLightSourceSystem       *_pointLightSourceSystem;
@@ -44,15 +49,15 @@ public:
     /*
      * Adds the material to the material library
      */
-    void addMaterial(const std::string &materialName);
+    void addMaterial(const string &materialName);
 
     /*
      * Setters to change texture of material
      */
-    void setAmbient(const std::string &materialName, const std::string &textureName);
-    void setDiffuse(const std::string &materialName, const std::string &textureName);
-    void setSpecular(const std::string &materialName, const std::string &textureName);
-    void setEmission(const std::string &materialName, const std::string &textureName);
+    void setAmbient(const string &materialName, const string &textureName);
+    void setDiffuse(const string &materialName, const string &textureName);
+    void setSpecular(const string &materialName, const string &textureName);
+    void setEmission(const string &materialName, const string &textureName);
 
     // ************************************************************************** //
     //                               Shader Methods                               //
@@ -62,9 +67,9 @@ public:
      * Loads and adds a shader to the shader library
      */
     void addShader(
-        const std::string &vsPath,
-        const std::string &fsPath,
-        const std::string &shaderName);
+        const string &vsPath,
+        const string &fsPath,
+        const string &shaderName);
 
     // ************************************************************************** //
     //                              Texture Methods                               //
@@ -74,13 +79,18 @@ public:
      * Loads and adds a texture to the texture library
      */
     void addTexture(
-        const std::string &texturePath,
-        const std::string &textureName);
+        const string &texturePath,
+        const string &textureName);
+    void addTexture(
+        const char *texturePath,
+        const string &textureName);
 
     /*
-     * Retrieves the texture from the texture library
+     * Adds a colored texture to the texture library
      */
-    Texture *getTexture(const std::string &textureName); // shouldn't need this
+    void addTexture(
+        const Vector<float, 4>& color,
+        const string &textureName);
 
     // ************************************************************************** //
     //                               Model Methods                                //
@@ -90,27 +100,27 @@ public:
      * Order of registraton matters
      * Once registered, the system will be updated when calling 'onUpdate'
      */
-    template <class System>
-    void registerSystem()
+    template <class System, typename... Args>
+    void registerSystem(const Args& ... args)
     {
         TRACE();
-        _registeredSystems.push_back(_modelManager.registerSystem<System>());
+        _registeredSystems.push_back(_modelManager.registerSystem<System>(args...));
     }
 
     /*
      * Loads in Model object under 'modelName' for later retrieval
      */
     void loadModel(
-        const std::string &modelPath,
-        const std::string &modelName);
+        const string &modelPath,
+        const string &modelName);
 
     /*
      * Loads model from a meshFactory
      */
     void loadModel(
         IMeshFactory *meshFactory,
-        const std::string &modelName,
-        const std::string &materialName);
+        const string &modelName,
+        const string &materialName);
 
     /*
      * Returns an already loaded model as a model object
@@ -118,8 +128,8 @@ public:
      * Each transparent object adds extra computing overhead during drawing
      */
     Entity createModel(
-        const std::string &modelName,
-        const std::string &shaderName,
+        const string &modelName,
+        const string &shaderName,
         const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
         float opacity = 1.0f);
 
@@ -147,15 +157,15 @@ public:
      * 2. Sort all transparent objects based on their distance from camera
      * 3. Draw all transparent objects in sorted order
      */
-    void drawObjects(
+    void drawObjects3D(
         const Vector<float, 3> &cameraPosition, // there should be a camera position component that updates for all opaque objects
         const Matrix<float, 4, 4> &view,
         const Matrix<float, 4, 4> &projection);
 
     /*
-     * 2D-version of drawing objects on the screen
+     * Render 2D objects
      */
-    void drawObjects(void);
+    void drawObjects2D(const Matrix<float, 4, 4>& projection);
 
     /*
      * Displays all entity's components

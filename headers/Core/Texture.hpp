@@ -11,11 +11,11 @@ class Shader;
 class Texture
 {
 GLuint GL_ID;
-std::string _name;
+string _name;
 Vector<float, 4> _color;
 public:
-    Texture(const Vector<float, 4>& color, const std::string &textureName);
-    Texture(const std::string &texturePath, const std::string &textureName);
+    Texture(const Vector<float, 4>& color, const string &textureName);
+    Texture(const string &texturePath, const string &textureName);
     ~Texture();
 
     // to avoid destruction of OpenGL context
@@ -28,9 +28,9 @@ public:
     void bind(GLint slot = 0);
     void unbind();
 
-    void setUniform(Shader *shader, const std::string &name, GLint slot);
+    void setUniform(Shader *shader, const string &name, GLint slot);
 
-    inline const std::string &getName() const { return (_name); }
+    inline const string &getName() const { return (_name); }
 };
 
 }

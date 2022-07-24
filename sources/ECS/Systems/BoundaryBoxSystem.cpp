@@ -1,6 +1,6 @@
 #include "ECS/Systems/BoundaryBoxSystem.hpp"
-#include "ECS/Components/PositionComponent.hpp"
-#include "ECS/Components/VelocityComponent.hpp"
+#include "ECS/Components/PositionComponent3D.hpp"
+#include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Components/EnergyComponent.hpp"
 #include "ECS/Components/MassComponent.hpp"
 #include "ECS/Components/RotationalComponent.hpp"
@@ -22,8 +22,8 @@ void BoundaryBoxSystem::onUpdate(float dt)
     TRACE();
     for (auto entity : entities)
     {
-        PositionComponent &position = _coordinator->getComponent<PositionComponent>(entity);
-        VelocityComponent &velocity = _coordinator->getComponent<VelocityComponent>(entity);
+        PositionComponent3D &position = _coordinator->getComponent<PositionComponent3D>(entity);
+        VelocityComponent3D &velocity = _coordinator->getComponent<VelocityComponent3D>(entity);
         RotationalComponent &rotation = _coordinator->getComponent<RotationalComponent>(entity);
         MassComponent &mass = _coordinator->getComponent<MassComponent>(entity);
         EnergyComponent &energy = _coordinator->getComponent<EnergyComponent>(entity);
@@ -34,7 +34,7 @@ void BoundaryBoxSystem::onUpdate(float dt)
             rotation.speed *= 0.5f;
             energy.joules *= 0.5f;
             velocity.v[0] *= -1;
-            velocity.v = normalize(velocity.v) * std::sqrt(2 * energy.joules / mass.m);
+            velocity.v = normalize(velocity.v) * sqrt(2 * energy.joules / mass.m);
         }
         if (position.p[1] + velocity.v[1] * dt < _bottomCorner[1]
             || position.p[1] + velocity.v[1] * dt > _upperCorner[1])
@@ -46,7 +46,7 @@ void BoundaryBoxSystem::onUpdate(float dt)
             {
                 velocity.v = Vector<float, 3>();
             }
-            velocity.v = normalize(velocity.v) * std::sqrt(2 * energy.joules / mass.m);
+            velocity.v = normalize(velocity.v) * sqrt(2 * energy.joules / mass.m);
         }
         if (position.p[2] + velocity.v[2] * dt < _bottomCorner[2]
             || position.p[2] + velocity.v[2] * dt > _upperCorner[2])
@@ -54,7 +54,7 @@ void BoundaryBoxSystem::onUpdate(float dt)
             rotation.speed *= 0.5f;
             energy.joules *= 0.5f;
             velocity.v[2] *= -1;
-            velocity.v = normalize(velocity.v) * std::sqrt(2 * energy.joules / mass.m);
+            velocity.v = normalize(velocity.v) * sqrt(2 * energy.joules / mass.m);
         }
     }
 }
@@ -69,8 +69,8 @@ void BoundaryBoxSystem::setSystemSignature()
 {
     TRACE();
     ComponentSignature boundaryBoxSystemSignature;
-    boundaryBoxSystemSignature.set(_coordinator->getComponentId<PositionComponent>(), true);
-    boundaryBoxSystemSignature.set(_coordinator->getComponentId<VelocityComponent>(), true);
+    boundaryBoxSystemSignature.set(_coordinator->getComponentId<PositionComponent3D>(), true);
+    boundaryBoxSystemSignature.set(_coordinator->getComponentId<VelocityComponent3D>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<EnergyComponent>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<RotationalComponent>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<MassComponent>(), true);
@@ -80,8 +80,8 @@ void BoundaryBoxSystem::setSystemSignature()
 void BoundaryBoxSystem::registerComponents()
 {
     TRACE();
-    _coordinator->registerComponent<PositionComponent>();
-    _coordinator->registerComponent<VelocityComponent>();
+    _coordinator->registerComponent<PositionComponent3D>();
+    _coordinator->registerComponent<VelocityComponent3D>();
     _coordinator->registerComponent<EnergyComponent>();
     _coordinator->registerComponent<RotationalComponent>();
     _coordinator->registerComponent<MassComponent>();

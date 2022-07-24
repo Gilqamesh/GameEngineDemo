@@ -11,7 +11,7 @@ struct ModelMatrixComponent
     Matrix<float, 4, 4> m;
 };
 
-std::ostream &operator<<(std::ostream &os, const ModelMatrixComponent &a);
+ostream &operator<<(ostream &os, const ModelMatrixComponent &a);
 
 }
 

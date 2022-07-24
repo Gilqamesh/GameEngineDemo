@@ -3,7 +3,7 @@
 namespace GilqEngine
 {
 
-std::ostream &operator<<(std::ostream &os, const ModelMatrixComponent &a)
+ostream &operator<<(ostream &os, const ModelMatrixComponent &a)
 {
     TRACE();
     os << a.m;

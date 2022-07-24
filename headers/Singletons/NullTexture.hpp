@@ -16,7 +16,7 @@ class NullTexture : public Texture
 {
 NullTexture();
 static NullTexture *thisInstance;
-static std::mutex thisInstanceMutex;
+static mutex thisInstanceMutex;
 public:
     ~NullTexture();
     static NullTexture *getInstance();

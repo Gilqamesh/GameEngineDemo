@@ -2,8 +2,8 @@
 #include "Math/Utils.hpp"
 #include "Debug/Trace.hpp"
 #include "ECS/Components/RotationalComponent.hpp"
-#include "ECS/Components/PositionComponent.hpp"
-#include "ECS/Components/VelocityComponent.hpp"
+#include "ECS/Components/PositionComponent3D.hpp"
+#include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Components/EnergyComponent.hpp"
 #include "ECS/Components/MassComponent.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
@@ -62,8 +62,8 @@ void ModelLoadLayer::onAttach()
             scale_matrix(Vector<float, 3>(scale, scale, scale))
         );
         _models.insert(sphere);
-        _objectCoordinator.attachComponent<PositionComponent>(sphere, position);
-        _objectCoordinator.attachComponent<VelocityComponent>(sphere, {
+        _objectCoordinator.attachComponent<PositionComponent3D>(sphere, position);
+        _objectCoordinator.attachComponent<VelocityComponent3D>(sphere, {
             getRand(-20.0f, 20.0f), getRand(-40.0f, 40.0f), getRand(-20.0f, 20.0f)
         });
         _objectCoordinator.attachComponent<RotationalComponent>(sphere, {
@@ -166,7 +166,7 @@ void ModelLoadLayer::onUpdate(float deltaTime)
 void ModelLoadLayer::onRender()
 {
     TRACE();
-    _objectCoordinator.drawObjects(
+    _objectCoordinator.drawObjects3D(
         _camera->getPosition(),
         _camera->getViewMatrix(),
         projection_matrix_perspective(
@@ -196,23 +196,23 @@ void ModelLoadLayer::loadTextures()
 {
     TRACE();
     _objectCoordinator.addTexture(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/Window.png",
+        getTextureDir() + "Window.png",
         "Window Texture"
     );
     _objectCoordinator.addTexture(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/White.png",
+        getTextureDir() + "White.png",
         "White Texture"
     );
     _objectCoordinator.addTexture(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/Red.png",
+        getTextureDir() + "Red.png",
         "Red Texture"
     );
     _objectCoordinator.addTexture(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/Grass.png",
+        getTextureDir() + "Grass.png",
         "Grass Texture"
     );
     _objectCoordinator.addTexture(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/textures/Dirt.png",
+        getTextureDir() + "Dirt.png",
         "Dirt Texture"
     );
 }
@@ -245,13 +245,13 @@ void ModelLoadLayer::loadMaterials()
 
 void ModelLoadLayer::loadModels()
 {
-    TRACE();
+TRACE();
     _objectCoordinator.loadModel(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/models/backpack/backpack.obj",
+        getModelDir() + "backpack/backpack.obj",
         "Backpack Model"
     );
     _objectCoordinator.loadModel(
-        "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/models/grass/scene.gltf",
+        getModelDir() + "grass/scene.gltf",
         "Grass Model"
     );
     // _objectCoordinator.loadModel(

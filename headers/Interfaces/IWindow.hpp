@@ -11,7 +11,7 @@ class IEvent;
 class IWindow
 {
 public:
-    typedef typename std::function<void (IEvent &)> eventCallbackFn;
+    typedef function<void (IEvent &)> eventCallbackFn;
 
     IWindow();
     virtual ~IWindow() = default;

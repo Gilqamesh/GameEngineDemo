@@ -23,7 +23,7 @@ PositionVertexAttribute2D::PositionVertexAttribute2D(const Vector<GLfloat, 2> &p
 VertexLayout PositionVertexAttribute2D::getLayout()
 {
     TRACE();
-    return (VertexLayout(3, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT)));
+    return (VertexLayout(2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT)));
 }
 
 size_t PositionVertexAttribute2D::getSize()

@@ -8,16 +8,16 @@ namespace GilqEngine
 
 class MaterialManager
 {
-std::unordered_map<std::string, Material> _materials;
+unordered_map<string, Material> _materials;
 public:
     ~MaterialManager();
-    void addMaterial(const std::string &materialName);
+    void addMaterial(const string &materialName);
     
-    void deleteMaterial(const std::string &materialName);
+    void deleteMaterial(const string &materialName);
     void clear();
 
-    Material &getMaterial(const std::string &materialName);
-    bool exists(const std::string &materialName) const;
+    Material &getMaterial(const string &materialName);
+    bool exists(const string &materialName) const;
 };
 
 }

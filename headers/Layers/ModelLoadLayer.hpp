@@ -18,7 +18,7 @@ Matrix<float, 4, 4> _projection;
 
 ObjectCoordinator _objectCoordinator;
 
-std::unordered_set<Entity, std::hash<int> > _models;
+unordered_set<Entity, hash<int> > _models;
 public:
     ModelLoadLayer(MacWindow *macWindow, ICamera *camera);
     virtual void onAttach() override;

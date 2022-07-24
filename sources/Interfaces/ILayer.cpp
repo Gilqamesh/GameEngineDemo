@@ -4,7 +4,7 @@
 namespace GilqEngine
 {
 
-ILayer::ILayer(const std::string &name, LayerType layerType)
+ILayer::ILayer(const string &name, LayerType layerType)
     : _name(name), layerType(layerType)
 {
     TRACE();

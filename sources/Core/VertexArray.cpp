@@ -1,5 +1,6 @@
 #include "Core/VertexArray.hpp"
 #include "Debug/Trace.hpp"
+#include "Log.hpp"
 
 namespace GilqEngine
 {

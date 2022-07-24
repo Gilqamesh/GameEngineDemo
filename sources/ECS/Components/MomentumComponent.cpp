@@ -17,7 +17,7 @@ MomentumComponent::MomentumComponent(const Vector<float, 3> &momentum)
 
 }
 
-std::ostream &operator<<(std::ostream &os, const MomentumComponent &a)
+ostream &operator<<(ostream &os, const MomentumComponent &a)
 {
     TRACE();
     os << a.p;

@@ -2,13 +2,14 @@
 #include "Applications/MacApplication.hpp"
 #include "Layers/ClearWindowLayer.hpp"
 #include "Layers/QuadTreeLayer.hpp"
+#include "Log.hpp"
 
 namespace GilqEngine
 {
 
 void QuadTreeSimulator::main()
 {
-    unique_ptr<MacApplication> application = make_unique<MacApplication>();
+    MacApplication *application = new MacApplication();
 
     ILayer *clearWindowLayer = new ClearWindowLayer({0.5f, 0.5f, 0.5f});
     ILayer *quadTreeLayer = new QuadTreeLayer(application->getWindow());
@@ -17,9 +18,9 @@ void QuadTreeSimulator::main()
     application->pushLayer(quadTreeLayer);
 
     application->run();
-
-    delete clearWindowLayer;
+    delete application;
     delete quadTreeLayer;
+    delete clearWindowLayer;
 }
 
 }

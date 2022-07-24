@@ -1,16 +1,15 @@
 #include "Layers/QuadTreeLayer.hpp"
-#include "Factories/QuadMeshFactory3D.hpp"
+#include "Factories/QuadMeshFactory2D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
-#include "ECS/Components/VelocityComponent.hpp"
-#include "ECS/Components/PositionComponent.hpp"
-#include "ECS/Systems/CollisionSystem.hpp"
-#include "ECS/Systems/DisplacementSystem.hpp"
+#include "ECS/Components/VelocityComponent2D.hpp"
+#include "ECS/Components/PositionComponent2D.hpp"
+#include "ECS/Systems/CollisionSystem2D.hpp"
 
 namespace GilqEngine
 {
 
-QuadTreeLayer::QuadTreeLayer(MacWindow *window)
+QuadTreeLayer::QuadTreeLayer(IWindow *window)
     : ILayer("QuadTree Layer", LayerType::overlay),
       _window(window)
 {
@@ -31,7 +30,7 @@ void QuadTreeLayer::onAttach()
     float maxWidth = (float)_window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 1;
+    unsigned int numberOfInsertions = 2;
     vector<string> modelNames = {
         "BlackRectangleModel",
         "RedRectangleModel",
@@ -41,36 +40,33 @@ void QuadTreeLayer::onAttach()
     };
     // Vertical line
     _objectCoordinator.createModel("PurpleRectangleModel", "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
             scale_matrix(maxWidth, 1.0f, 1.0f) *
-            translation_matrix(maxWidth / 2.0f, 0.0f, maxHeight / 2.0f));
+            translation_matrix(0.0f, maxHeight / 2.0f, 0.0f));
     // Horizontal line
     _objectCoordinator.createModel("PurpleRectangleModel", "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(1.0f, 1.0f, maxHeight) *
-            translation_matrix(maxWidth / 2.0f, 0.0f, maxHeight / 2.0f));
+            scale_matrix(1.0f, maxHeight, 1.0f) *
+            translation_matrix(maxWidth / 2.0f, 0.0f, 0.0f));
 
     for (unsigned int index = 0; index < numberOfInsertions; ++index)
     {
+        // Rectangle parameters
         float upperLeftX = getRand(low, maxWidth);
         float upperLeftY = getRand(low, maxHeight);
-        // float width = getRand(low, maxWidth);
         float width = 20.0f;
+        float height = 20.0f;
+
+        // Bound checking
         if (upperLeftX + width > maxWidth)
             width = maxWidth - upperLeftX;
-        // float height = getRand(low, maxHeight);
-        float height = 20.0f;
         if (upperLeftY + height > maxHeight)
             height = maxHeight - upperLeftY;
+
+        // Create rectangle
         string modelName = modelNames[rand() % modelNames.size()];
-        // Top
-        Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader",
-            rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-            scale_matrix(width, 1.0f, height) *
-            translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
+        Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader", scale_matrix(width, height, 1.0f));
         _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX, upperLeftY, width, height});
-        _objectCoordinator.attachComponent<VelocityComponent>(rectangle, {getRand(-20.0f, 20.0f), 0.0f, getRand(-20.0f, 20.0f)});
-        _objectCoordinator.attachComponent<PositionComponent>(rectangle, {upperLeftX, 0.0f, upperLeftY});
+        _objectCoordinator.attachComponent<VelocityComponent2D>(rectangle, {getRand(-20.0f, 20.0f), getRand(-20.0f, 20.0f)});
+        _objectCoordinator.attachComponent<PositionComponent2D>(rectangle, {upperLeftX, upperLeftY});
     }
 }
 
@@ -92,40 +88,25 @@ void QuadTreeLayer::onUpdate(float deltaTime)
 
 void QuadTreeLayer::onRender()
 {
-    Vector<float, 3> camPosition(0.0f, 0.0f, (float)_window->getHeight());
-    _objectCoordinator.drawObjects(
-        camPosition,
-        look_at(camPosition,
-                camPosition + Vector<float, 3>(0.0f, -1.0f, 0.0f),
-                Vector<float, 3>(0.0f, 0.0f, -1.0f)),
-        projection_matrix_ortho(0.0f,
-                                (float)_window->getWidth(),
-                                0.0f,
-                                -(float)_window->getHeight(),
-                                -100.0f, 100.0f));
+    _objectCoordinator.drawObjects2D(
+        projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f));
 }
 
 void QuadTreeLayer::loadShaders(void)
 {
-    _objectCoordinator.addShader(getShaderDir() + "3D/TriangleNormal/vs.glsl",
-                                 getShaderDir() + "3D/TriangleNormal/fs.glsl",
+    _objectCoordinator.addShader(getShaderDir() + "2D/TriangleColor/vs.glsl",
+                                 getShaderDir() + "2D/TriangleColor/fs.glsl",
                                  "RectangleShader");
 }
 
 void QuadTreeLayer::loadTextures(void)
 {
-    _objectCoordinator.addTexture(getTextureDir() + "Black.png",
-                                  "BlackTexture");
-    _objectCoordinator.addTexture(getTextureDir() + "Red.png",
-                                  "RedTexture");
-    _objectCoordinator.addTexture(getTextureDir() + "Green.png",
-                                  "GreenTexture");
-    _objectCoordinator.addTexture(getTextureDir() + "Blue.png",
-                                  "BlueTexture");
-    _objectCoordinator.addTexture(getTextureDir() + "Yellow.png",
-                                  "YellowTexture");
-    _objectCoordinator.addTexture(getTextureDir() + "Purple.png",
-                                  "PurpleTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 0.0f, 0.0f, 1.0f), "BlackTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f), "RedTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f), "GreenTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f), "BlueTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f), "YellowTexture");
+    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 0.0f, 1.0f, 1.0f), "PurpleTexture");
 }
 
 void QuadTreeLayer::loadMaterials(void)
@@ -151,7 +132,7 @@ void QuadTreeLayer::loadMaterials(void)
 
 void QuadTreeLayer::loadModels(void)
 {
-    QuadMeshFactory3D quadMeshFactory;
+    QuadMeshFactory2D quadMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "BlackRectangleModel", "BlackMaterial");
     _objectCoordinator.loadModel(&quadMeshFactory, "RedRectangleModel", "RedMaterial");
@@ -163,8 +144,7 @@ void QuadTreeLayer::loadModels(void)
 
 void QuadTreeLayer::registerSystems(void)
 {
-    _objectCoordinator.registerSystem<CollisionSystem>();
-    _objectCoordinator.registerSystem<DisplacementSystem>();
+    _objectCoordinator.registerSystem<CollisionSystem2D>(_window);
 }
 
 }

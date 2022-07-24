@@ -9,7 +9,7 @@ Model::Model()
     TRACE();
 }
 
-Model::Model(const std::string &path, const std::string &name)
+Model::Model(const string &path, const string &name)
     : _path(path),
     _name(name),
     _materialManager(nullptr),
@@ -20,7 +20,7 @@ Model::Model(const std::string &path, const std::string &name)
     TRACE();
 }
 
-Model::Model(IMeshFactory *meshFactory, const std::string &name)
+Model::Model(IMeshFactory *meshFactory, const string &name)
     : _name(name),
     _materialManager(nullptr),
     _textureManager(nullptr),
@@ -32,7 +32,7 @@ Model::Model(IMeshFactory *meshFactory, const std::string &name)
 }
 
 Model::Model(Model &&other)
-    : _meshes(std::move(other._meshes)),
+    : _meshes(move(other._meshes)),
     _path(other._path),
     _name(other._name),
     _directory(other._directory),
@@ -55,7 +55,7 @@ Model &Model::operator=(Model &&other)
     TRACE();
     if (this != &other)
     {
-        _meshes = std::move(other._meshes);
+        _meshes = move(other._meshes);
         _path = other._path;
         _name = other._name;
         _directory = other._directory;
@@ -74,7 +74,7 @@ Model &Model::operator=(Model &&other)
     return (*this);
 }
 
-void Model::setMaterial(const std::string &materialName)
+void Model::setMaterial(const string &materialName)
 {
     TRACE();
     ASSERT(_materialManager);
@@ -101,7 +101,7 @@ void Model::load()
         loadModel(_path);
 }
 
-void Model::loadModel(const std::string &path)
+void Model::loadModel(const string &path)
 {
     TRACE();
     Assimp::Importer importer;
@@ -210,7 +210,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 
     _vertexData.configureVAO();
 
-    myMesh.setVertexData(std::move(_vertexData));
+    myMesh.setVertexData(move(_vertexData));
     return (myMesh);
 }
 
@@ -223,12 +223,12 @@ Texture *Model::loadTexture(aiMaterial* mat, aiTextureType type)
     {
         aiString str;
         mat->GetTexture(type, i, &str);
-        std::string originalPath(str.C_Str());
-        if (originalPath.find_last_of("\\") != std::string::npos)
+        string originalPath(str.C_Str());
+        if (originalPath.find_last_of("\\") != string::npos)
             originalPath = originalPath.substr(originalPath.find_last_of("\\") + 1);
-        if (originalPath.find_last_of("/") != std::string::npos)
+        if (originalPath.find_last_of("/") != string::npos)
             originalPath = originalPath.substr(originalPath.find_last_of("/") + 1);
-        std::string texturePath(_directory + "/" + originalPath);
+        string texturePath(_directory + "/" + originalPath);
         if (_textureManager->exists(texturePath) == true)
             return (_textureManager->getTexture(texturePath));
         LOG("Loading texture " << texturePath << "...");

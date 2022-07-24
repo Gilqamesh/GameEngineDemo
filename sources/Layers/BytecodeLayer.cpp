@@ -130,7 +130,7 @@ void BytecodeLayer::onUpdate(float deltaTime)
 void BytecodeLayer::onRender()
 {
     Vector<float, 3> camPosition(0.0f, 10.0f, (float)_window->getHeight());
-    _objectCoordinator.drawObjects(
+    _objectCoordinator.drawObjects3D(
         camPosition,
         look_at(camPosition,
                 camPosition + Vector<float, 3>(0.0f, -1.0f, 0.0f),

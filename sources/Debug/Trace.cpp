@@ -4,7 +4,7 @@ namespace GilqEngine
 {
 
 Trace *Trace::traceInstance = nullptr;
-std::mutex Trace::traceInstanceMutex;
+mutex Trace::traceInstanceMutex;
 
 Trace::Trace()
 {
@@ -27,7 +27,7 @@ Trace *Trace::getInstance()
     return (traceInstance);
 }
 
-void Trace::add(const std::string &traceMsg)
+void Trace::add(const string &traceMsg)
 {
     traceInstanceMutex.lock();
     if (traceInstance->size() > 40)
@@ -36,11 +36,11 @@ void Trace::add(const std::string &traceMsg)
     traceInstanceMutex.unlock();
 }
 
-void Trace::printHistory(std::ostream &os)
+void Trace::printHistory(ostream &os)
 {
-    os << "Trace History:" << std::endl;
+    os << "Trace History:" << endl;
     for (auto message : c)
-        os << message << std::endl;
+        os << message << endl;
 }
 
 }

@@ -27,7 +27,7 @@ public:
     inline Material &getMaterial() { return (_material); }
     inline const Material &getMaterial() const { return (_material); }
 
-    inline void setVertexData(VertexData &&vertexData) { _vertexData = std::move(vertexData); }
+    inline void setVertexData(VertexData &&vertexData) { _vertexData = move(vertexData); }
     inline void setMaterial(const Material &material) { _material = material; }
 
     void draw(Shader *shader);

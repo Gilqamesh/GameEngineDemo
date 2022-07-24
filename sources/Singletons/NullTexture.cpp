@@ -6,7 +6,7 @@ namespace GilqEngine
 {
 
 NullTexture *NullTexture::thisInstance = nullptr;
-std::mutex NullTexture::thisInstanceMutex;
+mutex NullTexture::thisInstanceMutex;
 
 NullTexture::NullTexture()
     : Texture(getTextureDir() + "NullTexture.png", "NullTexture")

@@ -16,7 +16,7 @@ float            _attenuationFactor_quadratic;
 void setShaderUniforms(Shader *shader, unsigned int n);
 };
 
-std::ostream &operator<<(std::ostream &os, const PointLightSourceComponent &a);
+ostream &operator<<(ostream &os, const PointLightSourceComponent &a);
 
 }
 

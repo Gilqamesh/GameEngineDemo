@@ -52,7 +52,7 @@ Mesh QuadMeshFactory3D::createMesh()
     vertexData.configureVAO();
 
     Mesh mesh;
-    mesh.setVertexData(std::move(vertexData));
+    mesh.setVertexData(move(vertexData));
     return (mesh);
 }
 
