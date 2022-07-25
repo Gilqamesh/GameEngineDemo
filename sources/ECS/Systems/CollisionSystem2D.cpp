@@ -96,7 +96,7 @@ QuadTree::~QuadTree()
 
 bool QuadTree::insert(Entity rectangleIndex)
 {
-    if (_boundary.doesIntersect(_coordinator->getComponent<RectangleColliderComponent>(rectangleIndex)) == false)
+    if (_boundary.doesRecIntersect(_coordinator->getComponent<RectangleColliderComponent>(rectangleIndex)) == false)
     {
         return (false);
     }
@@ -148,7 +148,7 @@ uint32 QuadTree::checkIntersections(void)
         {
             if (collidedPairs[_rectangleIndices[i]].count(_rectangleIndices[j]) == 0 &&
                 _coordinator->getComponent<RectangleColliderComponent>(_rectangleIndices[i]).
-                    doesIntersect(_coordinator->getComponent<RectangleColliderComponent>(_rectangleIndices[j])))
+                    doesRecIntersect(_coordinator->getComponent<RectangleColliderComponent>(_rectangleIndices[j])))
             {
                 collidedPairs[_rectangleIndices[i]].insert(_rectangleIndices[j]);
                 collidedPairs[_rectangleIndices[j]].insert(_rectangleIndices[i]);

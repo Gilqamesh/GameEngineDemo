@@ -58,7 +58,7 @@ struct Rectangle
     int width;
     int height;
 
-    inline bool doesIntersect(const Rectangle& other) const
+    inline bool doesRecIntersect(const Rectangle& other) const
     {
         if (topLeftX + width < other.topLeftX || other.topLeftX + other.width < topLeftX)
             return (false);
@@ -109,7 +109,7 @@ public:
 
     bool insert(const vector<Rectangle>& rectangles, unsigned int index)
     {
-        if (boundary.doesIntersect(rectangles[index]) == false)
+        if (boundary.doesRecIntersect(rectangles[index]) == false)
         {
             return (false);
         }
@@ -169,7 +169,7 @@ private:
             // cout << rectangleIndices[i] << " ";
             for (unsigned int j = i + 1; j < rectangleIndices.size(); ++j)
             {
-                if (rectangles[rectangleIndices[i]].doesIntersect(rectangles[rectangleIndices[j]]))
+                if (rectangles[rectangleIndices[i]].doesRecIntersect(rectangles[rectangleIndices[j]]))
                 {
                     ++nOfIntersections;
                 }
@@ -197,7 +197,7 @@ public:
     QuadTree(const Rectangle& bound) : _root(bound), _bound(bound) {}
     void insert(const Rectangle& rectangle)
     {
-        if (_bound.doesIntersect(rectangle) == false)
+        if (_bound.doesRecIntersect(rectangle) == false)
             return ;
         rectangles.push_back(rectangle);
         _root.insert(rectangles, rectangles.size() - 1);
@@ -239,7 +239,7 @@ public:
         {}
     void insert(const Rectangle& rectangle)
     {
-        if (_bound.doesIntersect(rectangle) == false)
+        if (_bound.doesRecIntersect(rectangle) == false)
             return ;
         rectangles.push_back(rectangle);
         insert(rectangles.size() - 1, 0, 0);
@@ -259,7 +259,7 @@ public:
                     // cout << region[i] << " ";
                     for (unsigned int j = i + 1; j < region.size(); ++j)
                     {
-                        if (rectangles[region[i]].doesIntersect(rectangles[region[j]]))
+                        if (rectangles[region[i]].doesRecIntersect(rectangles[region[j]]))
                         {
                             ++nOfIntersections;
                         }
@@ -297,7 +297,7 @@ private:
 
         Rectangle curBound = {topLeftX, topLeftY, width, height};
 
-        if (curBound.doesIntersect(rectangles[rectangleIndex]) == false)
+        if (curBound.doesRecIntersect(rectangles[rectangleIndex]) == false)
             return (false);
         
         // if next level does not exist under current region
@@ -346,7 +346,7 @@ public:
 
     void insert(const Rectangle& rectangle)
     {
-        if (_bound.doesIntersect(rectangle) == false)
+        if (_bound.doesRecIntersect(rectangle) == false)
             return ;
         _rectangles.push_back(rectangle);
         insert(_rectangles.size() - 1);
@@ -361,7 +361,7 @@ public:
             {
                 for (uint32_t j = i + 1; j < grid.size(); ++j)
                 {
-                    if (_rectangles[grid[i]].doesIntersect(_rectangles[grid[j]]))
+                    if (_rectangles[grid[i]].doesRecIntersect(_rectangles[grid[j]]))
                     {
                         ++nOfIntersections;
                     }

@@ -239,4 +239,49 @@ Texture *Model::loadTexture(aiMaterial* mat, aiTextureType type)
     return (nullptr);
 }
 
+void Model::updateVBO_position2D(const void *data, GLuint size)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateVBO_position2D(data, size);
+    }
+}
+
+void Model::updateVBO_position3D(const void *data, GLuint size)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateVBO_position3D(data, size);
+    }
+}
+
+void Model::updateVBO_normal(const void *data, GLuint size)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateVBO_normal(data, size);
+    }
+}
+
+void Model::updateVBO_texture(const void *data, GLuint size)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateVBO_texture(data, size);
+    }
+}
+
+void Model::updateIBO(const void *data, GLuint count)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateIBO(data, count);
+    }
+}
+
 }

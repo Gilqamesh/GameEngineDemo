@@ -169,6 +169,21 @@ public:
     void updatePosition3D(Entity object, const Vector<float, 3>& position);
 
     /*
+     * Update model matrix of the object
+     */
+    void updateModelMatrix(Entity object, const Matrix<float, 4, 4>& model);
+
+    /* Currently this updates all the meshes owned by the model.. not good..
+     * Caller's responsibility:
+     *      - Only call these functions if the specific Buffer Object is dynamically set
+     */
+    void updateVBO_position2D(Entity object, const void *data, GLuint size);
+    void updateVBO_position3D(Entity object, const void *data, GLuint size);
+    void updateVBO_normal(Entity object, const void *data, GLuint size);
+    void updateVBO_texture(Entity object, const void *data, GLuint size);
+    void updateIBO(Entity object, const void *data, GLuint count);
+
+    /*
      * Updates all registered systems in the order of registration
      */
     void onUpdate(float deltaTime);

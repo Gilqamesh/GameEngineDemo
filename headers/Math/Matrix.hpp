@@ -167,6 +167,20 @@ Matrix<T, 4, 4> rotation_matrix(const T &angleRad, const Vector<T, 3> &axis)
     ));
 }
 
+/*
+ * 2D rotation matrix around x-axis counter-clockwise
+ */
+template <typename T>
+Matrix<T, 4, 4> rotation_matrix(const T &angleRad)
+{
+    return (Matrix<T, 4, 4>(
+        cos(angleRad),      -sin(angleRad),    static_cast<T>(0), static_cast<T>(0),
+        sin(angleRad),      cos(angleRad),     static_cast<T>(0), static_cast<T>(0),
+        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
+        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
+    ));
+}
+
 template <typename T>
 Matrix<T, 4, 4> scale_matrix(const Vector<T, 3> &v)
 {

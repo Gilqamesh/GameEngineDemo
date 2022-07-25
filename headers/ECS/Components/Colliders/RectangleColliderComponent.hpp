@@ -16,7 +16,7 @@ struct RectangleColliderComponent
     float width;
     float height;
 
-    inline bool doesIntersect(const RectangleColliderComponent& other) const
+    inline bool doesRecIntersect(const RectangleColliderComponent& other) const
     {
         if (topLeftX + width < other.topLeftX || other.topLeftX + other.width < topLeftX)
             return (false);
@@ -30,6 +30,13 @@ struct RectangleColliderComponent
         return (p[0] >= topLeftX && p[0] <= topLeftX + width &&
                 p[1] >= topLeftY && p[1] <= topLeftY + height);
     }
+
+    bool doesRayIntersect(
+        Vector<float, 2> rayOrigin,
+        Vector<float, 2> rayDirection,
+        Vector<float, 2>& contactPoint,
+        Vector<float, 2>& contactNormal,
+        float &tHitNear);
 };
 
 ostream &operator<<(ostream &os, const RectangleColliderComponent &a);

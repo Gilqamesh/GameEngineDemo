@@ -104,6 +104,21 @@ void VertexData::configurePositionAttribute()
     }
 }
 
+void VertexData::configurePositionAttributeDynamic()
+{
+    TRACE();
+    if (_vertexVectorPosition2D.getSize())
+    {
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.getSize());
+        updateVBO_position2D(_vertexVectorPosition2D.getData(), _vertexVectorPosition2D.getSize());
+    }
+    if (_vertexVectorPosition3D.getSize())
+    {
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.getSize());
+        updateVBO_position3D(_vertexVectorPosition3D.getData(), _vertexVectorPosition2D.getSize());
+    }
+}
+
 void VertexData::configureNormalAttribute()
 {
     TRACE();
@@ -160,27 +175,35 @@ void VertexData::configureVAO()
     unbind();
 }
 
-void VertexData::updateVBO_position(VertexVector<PositionVertexAttribute3D> &data)
+void VertexData::updateVBO_position2D(const void *data, GLuint size)
 {
     TRACE();
     _vertexPositionBuffer.bind();
-    _vertexPositionBuffer.update(data.getData(), data.getSize());
+    _vertexPositionBuffer.update(data, size);
     _vertexPositionBuffer.unbind();
 }
 
-void VertexData::updateVBO_normal(VertexVector<NormalVertexAttribute> &data)
+void VertexData::updateVBO_position3D(const void *data, GLuint size)
+{
+    TRACE();
+    _vertexPositionBuffer.bind();
+    _vertexPositionBuffer.update(data, size);
+    _vertexPositionBuffer.unbind();
+}
+
+void VertexData::updateVBO_normal(const void *data, GLuint size)
 {
     TRACE();
     _vertexNormalBuffer.bind();
-    _vertexNormalBuffer.update(data.getData(), data.getSize());
+    _vertexNormalBuffer.update(data, size);
     _vertexNormalBuffer.unbind();
 }
 
-void VertexData::updateVBO_texture(VertexVector<TextureVertexAttribute> &data)
+void VertexData::updateVBO_texture(const void *data, GLuint size)
 {
     TRACE();
     _vertexTextureBuffer.bind();
-    _vertexTextureBuffer.update(data.getData(), data.getSize());
+    _vertexTextureBuffer.update(data, size);
     _vertexTextureBuffer.unbind();
 }
 

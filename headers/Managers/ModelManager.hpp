@@ -139,6 +139,16 @@ public:
         TRACE();
         _coordinator->print();
     }
+
+    /* Currently this updates all the meshes owned by the model.. not good..
+     * Caller's responsibility:
+     *      - Only call these functions if the specific Buffer Object is dynamically set
+     */
+    void updateVBO_position2D(Entity model, const void *data, GLuint size);
+    void updateVBO_position3D(Entity model, const void *data, GLuint size);
+    void updateVBO_normal(Entity model, const void *data, GLuint size);
+    void updateVBO_texture(Entity model, const void *data, GLuint size);
+    void updateIBO(Entity model, const void *data, GLuint count);
 };
 
 }

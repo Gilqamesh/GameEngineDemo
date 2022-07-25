@@ -12,12 +12,6 @@ namespace GilqEngine
     x;\
     ASSERT(GLLogCall(#x, __FILE__, __LINE__))
 # elif defined(G_DEBUG)
-// ?? don't comment out stuff without commenting why
-// # define TERMINATE(x) {\
-//     PRINT_HERE();\
-//     LOG(x);\
-//     exit(0);\
-// }
 #  define ASSERT(x) {\
     if(!(x)) {\
         Trace::getInstance()->printHistory(cerr);\

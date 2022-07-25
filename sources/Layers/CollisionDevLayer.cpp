@@ -1,5 +1,6 @@
 #include "Layers/CollisionDevLayer.hpp"
 #include "Factories/QuadMeshFactory2DTexture.hpp"
+#include "Factories/LineMeshFactory2D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
@@ -24,16 +25,17 @@ void CollisionDevLayer::onAttach()
 
     registerSystems();
 
+    _window->enablePolygonMode_Line();
+
     _rectangle = { 800.0f, 450.0f, 100.0f, 60.0f };
     _rect = _objectCoordinator.createModel2D("WhiteRectangleModel", "RectangleShader",
         scale_matrix(_rectangle.width, _rectangle.height),
         Vector<float, 2>(_rectangle.topLeftX, _rectangle.topLeftY),
         Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
-    
-    _rectangleMouse = { _window->getXMousePosition(), _window->getYMousePosition(), 60.0f, 40.0f };
-    _rectMouse = _objectCoordinator.createModel2D("WhiteRectangleModel", "RectangleShader",
-        scale_matrix(_rectangleMouse.width, _rectangleMouse.height),
-        Vector<float, 2>(_rectangleMouse.topLeftX, _rectangleMouse.topLeftY),
+
+    _line = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader",
+        identity_matrix<float, 4, 4>(),
+        Vector<float, 2>(0.0f, 0.0f),
         Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
 }
 
@@ -47,14 +49,33 @@ void CollisionDevLayer::onEvent(IEvent &e)
     (void)e;
 }
 
+template <typename T>
+Matrix<T, 4, 4> rotM(T angleRad)
+{
+    return (Matrix<T, 4, 4>(
+        cos(angleRad),      sin(angleRad),     static_cast<T>(0), static_cast<T>(0),
+        -sin(angleRad),     cos(angleRad),     static_cast<T>(0), static_cast<T>(0),
+        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
+        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
+    ));
+}
+
 void CollisionDevLayer::onUpdate(float deltaTime)
 {
     LOG(deltaTime);
-    _objectCoordinator.updatePosition2D(_rectMouse, _window->getMousePosition());
 
-    _rectangleMouse.topLeftX = _window->getXMousePosition();
-    _rectangleMouse.topLeftY = _window->getYMousePosition();
-    if (_rectangle.doesIntersect(_rectangleMouse))
+    Vector<float, 2> mousePos = _window->getMousePosition();
+    Vector<float, 2> _lineStart = { 30.0f, 40.0f };
+    vector<Vector<float, 2>> line = {
+        _lineStart,
+        mousePos
+    };
+    _objectCoordinator.updateVBO_position2D(_line, line.data(), line.size() * sizeof(line[0]));
+
+    Vector<float, 2> contactPoint;
+    Vector<float, 2> contactNormal;
+    float tHitNear;
+    if (_rectangle.doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
     {
         _objectCoordinator.updateColor(_rect, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
     }
@@ -62,6 +83,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     {
         _objectCoordinator.updateColor(_rect, Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
     }
+
     _objectCoordinator.onUpdate(deltaTime);
 }
 
@@ -77,6 +99,9 @@ void CollisionDevLayer::loadShaders(void)
     _objectCoordinator.addShader(getShaderDir() + "2D/TriangleTexture/vs.glsl",
                                  getShaderDir() + "2D/TriangleTexture/fs.glsl",
                                  "RectangleShader");
+    _objectCoordinator.addShader(getShaderDir() + "2D/LineColor/vs.glsl",
+                                 getShaderDir() + "2D/LineColor/fs.glsl",
+                                 "LineShader");
 }
 
 void CollisionDevLayer::loadTextures(void)
@@ -93,8 +118,10 @@ void CollisionDevLayer::loadMaterials(void)
 void CollisionDevLayer::loadModels(void)
 {
     QuadMeshFactory2DTexture quadMeshFactory;
+    LineMeshFactory2D lineMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel", "WhiteMaterial");
+    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "WhiteMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

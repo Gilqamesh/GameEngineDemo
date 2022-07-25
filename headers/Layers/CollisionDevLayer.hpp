@@ -19,6 +19,8 @@ class CollisionDevLayer : public ILayer
 
     Entity _rectMouse;
     RectangleColliderComponent _rectangleMouse;
+
+    Entity _line;
 public:
     CollisionDevLayer(MacWindow *macWindow);
     virtual void onAttach() override;

@@ -15,10 +15,10 @@ namespace GilqEngine
 
 class Model
 {
-vector<Mesh>   _meshes;
-string         _path;
-string         _name;
-string         _directory;
+vector<Mesh>        _meshes;
+string              _path;
+string              _name;
+string              _directory;
 MaterialManager     *_materialManager;
 TextureManager      *_textureManager;
 Shader              *_shader;
@@ -51,6 +51,17 @@ public:
     void draw();
 
     void load();
+
+    /*
+     * Currently this will apply on all the meshes stored by the model.. not good
+     * Caller's responsibility:
+     *      - Only call these functions if the specific Buffer Object is dynamically set
+     */
+    void updateVBO_position2D(const void *data, GLuint size);
+    void updateVBO_position3D(const void *data, GLuint size);
+    void updateVBO_normal(const void *data, GLuint size);
+    void updateVBO_texture(const void *data, GLuint size);
+    void updateIBO(const void *data, GLuint count);
 private:
     void loadModel(const string &path);
     void processNode(aiNode *node, const aiScene *scene);

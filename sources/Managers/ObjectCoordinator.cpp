@@ -159,6 +159,42 @@ void ObjectCoordinator::updatePosition2D(Entity object, const Vector<float, 2>& 
     _objectPositions2D[object] = position;
 }
 
+void ObjectCoordinator::updateModelMatrix(Entity object, const Matrix<float, 4, 4>& model)
+{
+    TRACE();
+    _modelMatrices[object] = model;
+}
+
+void ObjectCoordinator::updateVBO_position2D(Entity object, const void *data, GLuint size)
+{
+    TRACE();
+    _modelManager.updateVBO_position2D(object, data, size);
+}
+
+void ObjectCoordinator::updateVBO_position3D(Entity object, const void *data, GLuint size)
+{
+    TRACE();
+    _modelManager.updateVBO_position3D(object, data, size);
+}
+
+void ObjectCoordinator::updateVBO_normal(Entity object, const void *data, GLuint size)
+{
+    TRACE();
+    _modelManager.updateVBO_normal(object, data, size);
+}
+
+void ObjectCoordinator::updateVBO_texture(Entity object, const void *data, GLuint size)
+{
+    TRACE();
+    _modelManager.updateVBO_texture(object, data, size);
+}
+
+void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
+{
+    TRACE();
+    _modelManager.updateIBO(object, data, count);
+}
+
 void ObjectCoordinator::onUpdate(float deltaTime)
 {
     TRACE();

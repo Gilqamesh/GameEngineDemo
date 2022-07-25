@@ -53,6 +53,7 @@ public:
      * since OpenGL holds the memory for us already
      */
     void configurePositionAttribute();
+    void configurePositionAttributeDynamic(); // Creates Dynamic VertexBuffer so later it can be updated
     void configureNormalAttribute();
     void configureTextureAttribute();
     void configureIndices();
@@ -72,9 +73,10 @@ public:
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
      */
-    void updateVBO_position(VertexVector<PositionVertexAttribute3D> &data);
-    void updateVBO_normal(VertexVector<NormalVertexAttribute> &data);
-    void updateVBO_texture(VertexVector<TextureVertexAttribute> &data);
+    void updateVBO_position2D(const void *data, GLuint size);
+    void updateVBO_position3D(const void *data, GLuint size);
+    void updateVBO_normal(const void *data, GLuint size);
+    void updateVBO_texture(const void *data, GLuint size);
     void updateIBO(const void *data, GLuint count);
 
     void bind();

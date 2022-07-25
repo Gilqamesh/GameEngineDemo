@@ -119,4 +119,34 @@ void ModelManager::clearModelEntities()
     // _modelMatrices.clear();
 }
 
+void ModelManager::updateVBO_position2D(Entity model, const void *data, GLuint size)
+{
+    TRACE();
+    _modelEntities[model]->updateVBO_position2D(data, size);
+}
+
+void ModelManager::updateVBO_position3D(Entity model, const void *data, GLuint size)
+{
+    TRACE();
+    _modelEntities[model]->updateVBO_position3D(data, size);
+}
+
+void ModelManager::updateVBO_normal(Entity model, const void *data, GLuint size)
+{
+    TRACE();
+    _modelEntities[model]->updateVBO_normal(data, size);
+}
+
+void ModelManager::updateVBO_texture(Entity model, const void *data, GLuint size)
+{
+    TRACE();
+    _modelEntities[model]->updateVBO_texture(data, size);
+}
+
+void ModelManager::updateIBO(Entity model, const void *data, GLuint count)
+{
+    TRACE();
+    _modelEntities[model]->updateIBO(data, count);
+}
+
 }

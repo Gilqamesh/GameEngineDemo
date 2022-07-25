@@ -112,6 +112,8 @@ Mesh CubeMeshFactory::createMesh()
 
     Mesh mesh;
     mesh.setVertexData(move(vertexData));
+    mesh.setDrawMode(GL_TRIANGLES);
+    
     return (mesh);
 }
 

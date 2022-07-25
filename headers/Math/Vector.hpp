@@ -144,6 +144,16 @@ DIRECTION vectorDirection(Vector<T, 2> v)
 }
 
 template <typename T, unsigned int LENGTH>
+Vector<T, LENGTH> operator/(const Vector<T, LENGTH> &v1, const Vector<T, LENGTH>& v2)
+{
+    Vector<T, LENGTH>   r;
+
+    for (unsigned int i = 0; i < LENGTH; ++i)
+        r[i] = v1[i] / v2[i];
+    return (r);
+}
+
+template <typename T, unsigned int LENGTH>
 Vector<T, LENGTH> operator/(const Vector<T, LENGTH> &v, const T &a)
 {
     Vector<T, LENGTH>   r(v);
