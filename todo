@@ -22,3 +22,4 @@ have an api to simply put a geometric shape on the screen from a primitives libr
 2d: combine position and texture into 1 vec4
 change const& function parameter for types which its faster to create a copy (for example there is a lot of Matrix.hpp)
 batch rendering entities
+better logging system: use files maybe and log function parameter values as well

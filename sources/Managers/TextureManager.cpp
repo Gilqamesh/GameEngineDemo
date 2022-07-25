@@ -28,15 +28,6 @@ void TextureManager::addTexture(const string &texturePath, const string &texture
     _textures[textureName] = new Texture(texturePath, textureName);
 }
 
-void TextureManager::addTexture(const Vector<float, 4>& color, const string &textureName)
-{
-    TRACE();
-    if (exists(textureName) == true)
-        throw Exception("Texture " + textureName + " already exists in the TextureManager");
-    
-    _textures[textureName] = new Texture(color, textureName);
-}
-
 void TextureManager::deleteTexture(const string &textureName)
 {
     TRACE();

@@ -8,6 +8,8 @@ namespace GilqEngine
 
 struct ModelMatrixComponent
 {
+    ModelMatrixComponent() = default;
+    ModelMatrixComponent(const Matrix<float, 4, 4>& modelMatrix);
     Matrix<float, 4, 4> m;
 };
 

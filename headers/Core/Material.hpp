@@ -22,7 +22,7 @@ Texture     *_diffuse;
 Texture     *_specular;
 Texture     *_emission;
 float       _shininess;
-string _name;
+string      _name;
 public:
     Material();
     Material(const string &name);

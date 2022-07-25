@@ -5,8 +5,8 @@
  * This file should serve as a precompiled header, so only put stuff here that will not change
  */
 
-# define G_RELEASE
-// # define G_DEBUG
+// # define G_RELEASE
+# define G_DEBUG
 
 #if !defined(G_RELEASE) && !defined(G_DEBUG)
 # error G_RELEASE OR G_DEBUG NEEDS TO BE DEFINED

@@ -30,7 +30,7 @@ void QuadTreeLayer::onAttach()
     float maxWidth = (float)_window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 2;
+    unsigned int numberOfInsertions = 1000;
     vector<string> modelNames = {
         "BlackRectangleModel",
         "RedRectangleModel",
@@ -39,11 +39,11 @@ void QuadTreeLayer::onAttach()
         "YellowRectangleModel"
     };
     // Vertical line
-    _objectCoordinator.createModel("PurpleRectangleModel", "RectangleShader",
+    _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
             scale_matrix(maxWidth, 1.0f, 1.0f) *
             translation_matrix(0.0f, maxHeight / 2.0f, 0.0f));
     // Horizontal line
-    _objectCoordinator.createModel("PurpleRectangleModel", "RectangleShader",
+    _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
             scale_matrix(1.0f, maxHeight, 1.0f) *
             translation_matrix(maxWidth / 2.0f, 0.0f, 0.0f));
 
@@ -63,7 +63,7 @@ void QuadTreeLayer::onAttach()
 
         // Create rectangle
         string modelName = modelNames[rand() % modelNames.size()];
-        Entity rectangle = _objectCoordinator.createModel(modelName, "RectangleShader", scale_matrix(width, height, 1.0f));
+        Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader", scale_matrix(width, height, 1.0f));
         _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX, upperLeftY, width, height});
         _objectCoordinator.attachComponent<VelocityComponent2D>(rectangle, {getRand(-20.0f, 20.0f), getRand(-20.0f, 20.0f)});
         _objectCoordinator.attachComponent<PositionComponent2D>(rectangle, {upperLeftX, upperLeftY});
@@ -101,12 +101,7 @@ void QuadTreeLayer::loadShaders(void)
 
 void QuadTreeLayer::loadTextures(void)
 {
-    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 0.0f, 0.0f, 1.0f), "BlackTexture");
-    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f), "RedTexture");
-    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f), "GreenTexture");
-    _objectCoordinator.addTexture(Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f), "BlueTexture");
-    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f), "YellowTexture");
-    _objectCoordinator.addTexture(Vector<float, 4>(1.0f, 0.0f, 1.0f, 1.0f), "PurpleTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "White.png", "PurpleTexture");
 }
 
 void QuadTreeLayer::loadMaterials(void)

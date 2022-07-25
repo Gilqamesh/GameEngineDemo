@@ -8,14 +8,6 @@
 namespace GilqEngine
 {
 
-Texture::Texture(const Vector<float, 4>& color, const string &textureName)
-    : GL_ID(0),
-      _name(textureName),
-      _color(color)
-{
-    TRACE();
-}
-
 Texture::Texture(const string &texturePath, const string &textureName)
     : _name(textureName)
 {
@@ -76,8 +68,8 @@ Texture &Texture::operator=(Texture &&other)
 void Texture::bind(GLint slot)
 {
     TRACE();
-	GLCall(glActiveTexture(GL_TEXTURE0 + slot));
-	GLCall(glBindTexture(GL_TEXTURE_2D, GL_ID));
+    GLCall(glActiveTexture(GL_TEXTURE0 + slot));
+    GLCall(glBindTexture(GL_TEXTURE_2D, GL_ID));
 }
 
 void Texture::unbind()
@@ -89,15 +81,8 @@ void Texture::unbind()
 void Texture::setUniform(Shader *shader, const string &name, GLint slot)
 {
     TRACE();
-    if (GL_ID)
-    {
-        bind(slot);
-        shader->setInt(name, slot);
-    }
-    else
-    {
-        shader->setFloat4(name, _color);
-    }
+    bind(slot);
+    shader->setInt(name, slot);
 }
 
 }

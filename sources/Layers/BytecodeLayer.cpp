@@ -70,13 +70,13 @@ void BytecodeLayer::onAttach()
     float width = 100.0f;
     float height = 50.0f;
     _rectangleElements.push_back({upperLeftX, upperLeftY, width, height});
-    _objectCoordinator.createModel("AddModel", "BoxShader",
+    _objectCoordinator.createModel3D("AddModel", "BoxShader",
         rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
         scale_matrix(width, 1.0f, height) *
         translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
     float upperLeftX2 = 410.0f;
     _rectangleElements.push_back({upperLeftX2, upperLeftY, width, height});
-    _objectCoordinator.createModel("ShowTopValueModel", "BoxShader",
+    _objectCoordinator.createModel3D("ShowTopValueModel", "BoxShader",
         rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
         scale_matrix(width, 1.0f, height) *
         translation_matrix(upperLeftX2 + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
@@ -91,7 +91,7 @@ void BytecodeLayer::onAttach()
     pointLightSourceComponent._attenuationFactor_linear = 0.003f;
     pointLightSourceComponent._attenuationFactor_quadratic = 0.00001f;
 
-    Entity pointLightSourceEntity = _objectCoordinator.createModel("AddModel", "LightShader",
+    Entity pointLightSourceEntity = _objectCoordinator.createModel3D("AddModel", "LightShader",
         rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
         translation_matrix(0.0f, 10.0f, 0.0f));
     _objectCoordinator.attachComponent<PointLightSourceComponent>(pointLightSourceEntity, pointLightSourceComponent);

@@ -11,7 +11,6 @@ ModelManager::ModelManager()
 {
     TRACE();
     _coordinator = new Coordinator();
-    _coordinator->registerComponent<ModelMatrixComponent>();
 }
 
 ModelManager::~ModelManager()
@@ -55,22 +54,20 @@ void ModelManager::loadModel(
 //     _loadedModels.erase(name);
 // }
 
-Entity ModelManager::createModel(const string &name, const Matrix<GLfloat, 4, 4> &modelMatrix)
+Entity ModelManager::createModel(const string &name)
 {
     TRACE();
     ASSERT(_loadedModels.count(name));
     Entity model = _coordinator->createEntity();
-    _initialModelMatrices[model] = ModelMatrixComponent({modelMatrix});
-    _coordinator->attachComponent<ModelMatrixComponent>(model, {modelMatrix});
-    _modelEntities[model] = _loadedModels[name];
+    _modelEntities.push_back(_loadedModels[name]);
+
     return (model);
 }
 
 Model *ModelManager::getModel(Entity model)
 {
     TRACE();
-    ASSERT(_modelEntities.count(model));
-    return (_modelEntities.at(model));
+    return (_modelEntities[model]);
 }
 
 void ModelManager::setModelShader(Entity model, Shader *shader)
@@ -79,46 +76,47 @@ void ModelManager::setModelShader(Entity model, Shader *shader)
     _modelEntities[model]->setShader(shader);
 }
 
-void ModelManager::drawModels(
-    const Matrix<float, 4, 4> &view,
-    const Matrix<float, 4, 4> &projection)
-{
-    TRACE();
-    for (auto &model : _modelEntities)
-    {
-        auto *shader = model.second->getShader();
-        shader->bind();
-        shader->setMat4("model", _coordinator->getComponent<ModelMatrixComponent>(model.first).m);
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        model.second->draw();
-    }
-}
-
-void ModelManager::resetModelMatrices()
-{
-    TRACE();
-    for (auto &model : _modelEntities)
-    {
-        _coordinator->getComponent<ModelMatrixComponent>(model.first) = _initialModelMatrices[model.first];
-    }
-}
+// Check if anyone calls this
+// void ModelManager::drawModels(
+//     const Matrix<float, 4, 4> &view,
+//     const Matrix<float, 4, 4> &projection)
+// {
+//     TRACE();
+//     for (uint32 objectIndex = 0; objectIndex < _modelEntities.size(); ++objectIndex)
+//     {
+//         Model *model = _modelEntities[objectIndex];
+//         Shader *shader = model->getShader();
+//         shader->bind();
+//         shader->setMat4("model", _modelMatrices[objectIndex].m);
+//         shader->setMat4("view", view);
+//         shader->setMat4("projection", projection);
+//         model->draw();
+//     }
+// }
 
 void ModelManager::destroyModelEntity(Entity entity)
 {
+    (void)entity;
+    throw Exception("Not implemented");
+    // TODO(david): implement
+    // NOTE(david): for destroying entities it makes more sense to index into a vector than to store them sparsely
+
     TRACE();
-    _modelEntities.erase(entity);
-    _coordinator->destroyEntity(entity);
-    _initialModelMatrices.erase(entity);
+    // _modelEntities.erase(entity);
+    // _coordinator->destroyEntity(entity);
+    // _modelMatrices.erase(entity);
 }
 
 void ModelManager::clearModelEntities()
 {
+    throw Exception("Not implemented");
+    // TODO(david): implement
+
     TRACE();
-    for (auto &model : _modelEntities)
-        _coordinator->destroyEntity(model.first);
-    _modelEntities.clear();
-    _initialModelMatrices.clear();
+    // for (auto &model : _modelEntities)
+    //     _coordinator->destroyEntity(model.first);
+    // _modelEntities.clear();
+    // _modelMatrices.clear();
 }
 
 }

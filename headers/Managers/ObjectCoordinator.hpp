@@ -13,6 +13,9 @@
 # include "ECS/Components/Light/DirectionalLightSourceComponent.hpp"
 # include "ECS/Components/Light/PointLightSourceComponent.hpp"
 # include "ECS/Components/Light/SpotLightSourceComponent.hpp"
+# include "ECS/Components/ModelMatrixComponent.hpp"
+# include "ECS/Components/PositionComponent2D.hpp"
+# include "ECS/Components/PositionComponent3D.hpp"
 
 namespace GilqEngine
 {
@@ -29,8 +32,13 @@ list<ISystem *>         _registeredSystems;
 
 // Try this until we need to destroy entities, although even then we might want to store entities
 // contiguously and have a second array that indexes into it
-vector<Entity>              _opaqueObjects;
-vector<pair<Entity, float>> _transparentObjects;
+// TODO(david): does it make sense to abstract these out?
+vector<Entity>               _opaqueObjects;
+vector<pair<Entity, float>>  _transparentObjects;
+vector<Vector<float, 4>>     _objectColors; // index is the EntityId
+vector<ModelMatrixComponent> _modelMatrices;
+vector<PositionComponent2D>  _objectPositions2D;
+vector<PositionComponent3D>  _objectPositions3D;
 
 // unordered_map<Entity, float, hash<int>> _opaqueObjects;
 // unordered_map<Entity, float, hash<int>> _transparentObjects;
@@ -85,13 +93,6 @@ public:
         const char *texturePath,
         const string &textureName);
 
-    /*
-     * Adds a colored texture to the texture library
-     */
-    void addTexture(
-        const Vector<float, 4>& color,
-        const string &textureName);
-
     // ************************************************************************** //
     //                               Model Methods                                //
     // ************************************************************************** //
@@ -127,10 +128,19 @@ public:
      * Opacity is opaque by default
      * Each transparent object adds extra computing overhead during drawing
      */
-    Entity createModel(
+    Entity createModel2D(
         const string &modelName,
         const string &shaderName,
         const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
+        const Vector<float, 2>& position = Vector<float, 2>(0.0f, 0.0f),
+        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f),
+        float opacity = 1.0f);
+    Entity createModel3D(
+        const string &modelName,
+        const string &shaderName,
+        const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
+        const Vector<float, 3>& position = Vector<float, 3>(0.0f, 0.0f, 0.0f),
+        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f),
         float opacity = 1.0f);
 
     // ************************************************************************** //
@@ -146,6 +156,17 @@ public:
         TRACE();
         _modelManager.attachComponent<Component>(object, component);
     }
+
+    /*
+     * Updates the object's color
+     */
+    void updateColor(Entity object, const Vector<float, 4>& color);
+
+    /*
+     * Updates the object's position
+     */
+    void updatePosition2D(Entity object, const Vector<float, 2>& position);
+    void updatePosition3D(Entity object, const Vector<float, 3>& position);
 
     /*
      * Updates all registered systems in the order of registration

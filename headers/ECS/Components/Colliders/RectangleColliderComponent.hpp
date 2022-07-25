@@ -24,6 +24,12 @@ struct RectangleColliderComponent
             return (false);
         return (true);        
     }
+
+    inline bool isPointInside(Vector<float, 2> p) const
+    {
+        return (p[0] >= topLeftX && p[0] <= topLeftX + width &&
+                p[1] >= topLeftY && p[1] <= topLeftY + height);
+    }
 };
 
 ostream &operator<<(ostream &os, const RectangleColliderComponent &a);

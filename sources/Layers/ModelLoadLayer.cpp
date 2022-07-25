@@ -56,7 +56,7 @@ void ModelLoadLayer::onAttach()
         float scale = getRand(0.1f, 1.0f);
         Vector<float, 3> position(getRand(-100.0f, 100.0f), getRand(0.0f, 100.0f), getRand(-100.0f, 100.0f));
         position -= Vector<float, 3>(+100.0f, 0.0f, +100.0f);
-        Entity sphere = _objectCoordinator.createModel(
+        Entity sphere = _objectCoordinator.createModel3D(
             "Backpack Model",
             "Triangle Shader",
             scale_matrix(Vector<float, 3>(scale, scale, scale))
@@ -98,7 +98,7 @@ void ModelLoadLayer::onAttach()
         for (unsigned int j = 0; j < 20; ++j)
         {
             float scale = 10.0f;
-            Entity dirt = _objectCoordinator.createModel(
+            Entity dirt = _objectCoordinator.createModel3D(
                 "Dirt Model",
                 "Triangle Shader",
                 rotation_matrix(degToRad(90.0f), Vector<float, 3>(-1.0f, 0.0f, 0.0f))
@@ -124,7 +124,7 @@ void ModelLoadLayer::onAttach()
     for (int i = 0; i < 4; ++i)
     {
         Vector<float, 3> position(((i & 1) * 2 - 1) * 20.0f, 100.0f, (((i & 2) >> 1) * 2 - 1) * 20.0f);
-        Entity sun = _objectCoordinator.createModel(
+        Entity sun = _objectCoordinator.createModel3D(
             "White Box Model",
             "LightSource Shader",
             translation_matrix(position)

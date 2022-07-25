@@ -6,7 +6,6 @@
 # include "Interfaces/ICamera.hpp"
 # include "Managers/MaterialManager.hpp"
 # include "Managers/TextureManager.hpp"
-# include "ECS/Components/ModelMatrixComponent.hpp"
 # include "Interfaces/IMeshFactory.hpp"
 
 namespace GilqEngine
@@ -14,13 +13,15 @@ namespace GilqEngine
 
 class ModelManager
 {
-Coordinator                                                         *_coordinator;
-unordered_map<Entity, Model *, hash<int> >                _modelEntities;
-unordered_map<Entity, ModelMatrixComponent, hash<int> >   _initialModelMatrices;
+Coordinator                                               *_coordinator;
+vector<Model *>                                           _modelEntities;
+// it makes sense to use the EntityId as the index for the vector for now
+// unordered_map<Entity, Model *, hash<int> >                _modelEntities;
+// unordered_map<Entity, ModelMatrixComponent, hash<int> >   _initialModelMatrices;
 unordered_map<string, Model *>                            _loadedModels;
-unordered_map<const char *, ISystem *>                         _systems;
-MaterialManager                                                     *_materialManager;
-TextureManager                                                      *_textureManager;
+unordered_map<const char *, ISystem *>                    _systems;
+MaterialManager                                           *_materialManager;
+TextureManager                                            *_textureManager;
 public:
     ModelManager();
     ~ModelManager();
@@ -39,17 +40,17 @@ public:
      * Creates an already loaded model
      * 'modelMatrix' is initial model matrix for the Model
      */
-    Entity createModel(const string &name, const Matrix<GLfloat, 4, 4> &modelMatrix);
+    Entity createModel(const string &name);
 
     Model *getModel(Entity model);
 
     void setModelShader(Entity model, Shader *shader);
 
+    // TODO(david): Currently not being used from the ObjectCoordinator
+    // Find a way to use this maybe if it makes more sense.
     void drawModels(
         const Matrix<float, 4, 4> &view,
         const Matrix<float, 4, 4> &projection);
-
-    void resetModelMatrices();
 
     /*
      * Destroys the entity related to the model

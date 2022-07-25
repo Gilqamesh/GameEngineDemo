@@ -41,9 +41,7 @@ void CollisionSystem2D::onUpdate(float dt)
 
         positionComponent.p += dt * velocityComponent.v;
         modelMatrixComponent.m *= translation_matrix(positionComponent.p);
-    }
-    for (auto entity : entities)
-    {
+        
         quadTree.insert(entity);
     }
     quadTree.checkIntersections();
@@ -142,7 +140,7 @@ void QuadTree::subdivide(void)
 
 uint32 QuadTree::checkIntersections(void)
 {
-    static vector<unordered_set<uint32>> collidedPairs(300, unordered_set<uint32>());
+    static vector<unordered_set<uint32>> collidedPairs(10000, unordered_set<uint32>());
     uint32 nOfIntersections = 0;
     for (uint8 i = 0; i < _rectangleIndices.size(); ++i)
     {
@@ -155,20 +153,11 @@ uint32 QuadTree::checkIntersections(void)
                 collidedPairs[_rectangleIndices[i]].insert(_rectangleIndices[j]);
                 collidedPairs[_rectangleIndices[j]].insert(_rectangleIndices[i]);
 
-                const auto& velocityOne = _coordinator->getComponent<VelocityComponent2D>(_rectangleIndices[i]);
-                const auto& velocityTwo = _coordinator->getComponent<VelocityComponent2D>(_rectangleIndices[j]);
+                auto& velocityOne = _coordinator->getComponent<VelocityComponent2D>(_rectangleIndices[i]);
+                auto& velocityTwo = _coordinator->getComponent<VelocityComponent2D>(_rectangleIndices[j]);
 
-                /*
-                 * Check which side the collision happens
-                 * If dot product is positive -> they are going in the same direction
-                 * If dot product is negative, flip velocities, otherwise flip one velocity
-                 * and with the other do a velocity average, then turn its size back to what it was
-                 */
-                DIRECTION directionOne = vectorDirection(velocityOne.v);
-                DIRECTION directionTwo = vectorDirection(velocityTwo.v);
+                swap(velocityOne, velocityTwo);
 
-                _coordinator->updateComponent<VelocityComponent2D>(_rectangleIndices[i], velocityTwo);
-                _coordinator->updateComponent<VelocityComponent2D>(_rectangleIndices[j], velocityOne);
                 ++nOfIntersections;
             }
         }

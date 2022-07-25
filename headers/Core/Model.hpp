@@ -38,8 +38,8 @@ public:
     inline void setMaterialManager(MaterialManager *materialManager) { _materialManager = materialManager; }
     inline void setTextureManager(TextureManager *textureManager) { _textureManager = textureManager; }
 
-    inline const string &getName() const { return (_name); }
-    inline Shader *getShader() const { return (_shader); }
+    inline const string &getName() const { TRACE(); return (_name); }
+    inline Shader *getShader() const { TRACE(); return (_shader); }
 
     inline bool loaded() const { return (_loaded); }
 

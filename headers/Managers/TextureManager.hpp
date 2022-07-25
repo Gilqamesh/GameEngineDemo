@@ -13,7 +13,6 @@ public:
     ~TextureManager();
     void addTexture(Texture *texture);
     void addTexture(const string &texturePath, const string &textureName);
-    void addTexture(const Vector<float, 4>& color, const string &textureName);
     
     void deleteTexture(const string &textureName);
     void clear();

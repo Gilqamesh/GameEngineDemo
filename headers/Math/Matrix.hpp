@@ -185,6 +185,23 @@ Matrix<T, 4, 4> scale_matrix(T a, T b, T c)
 }
 
 template <typename T>
+Matrix<T, 4, 4> scale_matrix(const Vector<T, 2> &v)
+{
+    return (Matrix<T, 4, 4>(
+        v[0],   0.0f,   0.0f,   0.0f,
+        0.0f,   v[1],   0.0f,   0.0f,
+        0.0f,   0.0f,   1.0f,   0.0f,
+        0.0f,   0.0f,   0.0f,   1.0f
+    ));
+}
+
+template <typename T>
+Matrix<T, 4, 4> scale_matrix(T a, T b)
+{
+    return (scale_matrix(Vector<T, 2>(a, b)));
+}
+
+template <typename T>
 Matrix<T, 4, 4> translation_matrix(const Vector<T, 3> &v)
 {
     Matrix<T, 4, 4>    result;

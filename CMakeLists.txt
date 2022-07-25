@@ -54,7 +54,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 if (MSVC)
     add_compile_options(-Oi -FC -Zi -WX -W4 -nologo -EHa -wd4100 -wd4189 -wd4702 -wd4505 -wd4996 -wd4005 /std:c++14)
 else()
-    add_compile_options(-Wall -Wextra -std=c++14)
+    add_compile_options(-Wall -Wextra -Wno-address-of-packed-member -std=c++14)
 endif()
 
 # add the executable

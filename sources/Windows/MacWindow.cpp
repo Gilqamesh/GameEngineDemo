@@ -49,7 +49,11 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
         TERMINATE("glfwCreateWindow() failed");
     }
     glfwMakeContextCurrent(_window);
-    glfwGetCursorPos(_window, &_windowProps.previousMouseX, &_windowProps.previousMouseY);
+    double previousMouseX;
+    double previousMouseY;
+    glfwGetCursorPos(_window, &previousMouseX, &previousMouseY);
+    _windowProps.previousMouseX = static_cast<float>(previousMouseX);
+    _windowProps.previousMouseY = static_cast<float>(previousMouseY);
     if (glewInit() != GLEW_OK)
     {
         glfwTerminate();

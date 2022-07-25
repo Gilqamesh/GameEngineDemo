@@ -12,9 +12,7 @@ class Texture
 {
 GLuint GL_ID;
 string _name;
-Vector<float, 4> _color;
 public:
-    Texture(const Vector<float, 4>& color, const string &textureName);
     Texture(const string &texturePath, const string &textureName);
     ~Texture();
 
@@ -30,7 +28,8 @@ public:
 
     void setUniform(Shader *shader, const string &name, GLint slot);
 
-    inline const string &getName() const { return (_name); }
+    inline GLuint getGL_ID(void) const { return (GL_ID); }
+    inline const string &getName(void) const { return (_name); }
 };
 
 }

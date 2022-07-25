@@ -58,10 +58,14 @@ Material &Material::operator=(const Material &other)
 void Material::setShaderUniforms(Shader *shader)
 {
     TRACE();
-    _ambient->setUniform(shader, "u_ambient", 0);
-    _diffuse->setUniform(shader, "u_diffuse", 1);
-    _specular->setUniform(shader, "u_specular", 2);
-    _emission->setUniform(shader, "u_emission", 3);
+    uint8 textureSlot = 0;
+    if (_ambient->getGL_ID())
+    {
+        _ambient->setUniform(shader, "u_ambient", textureSlot++);
+    }
+    _diffuse->setUniform(shader, "u_diffuse", textureSlot++);
+    _specular->setUniform(shader, "u_specular", textureSlot++);
+    _emission->setUniform(shader, "u_emission", textureSlot++);
     shader->setFloat("shininess", _shininess);
 }
 
