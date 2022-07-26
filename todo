@@ -25,3 +25,4 @@ better logging system: use files maybe and log function parameter values as well
 shader class definition should include setting up its predefined uniforms, so each Model can have its own uniforms it wants
     to use along with its shader
 have better api to create primitives
+naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/model

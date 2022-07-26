@@ -141,6 +141,16 @@ Entity ObjectCoordinator::createModel3D(
     return (model);
 }
 
+void ObjectCoordinator::removeEntity(Entity entity)
+{
+    TRACE();
+}
+
+void ObjectCoordinator::addEntity(Entity entity)
+{
+    TRACE();
+}
+
 void ObjectCoordinator::updateColor(Entity object, const Vector<float, 4>& color)
 {
     TRACE();
@@ -265,6 +275,8 @@ void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
             translation_matrix(_objectPositions2D[object].p)
         );
         shader->setMat4("projection", projection);
+        shader->setFloat2("origin", _objectPositions2D[object].p);
+        shader->setFloat("radius", 6.0f);
         shader->setFloat4("u_color", _objectColors[object]);
         model->draw();
     }

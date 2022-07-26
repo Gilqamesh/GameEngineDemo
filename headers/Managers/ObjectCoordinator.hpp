@@ -142,6 +142,12 @@ public:
         const Vector<float, 3>& position = Vector<float, 3>(0.0f, 0.0f, 0.0f),
         const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f),
         float opacity = 1.0f);
+    
+    /*
+     * Remove/Add entity back to update/render loop
+     */
+    void removeEntity(Entity entity);
+    void addEntity(Entity entity);
 
     // ************************************************************************** //
     //                                 Own Methods                                //

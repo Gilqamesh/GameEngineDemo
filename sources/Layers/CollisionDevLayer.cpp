@@ -1,5 +1,6 @@
 #include "Layers/CollisionDevLayer.hpp"
 #include "Factories/QuadMeshFactory2DTexture.hpp"
+#include "Factories/CircleMeshFactory2DTexture.hpp"
 #include "Factories/LineMeshFactory2D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
@@ -25,7 +26,10 @@ void CollisionDevLayer::onAttach()
 
     registerSystems();
 
-    _window->enablePolygonMode_Line();
+    // _window->enablePolygonMode_Line();
+    _window->enableBlending();
+
+    LOG("Resolution: " << _window->getWidth() << " " << _window->getHeight());
 
     _rectangle = { 800.0f, 450.0f, 100.0f, 60.0f };
     _rect = _objectCoordinator.createModel2D("WhiteRectangleModel", "RectangleShader",
@@ -37,6 +41,11 @@ void CollisionDevLayer::onAttach()
         identity_matrix<float, 4, 4>(),
         Vector<float, 2>(0.0f, 0.0f),
         Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
+    
+    _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader",
+        scale_matrix(200.0f, 200.0f),
+        { 300.0f, 300.0f },
+        Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f));
 }
 
 void CollisionDevLayer::onDetach()
@@ -102,6 +111,9 @@ void CollisionDevLayer::loadShaders(void)
     _objectCoordinator.addShader(getShaderDir() + "2D/LineColor/vs.glsl",
                                  getShaderDir() + "2D/LineColor/fs.glsl",
                                  "LineShader");
+    _objectCoordinator.addShader(getShaderDir() + "2D/CircleColor/vs.glsl",
+                                 getShaderDir() + "2D/CircleColor/fs.glsl",
+                                 "CircleShader");
 }
 
 void CollisionDevLayer::loadTextures(void)
@@ -119,8 +131,10 @@ void CollisionDevLayer::loadModels(void)
 {
     QuadMeshFactory2DTexture quadMeshFactory;
     LineMeshFactory2D lineMeshFactory;
+    CircleMeshFactory2DTexture circleMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel", "WhiteMaterial");
+    _objectCoordinator.loadModel(&circleMeshFactory, "WhiteCircleModel", "WhiteMaterial");
     _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "WhiteMaterial");
 }
 
