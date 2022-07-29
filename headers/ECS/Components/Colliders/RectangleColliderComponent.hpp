@@ -36,7 +36,15 @@ struct RectangleColliderComponent
         Vector<float, 2> rayDirection,
         Vector<float, 2>& contactPoint,
         Vector<float, 2>& contactNormal,
-        float &tHitNear);
+        float &tHitNear) const;
+
+    bool dynamicRecIntersect(
+        Vector<float, 2> velocity,
+        const RectangleColliderComponent& target,
+        Vector<float, 2>& contactPoint,
+        Vector<float, 2>& contactNormal,
+        float &tHitNear,
+        float deltaTime) const;
 };
 
 ostream &operator<<(ostream &os, const RectangleColliderComponent &a);

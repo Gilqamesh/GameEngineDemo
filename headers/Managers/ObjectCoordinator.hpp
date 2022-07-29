@@ -181,6 +181,13 @@ public:
         _modelManager.updateComponent<Component>(object, component);
     }
 
+    template <typename Component>
+    Component &getComponent(Entity entity)
+    {
+        TRACE();
+        return (_modelManager.getComponent<Component>(entity));
+    }
+
     /* Currently this updates all the meshes owned by the model.. not good..
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set

@@ -111,6 +111,19 @@ Vector<T, 3> rotate(const Vector<T, 3> &v, const T &angle, const Vector<T, 3> &a
     return (Vector<T, 3>(cos(angle) * v + sin(angle) * cross_product(e, v) + (1 - cos(angle)) * dot_product(e, v) * e));
 }
 
+template <typename T, unsigned int LENGTH>
+Vector<T, LENGTH> element_wise_multiply(const Vector<T, LENGTH>& v1, const Vector<T, LENGTH>& v2)
+{
+    Vector<T, LENGTH> result(v1);
+
+    for (unsigned int i = 0; i < LENGTH; ++i)
+    {
+        result[i] *= v2[i];
+    }
+
+    return (result);
+}
+
 enum DIRECTION
 {
     UP,
@@ -144,7 +157,7 @@ DIRECTION vectorDirection(Vector<T, 2> v)
 }
 
 template <typename T, unsigned int LENGTH>
-Vector<T, LENGTH> operator/(const Vector<T, LENGTH> &v1, const Vector<T, LENGTH>& v2)
+Vector<T, LENGTH> element_wise_divide(const Vector<T, LENGTH> &v1, const Vector<T, LENGTH>& v2)
 {
     Vector<T, LENGTH>   r;
 

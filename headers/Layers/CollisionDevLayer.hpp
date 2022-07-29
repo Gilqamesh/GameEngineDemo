@@ -17,6 +17,9 @@ class CollisionDevLayer : public ILayer
     Entity _rect;
     RectangleColliderComponent _rectangle;
 
+    Entity _mouseRect;
+    RectangleColliderComponent _mouseRectangle;
+    
     Entity _line;
 
     Entity _circle;
