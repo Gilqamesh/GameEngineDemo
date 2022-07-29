@@ -42,31 +42,26 @@ void CollisionDevLayer::onAttach()
         Vector<float, 2>(0.0f, 0.0f),
         Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
     
-    _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader",
+    Vector<float, 2> circleOrigin = {200.0f, 300.0f};
+    _circle = _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader",
         scale_matrix(200.0f, 200.0f),
-        { 300.0f, 300.0f },
+        circleOrigin,
         Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f));
+    _objectCoordinator.addFloat("CircleShader", "radius", 6.0f);
+    _objectCoordinator.addFloat2("CircleShader", "origin", circleOrigin);
+
+    _normalLine = _objectCoordinator.createModel2D("WhiteLineModel2", "LineShader");
+    _objectCoordinator.hideEntity(_normalLine);
 }
 
 void CollisionDevLayer::onDetach()
 {
-
+    _objectCoordinator.clear();
 }
 
 void CollisionDevLayer::onEvent(IEvent &e)
 {
     (void)e;
-}
-
-template <typename T>
-Matrix<T, 4, 4> rotM(T angleRad)
-{
-    return (Matrix<T, 4, 4>(
-        cos(angleRad),      sin(angleRad),     static_cast<T>(0), static_cast<T>(0),
-        -sin(angleRad),     cos(angleRad),     static_cast<T>(0), static_cast<T>(0),
-        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
-        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
-    ));
 }
 
 void CollisionDevLayer::onUpdate(float deltaTime)
@@ -86,14 +81,26 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     float tHitNear;
     if (_rectangle.doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
     {
-        _objectCoordinator.updateColor(_rect, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
+        _objectCoordinator.updateComponent<ColorComponent>(_rect, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
+        _objectCoordinator.showEntity(_circle);
+        _objectCoordinator.updateComponent<PositionComponent2D>(_circle, contactPoint);
+        _objectCoordinator.updateFloat2("CircleShader", "origin", contactPoint);
+
+        _objectCoordinator.showEntity(_normalLine);
+        vector<Vector<float, 2>> normalLine = {
+            contactPoint + contactNormal * 30.0f,
+            contactPoint
+        };
+        _objectCoordinator.updateVBO_position2D(_normalLine, normalLine.data(), normalLine.size() * sizeof(normalLine[0]));
     }
     else
     {
-        _objectCoordinator.updateColor(_rect, Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
+        _objectCoordinator.updateComponent<ColorComponent>(_rect, Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
+        _objectCoordinator.hideEntity(_circle);
+        _objectCoordinator.hideEntity(_normalLine);
     }
 
-    _objectCoordinator.onUpdate(deltaTime);
+    _objectCoordinator.updateSystems(deltaTime);
 }
 
 void CollisionDevLayer::onRender()
@@ -136,6 +143,7 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel", "WhiteMaterial");
     _objectCoordinator.loadModel(&circleMeshFactory, "WhiteCircleModel", "WhiteMaterial");
     _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "WhiteMaterial");
+    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel2", "WhiteMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

@@ -11,73 +11,60 @@ class Coordinator;
 
 class SystemManager
 {
-unordered_map<const char *, ComponentSignature> nameToSignature; /* system name to its component signature */
-unordered_map<const char *, ISystem *> nameToSystems; /* system name to the sytem instance */
+unordered_map<const char *, ComponentSignature> _nameToSignature; /* system name to its component signature */
+unordered_map<const char *, ISystem *> _nameToSystems; /* system name to the sytem instance */
 Coordinator *_coordinator; /* reference to the coordinator so that each system has access to it */
 public:
     SystemManager(Coordinator *coordinator);
     ~SystemManager();
 
     /*
-     * Register system of type T to the manager
+     * Register system of type System to the manager
      */
-    template <typename T, typename... Args>
-    T *registerSystem(const Args& ... args)
+    template <typename System, typename... Args>
+    System *registerSystem(const Args& ... args)
     {
         TRACE();
-        const char *systemName = typeid(T).name();
+        const char *systemName = typeid(System).name();
         // System already exists in the manager
-        ASSERT(nameToSystems.count(systemName) == 0);
-        nameToSystems[systemName] = new T(_coordinator, args ...);
-        nameToSystems[systemName]->registerComponents();
-        nameToSystems[systemName]->setSystemSignature();
-        return (static_cast<T *>(nameToSystems[systemName]));
+        ASSERT(_nameToSystems.count(systemName) == 0);
+        _nameToSystems[systemName] = new System(_coordinator, args ...);
+        _nameToSystems[systemName]->registerComponents();
+        _nameToSystems[systemName]->setSystemSignature();
+        return (static_cast<System *>(_nameToSystems[systemName]));
     }
 
     /*
      * Set the component signature for the system
      */
-    template <typename T>
+    template <typename System>
     void setSystemSignature(ComponentSignature componentSignature)
     {
         TRACE();
-        const char *systemName = typeid(T).name();
+        const char *systemName = typeid(System).name();
         // System is not registered to the manager
-        ASSERT(nameToSystems.count(systemName));
-        nameToSignature[systemName] = componentSignature;
+        ASSERT(_nameToSystems.count(systemName));
+        _nameToSignature[systemName] = componentSignature;
     }
+
+    void entityDestroyed(Entity entity);
+
+    void updateSystems(float dt);
 
     /*
      * Remove entity from all registered systems
      */
-    void entityDestroyed(Entity entity)
-    {
-        TRACE();
-        for (auto systemPair : nameToSystems)
-        {
-            systemPair.second->entities.erase(entity);
-        }
-    }
+    void hideEntity(Entity entity);
+
+    /*
+     * Reregister entity to all previous systems it was a part of
+     */
+    void showEntity(Entity entity);
 
     /*
      * Add entity on all systems that has newComponentSignature
      */
-    void entityComponentSignatureChanged(Entity entity, ComponentSignature newComponentSignature)
-    {
-        TRACE();
-        for (auto nameToSignaturePair : nameToSignature)
-        {
-            // if newComponentSignature matches with the system's prerequesite
-            if ((nameToSignaturePair.second & newComponentSignature) == nameToSignaturePair.second)
-            {
-                nameToSystems[nameToSignaturePair.first]->entities.insert(entity);
-            }
-            else
-            {
-                nameToSystems[nameToSignaturePair.first]->entities.erase(entity);
-            }
-        }
-    }
+    void entityComponentSignatureChanged(Entity entity, ComponentSignature newComponentSignature);
 };
 
 }

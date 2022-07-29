@@ -34,27 +34,35 @@ public:
      */
     void destroyEntity(Entity entity);
 
+    /*
+     * Disable/Enable the update and rendering of the entity
+     */
+    void hideEntity(Entity entity);
+    void showEntity(Entity entity);
+
+    ComponentSignature getComponentSignature(Entity entity);
+
     // Component methods
 
     /*
      * Register component of type T
      */
-    template <typename T>
+    template <typename Component>
     void registerComponent()
     {
         TRACE();
-        _componentManager.registerComponent<T>();
+        _componentManager.registerComponent<Component>();
     }
 
     /*
-     * Adds a component type T to an entity
+     * Adds a component type Component to an entity
      */
-    template <typename T>
-    void attachComponent(Entity entity, T component)
+    template <typename Component>
+    void attachComponent(Entity entity, Component component)
     {
         TRACE();
         ComponentSignature newEntityComponentSignature = _entityManager.getComponentSignature(entity);
-        newEntityComponentSignature.set(_componentManager.getComponentId<T>(), true);
+        newEntityComponentSignature.set(_componentManager.getComponentId<Component>(), true);
         _entityManager.setComponentSignature(entity, newEntityComponentSignature);
         _componentManager.attachComponent(entity, component);
         _systemManager.entityComponentSignatureChanged(entity, newEntityComponentSignature);
@@ -63,8 +71,8 @@ public:
     /*
      * Updates existing component on an entity
      */
-    template <typename T>
-    void updateComponent(Entity entity, T component)
+    template <typename Component>
+    void updateComponent(Entity entity, Component component)
     {
         _componentManager.updateComponent(entity, component);
     }
@@ -72,68 +80,70 @@ public:
     /*
      * Removes a component of type T from an entity
      */
-    template <typename T>
+    template <typename Component>
     void removeComponent(Entity entity)
     {
         TRACE();
         ComponentSignature newEntityComponentSignature
-            = _entityManager.getComponentSignature(entity).reset(_componentManager.getComponentId<T>());
+            = _entityManager.getComponentSignature(entity).reset(_componentManager.getComponentId<Component>());
         _entityManager.setComponentSignature(entity, newEntityComponentSignature);
-        _componentManager.removeComponent<T>(entity);
+        _componentManager.removeComponent<Component>(entity);
         _systemManager.entityComponentSignatureChanged(entity, newEntityComponentSignature);
     }
 
     /*
-     * Returns the component data of type T in entity
+     * Returns the component data of type Component in entity
      */
-    template <typename T>
-    T& getComponent(Entity entity)
+    template <typename Component>
+    Component& getComponent(Entity entity)
     {
         TRACE();
-        return (_componentManager.getComponent<T>(entity));
+        return (_componentManager.getComponent<Component>(entity));
     }
 
     /*
-     * Returns the unique id held for the component of type T
+     * Returns the unique id held for the component of type Component
      */
-    template <typename T>
+    template <typename Component>
     ComponentId getComponentId() const
     {
         TRACE();
-        return (_componentManager.getComponentId<T>());
+        return (_componentManager.getComponentId<Component>());
     }
 
     /*
-     * Tests if entity has a component of type T
+     * Tests if entity has a component of type Component
      */
-    template <typename T>
+    template <typename Component>
     bool hasComponent(Entity entity)
     {
         TRACE();
-        return (_entityManager.getComponentSignature(entity).test(getComponentId<T>()));
+        return (_entityManager.getComponentSignature(entity).test(getComponentId<Component>()));
     }
 
     // System methods
 
     /*
-     * Register system of type T
+     * Register system of type System
      */
-    template <typename T, typename... Args>
-    T *registerSystem(const Args& ... args)
+    template <typename System, typename... Args>
+    System *registerSystem(const Args& ... args)
     {
         TRACE();
-        return (_systemManager.registerSystem<T>(args ...));
+        return (_systemManager.registerSystem<System>(args ...));
     }
+
+    void updateSystems(float dt);
 
     /*
      * Set the component signature for the system
      * Should be used by the system the set up its signature
      */
-    template <typename T>
+    template <typename System>
     void setSystemSignature(ComponentSignature componentSignature)
     {
         TRACE();
-        _systemManager.setSystemSignature<T>(componentSignature);
+        _systemManager.setSystemSignature<System>(componentSignature);
     }
 
     /*

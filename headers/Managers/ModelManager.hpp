@@ -14,12 +14,8 @@ namespace GilqEngine
 class ModelManager
 {
 Coordinator                                               *_coordinator;
-vector<Model *>                                           _modelEntities;
-// it makes sense to use the EntityId as the index for the vector for now
-// unordered_map<Entity, Model *, hash<int> >                _modelEntities;
-// unordered_map<Entity, ModelMatrixComponent, hash<int> >   _initialModelMatrices;
+unordered_map<Entity, Model *, hash<int> >                _modelEntities;
 unordered_map<string, Model *>                            _loadedModels;
-unordered_map<const char *, ISystem *>                    _systems;
 MaterialManager                                           *_materialManager;
 TextureManager                                            *_textureManager;
 public:
@@ -34,7 +30,10 @@ public:
 
     void loadModel(const string &path, const string &name);
     void loadModel(IMeshFactory *meshFactory, const string &name, const string &materialName);
-    // void destroyModel(const string name);
+    /* NOTE(david): Not tested!!
+     * Unloads model from the memory and destroys all entities associated with it.
+     */
+    void unloadModel(const string& name);
 
     /*
      * Creates an already loaded model
@@ -42,96 +41,99 @@ public:
      */
     Entity createModel(const string &name);
 
-    Model *getModel(Entity model);
+    Model *getModel(Entity entity);
 
-    void setModelShader(Entity model, Shader *shader);
+    void setModelShader(Entity entity, Shader *shader);
 
-    // TODO(david): Currently not being used from the ObjectCoordinator
-    // Find a way to use this maybe if it makes more sense.
-    void drawModels(
-        const Matrix<float, 4, 4> &view,
-        const Matrix<float, 4, 4> &projection);
+    // // TODO(david): Currently not being used from the ObjectCoordinator
+    // // Find a way to use this maybe if it makes more sense.
+    // void drawModels(
+    //     const Matrix<float, 4, 4> &view,
+    //     const Matrix<float, 4, 4> &projection);
 
     /*
-     * Destroys the entity related to the model
-     * Does not unload the model
+     * Disable/Enable the update and rendering of the entity
      */
-    void destroyModelEntity(Entity model);
+    void hideEntity(Entity entity);
+    void showEntity(Entity entity);
 
     /*
      * Destroy all model entities
      * Does not unload the models
      * Keep the Components and Systems registered
      */
-    void clearModelEntities();
+    void clearEntities();
 
-    template <typename T>
+    /*
+     * Destroys all entities
+     * Unloads all models
+     */
+    void clear();
+
+    template <typename Component>
     void registerComponent()
     {
         TRACE();
-        _coordinator->registerComponent<T>();
+        _coordinator->registerComponent<Component>();
     }
 
-    template <typename T>
-    void attachComponent(Entity model, T component)
+    template <typename Component>
+    void attachComponent(Entity model, Component component)
     {
         TRACE();
-        _coordinator->attachComponent<T>(model, component);
+        _coordinator->attachComponent<Component>(model, component);
     }
 
-    template <typename T>
+    template <typename Component>
     bool hasComponent(Entity model)
     {
         TRACE();
-        return (_coordinator->hasComponent<T>(model));
+        return (_coordinator->hasComponent<Component>(model));
     }
 
-    template <typename T>
+    template <typename Component>
     void removeComponent(Entity model)
     {
         TRACE();
-        _coordinator->removeComponent<T>(model);
+        _coordinator->removeComponent<Component>(model);
     }
 
-    template <typename T>
-    T& getComponent(Entity model)
+    template <typename Component>
+    Component& getComponent(Entity model)
     {
         TRACE();
-        return (_coordinator->getComponent<T>(model));
+        return (_coordinator->getComponent<Component>(model));
     }
 
-    template <typename T>
+    template <typename Component>
+    void updateComponent(Entity model, const Component& component)
+    {
+        TRACE();
+        _coordinator->updateComponent<Component>(model, component);
+    }
+
+    template <typename Component>
     ComponentId getComponentId() const
     {
         TRACE();
-        return (_coordinator->getComponentId<T>());
+        return (_coordinator->getComponentId<Component>());
     }
 
-    template <typename T, typename... Args>
-    T* registerSystem(const Args& ... args)
+    template <typename System, typename... Args>
+    System* registerSystem(const Args& ... args)
     {
         TRACE();
-        const char *systemName = typeid(T).name();
-        ASSERT(_systems.count(systemName) == 0);
-        T* system = _coordinator->registerSystem<T>(args ...);
-        _systems[systemName] = system;
+        System* system = _coordinator->registerSystem<System>(args ...);
         return (system);
     }
 
-    template <typename T>
-    void updateSystem(float dt)
-    {
-        TRACE();
-        const char *systemName = typeid(T).name();
-        ASSERT(_systems.count(systemName));
-        _systems[systemName]->onUpdate(dt);
-    }
+    void updateSystems(float dt);
 
-    template <typename T>
+    template <typename System>
     void setSystemSignature(ComponentSignature componentSignature)
     {
         TRACE();
-        return (_coordinator->setSystemSignature<T>(componentSignature));
+        return (_coordinator->setSystemSignature<System>(componentSignature));
     }
 
     void print() const

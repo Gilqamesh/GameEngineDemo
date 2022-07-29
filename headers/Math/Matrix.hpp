@@ -5,8 +5,6 @@
 //                              Matrix Class                                  //
 // ************************************************************************** //
 
-# include "Vector.hpp"
-
 namespace GilqEngine
 {
 
@@ -30,16 +28,22 @@ class Matrix
     private:
         array<T, ROWS * COLUMNS>                   entries;
     public:
-        Matrix():                                       entries()           { }
+        Matrix() = default;
         Matrix(T* a)
         {
             for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
                 entries[i] = a[i];
         }
         template <typename... Args>
-        Matrix(const Args & ... args):                  entries({args...})  { }
-        ~Matrix()                                                           { }
-        Matrix(const Matrix &m):                        entries(m.entries)  { }
+        Matrix(const Args & ... args):                  entries({ args... })  { }
+        ~Matrix() = default;
+        Matrix(const Matrix &m)
+        {
+            for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
+            {
+                entries[i] = m.entries[i];
+            }
+        }
         Matrix &operator=(const Matrix &m)                                  { if (this != &m) entries = m.entries; return (*this); }
 
         T*        data(void)        { return (entries.data()); }

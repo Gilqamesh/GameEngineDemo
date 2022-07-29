@@ -16,6 +16,7 @@
 # include "ECS/Components/ModelMatrixComponent.hpp"
 # include "ECS/Components/PositionComponent2D.hpp"
 # include "ECS/Components/PositionComponent3D.hpp"
+# include "ECS/Components/ColorComponent.hpp"
 
 namespace GilqEngine
 {
@@ -28,20 +29,9 @@ ShaderManager           _shaderManager;
 TextureManager          _textureManager;
 ModelManager            _modelManager;
 
-list<ISystem *>         _registeredSystems;
-
-// Try this until we need to destroy entities, although even then we might want to store entities
-// contiguously and have a second array that indexes into it
-// TODO(david): does it make sense to abstract these out?
-vector<Entity>               _opaqueObjects;
-vector<pair<Entity, float>>  _transparentObjects;
-vector<Vector<float, 4>>     _objectColors; // index is the EntityId
-vector<ModelMatrixComponent> _modelMatrices;
-vector<PositionComponent2D>  _objectPositions2D;
-vector<PositionComponent3D>  _objectPositions3D;
-
-// unordered_map<Entity, float, hash<int>> _opaqueObjects;
-// unordered_map<Entity, float, hash<int>> _transparentObjects;
+unordered_set<Entity, hash<int>>   _aliveEntities;
+// NOTE(david): Currently I don't technically need this as the caller knows the Entities to set alive
+unordered_set<Entity, hash<int>>   _deadEntities;
 
 DirectionalLightSourceSystem *_directionalLightSourceSystem;
 PointLightSourceSystem       *_pointLightSourceSystem;
@@ -79,6 +69,29 @@ public:
         const string &fsPath,
         const string &shaderName);
 
+    /*
+     * Adds and remembers uniform to the shader
+     */
+    void addInt(const string &shaderName, const string &uniformName, GLint value);
+    void addIntArr(const string &shaderName, const string &uniformName, int *value, uint32 size);
+    void addFloat(const string &shaderName, const string &uniformName, GLfloat value);
+    void addFloat2(const string &shaderName, const string &uniformName, const Vector<GLfloat, 2> &value);
+    void addFloat3(const string &shaderName, const string &uniformName, const Vector<GLfloat, 3> &value);
+    void addFloat4(const string &shaderName, const string &uniformName, const Vector<GLfloat, 4> &value);
+    void addMat4(const string &shaderName, const string &uniformName, const Matrix<GLfloat, 4, 4> &value);
+
+    /*
+     * Updates the stored uniform in the shader
+     * Only call these methods if updating the uniform is necessary
+     */
+    void updateInt(const string &shaderName, const string& uniformName, GLint value);
+    void updateIntArr(const string &shaderName, const string& uniformName, int *value, uint32 size);
+    void updateFloat(const string &shaderName, const string& uniformName, GLfloat value);
+    void updateFloat2(const string &shaderName, const string& uniformName, const Vector<GLfloat, 2> &value);
+    void updateFloat3(const string &shaderName, const string& uniformName, const Vector<GLfloat, 3> &value);
+    void updateFloat4(const string &shaderName, const string& uniformName, const Vector<GLfloat, 4> &value);
+    void updateMat4(const string &shaderName, const string& uniformName, const Matrix<GLfloat, 4, 4> &value);
+
     // ************************************************************************** //
     //                              Texture Methods                               //
     // ************************************************************************** //
@@ -105,7 +118,7 @@ public:
     void registerSystem(const Args& ... args)
     {
         TRACE();
-        _registeredSystems.push_back(_modelManager.registerSystem<System>(args...));
+        _modelManager.registerSystem<System>(args...);
     }
 
     /*
@@ -133,21 +146,19 @@ public:
         const string &shaderName,
         const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
         const Vector<float, 2>& position = Vector<float, 2>(0.0f, 0.0f),
-        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f),
-        float opacity = 1.0f);
+        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
     Entity createModel3D(
         const string &modelName,
         const string &shaderName,
         const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
         const Vector<float, 3>& position = Vector<float, 3>(0.0f, 0.0f, 0.0f),
-        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f),
-        float opacity = 1.0f);
+        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
     
     /*
-     * Remove/Add entity back to update/render loop
+     * Disable/Enable entity for update and render
      */
-    void removeEntity(Entity entity);
-    void addEntity(Entity entity);
+    void hideEntity(Entity entity);
+    void showEntity(Entity entity);
 
     // ************************************************************************** //
     //                                 Own Methods                                //
@@ -163,21 +174,12 @@ public:
         _modelManager.attachComponent<Component>(object, component);
     }
 
-    /*
-     * Updates the object's color
-     */
-    void updateColor(Entity object, const Vector<float, 4>& color);
-
-    /*
-     * Updates the object's position
-     */
-    void updatePosition2D(Entity object, const Vector<float, 2>& position);
-    void updatePosition3D(Entity object, const Vector<float, 3>& position);
-
-    /*
-     * Update model matrix of the object
-     */
-    void updateModelMatrix(Entity object, const Matrix<float, 4, 4>& model);
+    template <typename Component>
+    void updateComponent(Entity object, const Component& component)
+    {
+        TRACE();
+        _modelManager.updateComponent<Component>(object, component);
+    }
 
     /* Currently this updates all the meshes owned by the model.. not good..
      * Caller's responsibility:
@@ -192,7 +194,7 @@ public:
     /*
      * Updates all registered systems in the order of registration
      */
-    void onUpdate(float deltaTime);
+    void updateSystems(float deltaTime);
 
     /*
      * 1. Draw opaque objects
@@ -208,6 +210,15 @@ public:
      * Render 2D objects
      */
     void drawObjects2D(const Matrix<float, 4, 4>& projection);
+
+    /*
+     * Destroys all entities
+     * Unloads all models
+     * Unloads all textures
+     * Unloads all shaders
+     * Unloads all materials
+     */
+    void clear(void);
 
     /*
      * Displays all entity's components

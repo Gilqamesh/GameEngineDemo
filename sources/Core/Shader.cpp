@@ -20,7 +20,16 @@ Shader::~Shader()
 }
 
 Shader::Shader(Shader &&other)
-    : GL_ID(other.GL_ID), _shaderName(other._shaderName), uniformLocationCache(other.uniformLocationCache)
+    : GL_ID(other.GL_ID),
+      _shaderName(other._shaderName),
+      _uniformLocationCache(other._uniformLocationCache),
+      _intUniforms(other._intUniforms),
+      _intArrUniforms(other._intArrUniforms),
+      _floatUniforms(other._floatUniforms),
+      _float2Uniforms(other._float2Uniforms),
+      _float3Uniforms(other._float3Uniforms),
+      _float4Uniforms(other._float4Uniforms),
+      _mat4Uniforms(other._mat4Uniforms)
 {
     TRACE();
     other.GL_ID = 0;
@@ -33,7 +42,14 @@ Shader &Shader::operator=(Shader &&other)
     {
         GL_ID = other.GL_ID;
         _shaderName = other._shaderName;
-        uniformLocationCache = other.uniformLocationCache;
+        _uniformLocationCache = other._uniformLocationCache;
+        _intUniforms = other._intUniforms;
+        _intArrUniforms = other._intArrUniforms;
+        _floatUniforms = other._floatUniforms;
+        _float2Uniforms = other._float2Uniforms;
+        _float3Uniforms = other._float3Uniforms;
+        _float4Uniforms = other._float4Uniforms;
+        _mat4Uniforms = other._mat4Uniforms;
         other.GL_ID = 0;
     }
     return (*this);
@@ -51,59 +67,233 @@ void Shader::unbind()
     GLCall(glUseProgram(0));
 }
 
-void Shader::setInt(const string &name, GLint value)
+void Shader::setUniforms(void)
 {
     TRACE();
-    GLCall(glUniform1i(getUniformLocation(name), value));
+    for (const auto& p : _intUniforms)
+    {
+        GLCall(glUniform1i(getUniformLocation(p.first), p.second));
+    }
+    for (const auto& p : _intArrUniforms)
+    {
+        GLCall(glUniform1iv(getUniformLocation(p.first), p.second.second, p.second.first));
+    }
+    for (const auto& p : _floatUniforms)
+    {
+        GLCall(glUniform1f(getUniformLocation(p.first), p.second));
+    }
+    for (const auto& p : _float2Uniforms)
+    {
+        GLCall(glUniform2f(getUniformLocation(p.first), p.second[0], p.second[1]));
+    }
+    for (const auto& p : _float3Uniforms)
+    {
+        GLCall(glUniform3f(getUniformLocation(p.first), p.second[0], p.second[1], p.second[2]));
+    }
+    for (const auto& p : _float4Uniforms)
+    {
+        GLCall(glUniform4f(getUniformLocation(p.first), p.second[0], p.second[1], p.second[2], p.second[3]));
+    }
+    for (const auto& p : _mat4Uniforms)
+    {
+        GLCall(glUniformMatrix4fv(getUniformLocation(p.first), 1, GL_FALSE, p.second.data()));
+    }
 }
 
-void Shader::setIntArr(const string &name, int *value, unsigned int size)
+void Shader::addInt(const string &uniformName, GLint value)
 {
     TRACE();
-    GLCall(glUniform1iv(getUniformLocation(name), size, value));
+    _intUniforms.push_back({ uniformName, value });
 }
 
-void Shader::setFloat(const string &name, GLfloat value)
+void Shader::addIntArr(const string &uniformName, int *value, uint32 size)
 {
     TRACE();
-    GLCall(glUniform1f(getUniformLocation(name), value));
+    _intArrUniforms.push_back({ uniformName, { value, size } });
 }
 
-void Shader::setFloat2(const string &name, const Vector<GLfloat, 2> &value)
+void Shader::addFloat(const string &uniformName, GLfloat value)
 {
     TRACE();
-    GLCall(glUniform2f(getUniformLocation(name), value[0], value[1]));
+    _floatUniforms.push_back({ uniformName, value });
 }
 
-void Shader::setFloat3(const string &name, const Vector<GLfloat, 3> &value)
+void Shader::addFloat2(const string &uniformName, const Vector<GLfloat, 2> &value)
 {
     TRACE();
-    GLCall(glUniform3f(getUniformLocation(name), value[0], value[1], value[2]));
+    _float2Uniforms.push_back({ uniformName, value });
 }
 
-void Shader::setFloat4(const string &name, const Vector<GLfloat, 4> &value)
+void Shader::addFloat3(const string &uniformName, const Vector<GLfloat, 3> &value)
 {
     TRACE();
-    GLCall(glUniform4f(getUniformLocation(name), value[0], value[1], value[2], value[3]));
+    _float3Uniforms.push_back({ uniformName, value });
 }
 
-void Shader::setMat4(const string &name, const Matrix<GLfloat, 4, 4> &value)
+void Shader::addFloat4(const string &uniformName, const Vector<GLfloat, 4> &value)
 {
     TRACE();
-    GLCall(glUniformMatrix4fv(getUniformLocation(name), 1, GL_FALSE, value.data()));
+    _float4Uniforms.push_back({ uniformName, value });
 }
 
-GLint Shader::getUniformLocation(const string &name)
+void Shader::addMat4(const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
 {
     TRACE();
-    if (uniformLocationCache.count(name))
-        return (uniformLocationCache[name]);
+    _mat4Uniforms.push_back({ uniformName, value });
+}
 
-    GLCall(int location = glGetUniformLocation(GL_ID, name.c_str()));
+void Shader::updateInt(const string &uniformName, GLint value)
+{
+    TRACE();
+    for (auto &p : _intUniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateIntArr(const string &uniformName, int *value, uint32 size)
+{
+    TRACE();
+    for (auto &p : _intArrUniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second.first = value;
+            p.second.second = size;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateFloat(const string &uniformName, GLfloat value)
+{
+    TRACE();
+    for (auto &p : _floatUniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateFloat2(const string &uniformName, const Vector<GLfloat, 2> &value)
+{
+    TRACE();
+    for (auto &p : _float2Uniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateFloat3(const string &uniformName, const Vector<GLfloat, 3> &value)
+{
+    TRACE();
+    for (auto &p : _float3Uniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateFloat4(const string &uniformName, const Vector<GLfloat, 4> &value)
+{
+    TRACE();
+    for (auto &p : _float4Uniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::updateMat4(const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
+{
+    TRACE();
+    for (auto &p : _mat4Uniforms)
+    {
+        if (p.first == uniformName)
+        {
+            p.second = value;
+            return ;
+        }
+    }
+    LOG_E("Uniform " << uniformName << " is not stored for " << _shaderName);
+}
+
+void Shader::setInt(const string &uniformName, GLint value)
+{
+    TRACE();
+    GLCall(glUniform1i(getUniformLocation(uniformName), value));
+}
+
+void Shader::setIntArr(const string &uniformName, int *value, uint32 size)
+{
+    TRACE();
+    GLCall(glUniform1iv(getUniformLocation(uniformName), size, value));
+}
+
+void Shader::setFloat(const string &uniformName, GLfloat value)
+{
+    TRACE();
+    GLCall(glUniform1f(getUniformLocation(uniformName), value));
+}
+
+void Shader::setFloat2(const string &uniformName, const Vector<GLfloat, 2> &value)
+{
+    TRACE();
+    GLCall(glUniform2f(getUniformLocation(uniformName), value[0], value[1]));
+}
+
+void Shader::setFloat3(const string &uniformName, const Vector<GLfloat, 3> &value)
+{
+    TRACE();
+    GLCall(glUniform3f(getUniformLocation(uniformName), value[0], value[1], value[2]));
+}
+
+void Shader::setFloat4(const string &uniformName, const Vector<GLfloat, 4> &value)
+{
+    TRACE();
+    GLCall(glUniform4f(getUniformLocation(uniformName), value[0], value[1], value[2], value[3]));
+}
+
+void Shader::setMat4(const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
+{
+    TRACE();
+    GLCall(glUniformMatrix4fv(getUniformLocation(uniformName), 1, GL_FALSE, value.data()));
+}
+
+GLint Shader::getUniformLocation(const string &uniformName)
+{
+    TRACE();
+    if (_uniformLocationCache.count(uniformName))
+        return (_uniformLocationCache[uniformName]);
+
+    GLCall(int location = glGetUniformLocation(GL_ID, uniformName.c_str()));
     if (location == -1)
-        LOG_E("Warning: uniform '" << name << "' does not exist! " << _shaderName);
+        LOG_E("Warning: uniform '" << uniformName << "' does not exist! " << _shaderName);
 
-    uniformLocationCache[name] = location;
+    _uniformLocationCache[uniformName] = location;
     return (location);
 }
 

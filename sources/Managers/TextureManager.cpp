@@ -62,5 +62,4 @@ bool TextureManager::exists(const string &textureName) const
     return (_textures.count(textureName));
 }
 
-
 }

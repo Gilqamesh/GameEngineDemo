@@ -28,4 +28,28 @@ void Coordinator::destroyEntity(Entity entity)
     _componentManager.entityDestroyed(entity);
 }
 
+void Coordinator::hideEntity(Entity entity)
+{
+    TRACE();
+    _systemManager.hideEntity(entity);
+}
+
+void Coordinator::showEntity(Entity entity)
+{
+    TRACE();
+    _systemManager.showEntity(entity);
+}
+
+ComponentSignature Coordinator::getComponentSignature(Entity entity)
+{
+    TRACE();
+    return (_entityManager.getComponentSignature(entity));
+}
+
+void Coordinator::updateSystems(float dt)
+{
+    TRACE();
+    _systemManager.updateSystems(dt);
+}
+
 }

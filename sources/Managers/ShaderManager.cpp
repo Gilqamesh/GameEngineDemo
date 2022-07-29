@@ -14,7 +14,7 @@ void ShaderManager::addShader(Shader *shader)
 {
     TRACE();
     if (exists(shader->getName()) == true)
-        throw runtime_error("Shader " + shader->getName() + " already exists in the ShaderManager");
+        throw Exception("Shader " + shader->getName() + " already exists in the ShaderManager");
 
     _shaders[shader->getName()] = shader;
 }
@@ -23,7 +23,7 @@ void ShaderManager::addShader(const string &vertexShaderPath, const string &frag
 {
     TRACE();
     if (exists(shaderName) == true)
-        throw runtime_error("Shader " + shaderName + " already exists in the ShaderManager");
+        throw Exception("Shader " + shaderName + " already exists in the ShaderManager");
 
     _shaders[shaderName] = new Shader(vertexShaderPath, fragmentShaderPath, shaderName);
 }
@@ -32,7 +32,7 @@ void ShaderManager::deleteShader(const string &shaderName)
 {
     TRACE();
     if (exists(shaderName) == false)
-        throw runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
+        throw Exception("Shader " + shaderName + " does not exist in the ShaderManager");
 
     delete _shaders[shaderName];
     _shaders.erase(shaderName);
@@ -51,7 +51,7 @@ Shader *ShaderManager::getShader(const string &shaderName)
 {
     TRACE();
     if (exists(shaderName) == false)
-        throw runtime_error("Shader " + shaderName + " does not exist in the ShaderManager");
+        throw Exception("Shader " + shaderName + " does not exist in the ShaderManager");
 
     return (_shaders[shaderName]);
 }

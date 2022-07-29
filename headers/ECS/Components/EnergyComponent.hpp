@@ -6,9 +6,8 @@
 namespace GilqEngine
 {
 
-class EnergyComponent
+struct EnergyComponent
 {
-public:
     float joules;
 };
 

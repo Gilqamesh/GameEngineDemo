@@ -20,13 +20,13 @@ class Vector
 {
 Matrix<T, 1, LENGTH>    entries;
 public:
-    Vector()                                                    { }
+    Vector() = default;
     Vector(T* v):                           entries(v)          { }
-    Vector(const Matrix<T, 1, LENGTH> &m):  entries(m)          { }
-    template <typename... Args>
+    explicit Vector(const Matrix<T, 1, LENGTH> &m):  entries(m)          { }
+    template<typename... Args, typename enable_if<sizeof...(Args) == LENGTH, bool>::type = true>
     Vector(const Args & ... args):          entries(args...)    { }
     Vector(const Vector &v):                entries(v.entries)  { }
-    ~Vector()                                                   { }
+    ~Vector() = default;
     Vector &operator=(const Vector &v) { if (this != &v) entries = v.entries; return (*this); }
 
     T*       data(void)       { return (entries.data()); }

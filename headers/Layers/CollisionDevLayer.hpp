@@ -17,10 +17,11 @@ class CollisionDevLayer : public ILayer
     Entity _rect;
     RectangleColliderComponent _rectangle;
 
-    Entity _rectMouse;
-    RectangleColliderComponent _rectangleMouse;
-
     Entity _line;
+
+    Entity _circle;
+
+    Entity _normalLine;
 public:
     CollisionDevLayer(MacWindow *macWindow);
     virtual void onAttach() override;

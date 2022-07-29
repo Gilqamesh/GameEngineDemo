@@ -83,7 +83,7 @@ void QuadTreeLayer::onEvent(IEvent &e)
 void QuadTreeLayer::onUpdate(float deltaTime)
 {
     LOG(deltaTime);
-    _objectCoordinator.onUpdate(deltaTime);
+    _objectCoordinator.updateSystems(deltaTime);
 }
 
 void QuadTreeLayer::onRender()
@@ -101,7 +101,13 @@ void QuadTreeLayer::loadShaders(void)
 
 void QuadTreeLayer::loadTextures(void)
 {
-    _objectCoordinator.addTexture(getTextureDir() + "White.png", "PurpleTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "White.png", "WhiteTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Purple.png", "PurpleTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Green.png", "GreenTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Blue.png", "BlueTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Black.png", "BlackTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Yellow.png", "YellowTexture");
+    _objectCoordinator.addTexture(getTextureDir() + "Red.png", "RedTexture");
 }
 
 void QuadTreeLayer::loadMaterials(void)

@@ -16,7 +16,7 @@ ModelManager::ModelManager()
 ModelManager::~ModelManager()
 {
     TRACE();
-    clearModelEntities();
+    clearEntities();
     for (auto model : _loadedModels)
         delete model.second;
     delete _coordinator;
@@ -45,21 +45,37 @@ void ModelManager::loadModel(
     _loadedModels[name]->setMaterial(materialName);
 }
 
-// Todo: remove entities that are associated with this model
-// void destroyModel(const string name)
-// {
-//     TRACE();
-//     ASSERT(_loadedModels.count(name));
-//     delete _loadedModels[name];
-//     _loadedModels.erase(name);
-// }
+/*
+ * Not tested
+ */
+void ModelManager::unloadModel(const string& name)
+{
+    TRACE();
+    if (_loadedModels.count(name) == 0)
+        return ;
+    Model *model = _loadedModels[name];
+    auto it = _modelEntities.begin();
+    while (it != _modelEntities.end())
+    {
+        if (it->second == model)
+        {
+            it = _modelEntities.erase(it);
+        }
+        else
+        {
+            ++it;
+        }
+    }
+    delete model;
+    _loadedModels.erase(name);
+}
 
 Entity ModelManager::createModel(const string &name)
 {
     TRACE();
     ASSERT(_loadedModels.count(name));
     Entity model = _coordinator->createEntity();
-    _modelEntities.push_back(_loadedModels[name]);
+    _modelEntities[model] = _loadedModels[name];
 
     return (model);
 }
@@ -76,47 +92,32 @@ void ModelManager::setModelShader(Entity model, Shader *shader)
     _modelEntities[model]->setShader(shader);
 }
 
-// Check if anyone calls this
-// void ModelManager::drawModels(
-//     const Matrix<float, 4, 4> &view,
-//     const Matrix<float, 4, 4> &projection)
-// {
-//     TRACE();
-//     for (uint32 objectIndex = 0; objectIndex < _modelEntities.size(); ++objectIndex)
-//     {
-//         Model *model = _modelEntities[objectIndex];
-//         Shader *shader = model->getShader();
-//         shader->bind();
-//         shader->setMat4("model", _modelMatrices[objectIndex].m);
-//         shader->setMat4("view", view);
-//         shader->setMat4("projection", projection);
-//         model->draw();
-//     }
-// }
-
-void ModelManager::destroyModelEntity(Entity entity)
+void ModelManager::hideEntity(Entity entity)
 {
-    (void)entity;
-    throw Exception("Not implemented");
-    // TODO(david): implement
-    // NOTE(david): for destroying entities it makes more sense to index into a vector than to store them sparsely
-
     TRACE();
-    // _modelEntities.erase(entity);
-    // _coordinator->destroyEntity(entity);
-    // _modelMatrices.erase(entity);
+    _coordinator->hideEntity(entity);
 }
 
-void ModelManager::clearModelEntities()
+void ModelManager::showEntity(Entity entity)
 {
-    throw Exception("Not implemented");
-    // TODO(david): implement
-
     TRACE();
-    // for (auto &model : _modelEntities)
-    //     _coordinator->destroyEntity(model.first);
-    // _modelEntities.clear();
-    // _modelMatrices.clear();
+    _coordinator->showEntity(entity);
+}
+
+void ModelManager::clearEntities()
+{
+    TRACE();
+    for (auto &model : _modelEntities)
+    {
+        _coordinator->destroyEntity(model.first);
+    }
+    _modelEntities.clear();
+}
+
+void ModelManager::clear()
+{
+    _modelEntities.clear();
+    _loadedModels.clear();
 }
 
 void ModelManager::updateVBO_position2D(Entity model, const void *data, GLuint size)
@@ -147,6 +148,12 @@ void ModelManager::updateIBO(Entity model, const void *data, GLuint count)
 {
     TRACE();
     _modelEntities[model]->updateIBO(data, count);
+}
+
+void ModelManager::updateSystems(float dt)
+{
+    TRACE();
+    _coordinator->updateSystems(dt);
 }
 
 }

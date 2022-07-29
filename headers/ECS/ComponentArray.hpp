@@ -11,38 +11,37 @@ namespace GilqEngine
 /*
  * Bookkeeps what entities are associated with a specific implementation of a Component
  */
-template <typename T>
+template <typename Component>
 class ComponentArray : public IComponentArray
 {
-array<T, MAX_ENTITIES>        data; /* packed component data for entities */
-unordered_map<Entity, size_t, hash<int> > entityToData; /* maps entity id to 'data' index */
-unordered_map<size_t, Entity> dataToEntity; /* maps 'data' index to entity id */
-size_t                             currentSize; /* size of valid entries in 'data' */
+array<Component, MAX_ENTITIES>            _data; /* packed component _data for entities */
+unordered_map<Entity, size_t, hash<int> > _entityToData; /* maps entity id to '_data' index */
+unordered_map<size_t, Entity>             _dataToEntity; /* maps '_data' index to entity id */
+size_t                                    _currentSize; /* size of valid entries in '_data' */
 public:
-    ComponentArray()
-        : currentSize(0) { }
+    ComponentArray() : _currentSize(0) { }
     
     /*
      * Adds entity to the component array
      * Essentially adding a new component to an Entity
      */
-    void insertData(Entity entity, T component)
+    void insertData(Entity entity, Component component)
     {
-        ASSERT(entityToData.count(entity) == 0);
+        ASSERT(_entityToData.count(entity) == 0);
 
-        entityToData[entity] = currentSize;
-        dataToEntity[currentSize] = entity;
-        data[currentSize++] = component;
+        _entityToData[entity] = _currentSize;
+        _dataToEntity[_currentSize] = entity;
+        _data[_currentSize++] = component;
     }
 
     /*
      * Updates existing component on an entity
      */
-    void updateComponent(Entity entity, T component)
+    void updateComponent(Entity entity, const Component& component)
     {
-        ASSERT(entityToData.count(entity));
+        ASSERT(_entityToData.count(entity));
 
-        data[entityToData[entity]] = component;
+        _data[_entityToData[entity]] = component;
     }
 
     /*
@@ -52,29 +51,29 @@ public:
     void removeData(Entity entity)
     {
         // "Entity does not exist in component."
-        ASSERT(entityToData.count(entity));
+        ASSERT(_entityToData.count(entity));
 
-        size_t removedIndex = entityToData[entity];
-        // replacing the old 'data' with the last 'data'
-        data[removedIndex] = data[currentSize - 1];
-        Entity lastEntity = dataToEntity[currentSize - 1];
-        entityToData[lastEntity] = removedIndex;
-        dataToEntity[removedIndex] = lastEntity;
+        size_t removedIndex = _entityToData[entity];
+        // replacing the old '_data' with the last '_data'
+        _data[removedIndex] = _data[_currentSize - 1];
+        Entity lastEntity = _dataToEntity[_currentSize - 1];
+        _entityToData[lastEntity] = removedIndex;
+        _dataToEntity[removedIndex] = lastEntity;
 
         // erasing old entry
-        entityToData.erase(entity);
-        dataToEntity.erase(--currentSize);
+        _entityToData.erase(entity);
+        _dataToEntity.erase(--_currentSize);
     }
 
     /*
      * Returns the component associated with the entity
      */
-    T& getData(Entity entity)
+    Component& getData(Entity entity)
     {
         // "Entity does not exist in component."
-        ASSERT(entityToData.count(entity));
+        ASSERT(_entityToData.count(entity));
 
-        return (data[entityToData[entity]]);
+        return (_data[_entityToData[entity]]);
     }
 
     /*
@@ -82,7 +81,7 @@ public:
      */
     virtual void entityDestroyed(Entity entity) override
     {
-        if (entityToData.count(entity))
+        if (_entityToData.count(entity))
             removeData(entity);
     }
 
@@ -91,7 +90,7 @@ public:
      */
     bool hasEntity(Entity entity) const
     {
-        return (entityToData.count(entity) > 0);
+        return (_entityToData.count(entity) > 0);
     }
 
     /*
@@ -99,8 +98,8 @@ public:
      */
     virtual void print() const override
     {
-        for (size_t i = 0; i < currentSize; ++i)
-            cout << "[Entity id: " << dataToEntity.at(i) << ", data: " << data.at(i) << "], ";
+        for (size_t i = 0; i < _currentSize; ++i)
+            cout << "[Entity id: " << _dataToEntity.at(i) << ", _data: " << _data.at(i) << "], ";
         cout << endl;
     }
 };

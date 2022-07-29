@@ -24,84 +24,84 @@ public:
     ~ComponentManager();
 
     /*
-     * Register component of type T to the manager
+     * Register component of type Component to the manager
      */
-    template <typename T>
+    template <typename Component>
     void registerComponent()
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         if (NameToId.count(componentName)) return ; // if component already registered do nothing
         // Number of components in the manager reached maximum size MAX_COMPONENTS
         ASSERT(currentId != MAX_COMPONENTS);
         // Component type is already registered
         ASSERT(NameToId.count(componentName) == 0);
         NameToId[componentName] = currentId++;
-        NameToArr[componentName] = new ComponentArray<T>();
+        NameToArr[componentName] = new ComponentArray<Component>();
     }
 
     /*
-     * Returns the id (essentially the bit in the bitset) held for the component of type T
+     * Returns the id (essentially the bit in the bitset) held for the component of type Component
      */
-    template <typename T>
+    template <typename Component>
     ComponentId getComponentId() const
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         // Component type is not registered
         ASSERT(NameToId.count(componentName));
         return (NameToId.at(componentName));
     }
 
     /*
-     * Adds a component type T to an entity
+     * Adds a component type Component to an entity
      */
-    template <typename T>
-    void attachComponent(Entity entity, T component)
+    template <typename Component>
+    void attachComponent(Entity entity, Component component)
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         // Component type is not registered
         ASSERT(NameToArr.count(componentName));
-        static_cast<ComponentArray<T> *>(NameToArr[componentName])->insertData(entity, component);
+        static_cast<ComponentArray<Component> *>(NameToArr[componentName])->insertData(entity, component);
     }
 
     /*
      * Updates existing component on an entity
      */
-    template <typename T>
-    void updateComponent(Entity entity, T component)
+    template <typename Component>
+    void updateComponent(Entity entity, const Component& component)
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         ASSERT(NameToArr.count(componentName));
-        static_cast<ComponentArray<T> *>(NameToArr[componentName])->updateComponent(entity, component);
+        static_cast<ComponentArray<Component> *>(NameToArr[componentName])->updateComponent(entity, component);
     }
 
     /*
-     * Removes a component of type T from an entity
+     * Removes a component of type Component from an entity
      */
-    template <typename T>
+    template <typename Component>
     void removeComponent(Entity entity)
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         // Component type is not registered
         ASSERT(NameToArr.count(componentName));
-        return (static_cast<ComponentArray<T> *>(NameToArr[componentName])->removeData(entity));
+        return (static_cast<ComponentArray<Component> *>(NameToArr[componentName])->removeData(entity));
     }
 
     /*
-     * Returns the component data of type T in entity
+     * Returns the component data of type Component in entity
      */
-    template <typename T>
-    T& getComponent(Entity entity)
+    template <typename Component>
+    Component& getComponent(Entity entity)
     {
         TRACE();
-        const char *componentName = typeid(T).name();
+        const char *componentName = typeid(Component).name();
         // Component type is not registered
         ASSERT(NameToArr.count(componentName));
-        return (static_cast<ComponentArray<T> *>(NameToArr[componentName])->getData(entity));
+        return (static_cast<ComponentArray<Component> *>(NameToArr[componentName])->getData(entity));
     }
 
     /*
