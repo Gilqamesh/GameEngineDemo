@@ -9,26 +9,21 @@ namespace GilqEngine
 struct RectangleColliderComponent
 {
     RectangleColliderComponent() = default;
-    RectangleColliderComponent(float TopLeftX, float TopLeftY, float Width, float Height);
+    RectangleColliderComponent(Vector<float, 2> position, Vector<float, 2> size);
 
-    float topLeftX;
-    float topLeftY;
-    float width;
-    float height;
+    Vector<float, 2> position;
+    Vector<float, 2> size;
 
     inline bool doesRecIntersect(const RectangleColliderComponent& other) const
     {
-        if (topLeftX + width < other.topLeftX || other.topLeftX + other.width < topLeftX)
-            return (false);
-        if (topLeftY + height < other.topLeftY || other.topLeftY + other.height < topLeftY)
-            return (false);
-        return (true);        
+        return (position[0] < other.position[0] + other.size[0] && other.position[0] < position[0] + size[0] &&
+                position[1] < other.position[1] + other.size[1] && other.position[1] < position[1] + size[1]);
     }
 
     inline bool isPointInside(Vector<float, 2> p) const
     {
-        return (p[0] >= topLeftX && p[0] <= topLeftX + width &&
-                p[1] >= topLeftY && p[1] <= topLeftY + height);
+        return (p[0] >= position[0] && p[0] <= position[0] + size[0] &&
+                p[1] >= position[1] && p[1] <= position[1] + size[1]);
     }
 
     bool doesRayIntersect(

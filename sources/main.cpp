@@ -13,8 +13,8 @@ int main(void)
     try
     {
         // make_unique<BytecodeSimulator>();
-        // unique_ptr<QuadTreeSimulator> simulator = make_unique<QuadTreeSimulator>();
-        unique_ptr<ISimulator> simulator = make_unique<CollisionDevSimulator>();
+        unique_ptr<ISimulator> simulator = make_unique<QuadTreeSimulator>();
+        // unique_ptr<ISimulator> simulator = make_unique<CollisionDevSimulator>();
         simulator->main();
     }
     catch (const Exception& e)

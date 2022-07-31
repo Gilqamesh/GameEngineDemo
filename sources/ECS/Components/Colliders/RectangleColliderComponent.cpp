@@ -5,15 +5,15 @@ namespace GilqEngine
 
 ostream &operator<<(ostream &os, const RectangleColliderComponent &a)
 {
-    os << a.topLeftX << " " << a.topLeftY << " " << a.width << " " << a.height;
+    os << a.position << " " << a.size;
 
     return (os);
 }
 
 
 
-RectangleColliderComponent::RectangleColliderComponent(float TopLeftX, float TopLeftY, float Width, float Height)
-    : topLeftX(TopLeftX), topLeftY(TopLeftY), width(Width), height(Height)
+RectangleColliderComponent::RectangleColliderComponent(Vector<float, 2> position, Vector<float, 2> size)
+    : position(position), size(size)
 {
     
 }
@@ -31,8 +31,8 @@ bool RectangleColliderComponent::doesRayIntersect(
 
     Vector<float, 2> invRayDir = element_wise_divide(Vector<float, 2>(1.0f, 1.0f), rayDirection);
 
-    Vector<float, 2> tNear = element_wise_multiply((Vector<float, 2>(topLeftX, topLeftY) - rayOrigin), invRayDir);
-    Vector<float, 2> tFar  = element_wise_multiply((Vector<float, 2>(topLeftX + width, topLeftY + height) - rayOrigin), invRayDir);
+    Vector<float, 2> tNear = element_wise_multiply(position - rayOrigin, invRayDir);
+    Vector<float, 2> tFar  = element_wise_multiply(position + size - rayOrigin, invRayDir);
 
     if (isnan(tFar[1]) || isnan(tFar[0])) return (false);
     if (isnan(tNear[1]) || isnan(tNear[0])) return (false);
@@ -86,13 +86,9 @@ bool RectangleColliderComponent::dynamicRecIntersect(
     if (velocity[0] == 0.0f && velocity[1] == 0.0f)
         return (false);
 
-    RectangleColliderComponent expandedTarget(target);
-    expandedTarget.topLeftX -= width / 2.0f;
-    expandedTarget.topLeftY -= height / 2.0f;
-    expandedTarget.width += width;
-    expandedTarget.height += height;
+    RectangleColliderComponent expandedTarget(target.position - size / 2.0f, target.size + size);
 
-    if (expandedTarget.doesRayIntersect(Vector<float, 2>(topLeftX + width / 2.0f, topLeftY + height / 2.0f), velocity * deltaTime,
+    if (expandedTarget.doesRayIntersect(position + size / 2.0f, velocity * deltaTime,
         contactPoint, contactNormal, contactTime))
     {
         return (contactTime >= 0.0f && contactTime < 1.0f);

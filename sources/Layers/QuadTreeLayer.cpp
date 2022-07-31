@@ -30,7 +30,7 @@ void QuadTreeLayer::onAttach()
     float maxWidth = (float)_window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 1000;
+    unsigned int numberOfInsertions = 250;
     vector<string> modelNames = {
         "BlackRectangleModel",
         "RedRectangleModel",
@@ -38,35 +38,49 @@ void QuadTreeLayer::onAttach()
         "BlueRectangleModel",
         "YellowRectangleModel"
     };
-    // Vertical line
-    _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
-            scale_matrix(maxWidth, 1.0f, 1.0f) *
-            translation_matrix(0.0f, maxHeight / 2.0f, 0.0f));
-    // Horizontal line
-    _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
-            scale_matrix(1.0f, maxHeight, 1.0f) *
-            translation_matrix(maxWidth / 2.0f, 0.0f, 0.0f));
+    // Vector<float, 2> position1(750.0f, 200.0f);
+    // Vector<float, 2> position2(850.0f, 300.0f);
+    // Vector<float, 2> size(60.0f, 60.0f);
+
+    // Entity rec1 = _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader", scale_matrix(size), position1, Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f));
+    // _objectCoordinator.attachComponent<RectangleColliderComponent>(rec1, { position1, size });
+    // _objectCoordinator.attachComponent<VelocityComponent2D>(rec1, { 30.0f, 20.0f });
+
+    // Entity rec2 = _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader", scale_matrix(size), position2, Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
+    // _objectCoordinator.attachComponent<RectangleColliderComponent>(rec2, { position2, size });
+    // _objectCoordinator.attachComponent<VelocityComponent2D>(rec2, { -5.0f, -20.0f });
+
+    // // Vertical line
+    // _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
+    //         scale_matrix(maxWidth, 1.0f, 1.0f) *
+    //         translation_matrix(0.0f, maxHeight / 2.0f, 0.0f));
+    // // Horizontal line
+    // _objectCoordinator.createModel2D("PurpleRectangleModel", "RectangleShader",
+    //         scale_matrix(1.0f, maxHeight, 1.0f) *
+    //         translation_matrix(maxWidth / 2.0f, 0.0f, 0.0f));
 
     for (unsigned int index = 0; index < numberOfInsertions; ++index)
     {
         // Rectangle parameters
-        float upperLeftX = getRand(low, maxWidth);
-        float upperLeftY = getRand(low, maxHeight);
-        float width = 20.0f;
-        float height = 20.0f;
+        Vector<float, 2> position(getRand(low, maxWidth), getRand(low, maxHeight));
+        float width = getRand(5.0f, 40.0f);
+        float height = getRand(5.0f, 40.0f);
+        Vector<float, 2> size(width, height);
 
         // Bound checking
-        if (upperLeftX + width > maxWidth)
-            width = maxWidth - upperLeftX;
-        if (upperLeftY + height > maxHeight)
-            height = maxHeight - upperLeftY;
+        if (position[0] + size[0] > maxWidth)
+            size[0] = maxWidth - position[0];
+        if (position[1] + size[1] > maxHeight)
+            size[1] = maxHeight - position[1];
 
         // Create rectangle
         string modelName = modelNames[rand() % modelNames.size()];
-        Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader", scale_matrix(width, height, 1.0f));
-        _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, {upperLeftX, upperLeftY, width, height});
-        _objectCoordinator.attachComponent<VelocityComponent2D>(rectangle, {getRand(-20.0f, 20.0f), getRand(-20.0f, 20.0f)});
-        _objectCoordinator.attachComponent<PositionComponent2D>(rectangle, {upperLeftX, upperLeftY});
+        Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader", scale_matrix(size), position,
+            Vector<float, 4>(getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), 1.0f));
+        _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, { position, size });
+        float lowVelocity = -40.0f;
+        float highVelocity = 100.0f;
+        _objectCoordinator.attachComponent<VelocityComponent2D>(rectangle, {getRand(lowVelocity, highVelocity), getRand(lowVelocity, highVelocity)});
     }
 }
 

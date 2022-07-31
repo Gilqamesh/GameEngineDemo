@@ -32,10 +32,10 @@ void CollisionDevLayer::onAttach()
 
     LOG("Resolution: " << _window->getWidth() << " " << _window->getHeight());
 
-    _rectangle = { 800.0f, 450.0f, 100.0f, 60.0f };
+    _rectangle = { {800.0f, 450.0f}, {100.0f, 60.0f} };
     _rect = _objectCoordinator.createModel2D("WhiteRectangleModel", "RectangleShader",
-        scale_matrix(_rectangle.width, _rectangle.height),
-        Vector<float, 2>(_rectangle.topLeftX, _rectangle.topLeftY),
+        scale_matrix(_rectangle.size),
+        _rectangle.position,
         Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
 
     _line = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader",
@@ -54,10 +54,10 @@ void CollisionDevLayer::onAttach()
     _normalLine = _objectCoordinator.createModel2D("WhiteLineModel2", "LineShader");
     _objectCoordinator.hideEntity(_normalLine);
 
-    _mouseRectangle = { 0.0f, 0.0f, 50.0f, 75.0f };
+    _mouseRectangle = { {0.0f, 0.0f}, {50.0f, 75.0f} };
     _mouseRect = _objectCoordinator.createModel2D("WhiteRectangleModel2", "RectangleShader",
-        scale_matrix(_mouseRectangle.width, _mouseRectangle.height),
-        {},
+        scale_matrix(_mouseRectangle.size),
+        _mouseRectangle.position,
         {1.0f, 0.0f, 0.0f, 1.0f});
     _objectCoordinator.attachComponent<VelocityComponent2D>(_mouseRect, {});
 }
@@ -91,20 +91,30 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     float tHitNear;
 
     // mouseRectangle collision with rect
-    Vector<float, 2> rayDirection = mousePos - Vector<float, 2>(_mouseRectangle.topLeftX, _mouseRectangle.topLeftY);
+    Vector<float, 2> rayDirection = mousePos - _mouseRectangle.position;
     Vector<float, 2> mouseRecVelocity = normalize(rayDirection) * 10.0f;
     VelocityComponent2D &prevVelocity = _objectCoordinator.getComponent<VelocityComponent2D>(_mouseRect);
     if (GLFWInput::getInstance(_window->getWindow())->isMousePressed(0))
         prevVelocity.v += mouseRecVelocity;
     if (_mouseRectangle.dynamicRecIntersect(prevVelocity.v, _rectangle, contactPoint, contactNormal, tHitNear, deltaTime))
     {
+        // bounce
+        // if (contactNormal[0] != 0.0f)
+        // {
+        //     prevVelocity.v[0] *= -1.0f;    
+        // }
+        // if (contactNormal[1] != 0.0f)
+        // {
+        //     prevVelocity.v[1] *= -1.0f;
+        // }
+
+        // stop & slide
         prevVelocity.v += element_wise_multiply(contactNormal, Vector<float, 2>(abs(prevVelocity.v[0]), abs(prevVelocity.v[1])))
             * (1.0f - tHitNear);
     }
-    Vector<float, 2> newMouseRectPosition = Vector<float, 2>(_mouseRectangle.topLeftX, _mouseRectangle.topLeftY) + prevVelocity.v * deltaTime;
+    Vector<float, 2> newMouseRectPosition = _mouseRectangle.position + prevVelocity.v * deltaTime;
     _objectCoordinator.updateComponent<PositionComponent2D>(_mouseRect, newMouseRectPosition);
-    _mouseRectangle.topLeftX = newMouseRectPosition[0];
-    _mouseRectangle.topLeftY = newMouseRectPosition[1];
+    _mouseRectangle.position = newMouseRectPosition;
 
     // mouseRay collision with rect
     if (_rectangle.doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)

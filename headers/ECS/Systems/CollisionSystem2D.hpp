@@ -27,6 +27,8 @@ class QuadTree
     const uint8 _nodeCapacity;
 
     RectangleColliderComponent _boundary;
+    
+    float _dt;
 
     QuadTree *_northWest;
     QuadTree *_northEast;
@@ -34,8 +36,15 @@ class QuadTree
     QuadTree *_southEast;
 
     Coordinator *_coordinator;
+
+    vector<unordered_set<uint32>> &_collidedPairs;
 public:
-    QuadTree(const RectangleColliderComponent& boundary, uint8 nodeCapacity, Coordinator *coordinator);
+    QuadTree(
+        const RectangleColliderComponent& boundary,
+        uint8 nodeCapacity,
+        Coordinator *coordinator,
+        float dt,
+        vector<unordered_set<uint32>> &collidedPairs);
     ~QuadTree();
 
     bool insert(Entity rectangleIndex);

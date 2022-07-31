@@ -124,6 +124,19 @@ Vector<T, LENGTH> element_wise_multiply(const Vector<T, LENGTH>& v1, const Vecto
     return (result);
 }
 
+template <typename T, unsigned int LENGTH>
+Vector<T, LENGTH> element_wise_abs(const Vector<T, LENGTH>& v)
+{
+    Vector<T, LENGTH> result(v);
+
+    for (unsigned int i = 0; i < LENGTH; ++i)
+    {
+        result[i] = abs(result[i]);
+    }
+
+    return (result);
+}
+
 enum DIRECTION
 {
     UP,
