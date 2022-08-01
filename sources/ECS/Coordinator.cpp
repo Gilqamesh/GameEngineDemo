@@ -40,7 +40,7 @@ void Coordinator::showEntity(Entity entity)
     _systemManager.showEntity(entity);
 }
 
-ComponentSignature Coordinator::getComponentSignature(Entity entity)
+ComponentSignature &Coordinator::getComponentSignature(Entity entity)
 {
     TRACE();
     return (_entityManager.getComponentSignature(entity));

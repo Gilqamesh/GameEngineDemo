@@ -9,16 +9,10 @@ ObjectCoordinator::ObjectCoordinator()
     TRACE();
     _modelManager.setMaterialManager(&_materialManager);
     _modelManager.setTextureManager(&_textureManager);
-    _modelManager.registerComponent<ModelMatrixComponent>();
-    _modelManager.registerComponent<PositionComponent2D>();
-    _modelManager.registerComponent<PositionComponent3D>();
-    _modelManager.registerComponent<ColorComponent>();
-    _directionalLightSourceSystem
-        = _modelManager.registerSystem<DirectionalLightSourceSystem>();
-    _pointLightSourceSystem
-        = _modelManager.registerSystem<PointLightSourceSystem>();
-    _spotLightSourceSystem
-        = _modelManager.registerSystem<SpotLightSourceSystem>();
+    // TODO(david): maybe abstract these system registrations out
+    _directionalLightSourceSystem = _modelManager.registerSystem<DirectionalLightSourceSystem>();
+    _pointLightSourceSystem = _modelManager.registerSystem<PointLightSourceSystem>();
+    _spotLightSourceSystem = _modelManager.registerSystem<SpotLightSourceSystem>();
 }
 
 ObjectCoordinator::~ObjectCoordinator()
@@ -176,36 +170,20 @@ void ObjectCoordinator::loadModel(
     _modelManager.loadModel(meshFactory, modelName, materialName);
 }
 
-Entity ObjectCoordinator::createModel2D(
-    const string &modelName,
-    const string &shaderName,
-    const Matrix<float, 4, 4> &modelMatrix,
-    const Vector<float, 2>& position,
-    const Vector<float, 4>& color)
+Entity ObjectCoordinator::createModel2D(const string &modelName, const string &shaderName)
 {
     TRACE();
     Entity entity = _modelManager.createModel(modelName);
-    _modelManager.attachComponent<ModelMatrixComponent>(entity, modelMatrix);
-    _modelManager.attachComponent<PositionComponent2D>(entity, position);
-    _modelManager.attachComponent<ColorComponent>(entity, color);
 
     _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
     _aliveEntities.insert(entity);
     return (entity);
 }
 
-Entity ObjectCoordinator::createModel3D(
-    const string &modelName,
-    const string &shaderName,
-    const Matrix<float, 4, 4> &modelMatrix,
-    const Vector<float, 3>& position,
-    const Vector<float, 4>& color)
+Entity ObjectCoordinator::createModel3D(const string &modelName, const string &shaderName)
 {
     TRACE();
     Entity entity = _modelManager.createModel(modelName);
-    _modelManager.attachComponent<ModelMatrixComponent>(entity, modelMatrix);
-    _modelManager.attachComponent<PositionComponent3D>(entity, position);
-    _modelManager.attachComponent<ColorComponent>(entity, color);
 
     _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
     _aliveEntities.insert(entity);
@@ -264,6 +242,21 @@ void ObjectCoordinator::updateSystems(float deltaTime)
     _modelManager.updateSystems(deltaTime);
 }
 
+void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
+{
+    TRACE();
+    for (auto &entity : _aliveEntities)
+    {
+        Shader *shader = _modelManager.getShader(entity);
+        shader->bind();
+        shader->setUniforms();
+        _modelManager.setUniforms(entity);
+        shader->setMat4("model", _modelManager.getModelMatrix(entity));
+        shader->setMat4("projection", projection);
+        _modelManager.drawModel(entity);
+    }
+}
+
 void ObjectCoordinator::drawObjects3D(
     const Vector<float, 3> &cameraPosition,
     const Matrix<float, 4, 4> &view,
@@ -272,51 +265,20 @@ void ObjectCoordinator::drawObjects3D(
     TRACE();
     for (auto &entity : _aliveEntities)
     {
-        Model *model = _modelManager.getModel(entity);
-        Shader *shader = model->getShader();
+        Shader *shader = _modelManager.getShader(entity);
         shader->bind();
         shader->setUniforms();
-        shader->setMat4("model",
-            _modelManager.getComponent<ModelMatrixComponent>(entity).m *
-            translation_matrix(_modelManager.getComponent<PositionComponent3D>(entity).p)
-        );
+        _modelManager.setUniforms(entity);
+        Matrix<float, 4, 4> modelMatrix = _modelManager.getModelMatrix(entity);
+        shader->setMat4("model", modelMatrix);
         shader->setMat4("view", view);
         shader->setMat4("projection", projection);
-        shader->setMat4("normalMatrix",
-            normal_matrix(_modelManager.getComponent<ModelMatrixComponent>(entity).m));
+        shader->setMat4("normalMatrix", normal_matrix(modelMatrix));
         shader->setFloat3("viewPos", cameraPosition);
-        shader->setFloat4("u_color", _modelManager.getComponent<ColorComponent>(entity)._color);
         _directionalLightSourceSystem->onRender(shader);
         _pointLightSourceSystem->onRender(shader);
         _spotLightSourceSystem->onRender(shader);
-        model->draw();
-    }
-}
-
-void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
-{
-    TRACE();
-    for (auto &entity : _aliveEntities)
-    {
-        /*
-         * TODO(david): Design towards this API
-         *
-         * Model *model = _modelManager.getModel(entity);
-         * model->bind();
-         * model->setUniforms();
-         * model->draw();
-         */
-        Model *model = _modelManager.getModel(entity);
-        Shader *shader = model->getShader();
-        shader->bind();
-        shader->setUniforms();
-        shader->setMat4("model",
-            _modelManager.getComponent<ModelMatrixComponent>(entity).m *
-            translation_matrix(_modelManager.getComponent<PositionComponent2D>(entity).p)
-        );
-        shader->setMat4("projection", projection);
-        shader->setFloat4("u_color", _modelManager.getComponent<ColorComponent>(entity)._color);
-        model->draw();
+        _modelManager.drawModel(entity);
     }
 }
 

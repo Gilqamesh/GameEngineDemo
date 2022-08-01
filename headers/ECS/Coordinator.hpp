@@ -40,7 +40,7 @@ public:
     void hideEntity(Entity entity);
     void showEntity(Entity entity);
 
-    ComponentSignature getComponentSignature(Entity entity);
+    ComponentSignature &getComponentSignature(Entity entity);
 
     // Component methods
 
@@ -62,6 +62,7 @@ public:
     {
         TRACE();
         ComponentSignature newEntityComponentSignature = _entityManager.getComponentSignature(entity);
+        _componentManager.registerComponent<Component>();
         newEntityComponentSignature.set(_componentManager.getComponentId<Component>(), true);
         _entityManager.setComponentSignature(entity, newEntityComponentSignature);
         _componentManager.attachComponent(entity, component);
@@ -84,8 +85,8 @@ public:
     void removeComponent(Entity entity)
     {
         TRACE();
-        ComponentSignature newEntityComponentSignature
-            = _entityManager.getComponentSignature(entity).reset(_componentManager.getComponentId<Component>());
+        ComponentSignature newEntityComponentSignature =
+            _entityManager.getComponentSignature(entity).reset(_componentManager.getComponentId<Component>());
         _entityManager.setComponentSignature(entity, newEntityComponentSignature);
         _componentManager.removeComponent<Component>(entity);
         _systemManager.entityComponentSignatureChanged(entity, newEntityComponentSignature);
@@ -105,7 +106,7 @@ public:
      * Returns the unique id held for the component of type Component
      */
     template <typename Component>
-    ComponentId getComponentId() const
+    ComponentId getComponentId()
     {
         TRACE();
         return (_componentManager.getComponentId<Component>());

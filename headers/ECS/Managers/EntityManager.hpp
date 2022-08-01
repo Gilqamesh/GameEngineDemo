@@ -41,7 +41,7 @@ public:
     /*
      * Gets the component signature for the entity
      */
-    ComponentSignature getComponentSignature(Entity entity) const;
+    ComponentSignature &getComponentSignature(Entity entity);
 };
 
 }

@@ -6,7 +6,9 @@ in vec2 texCoords;
 
 uniform sampler2D u_diffuse;
 
+uniform vec4 u_color;
+
 void main()
 {
-    color = texture(u_diffuse, texCoords);
+    color = u_color * texture(u_diffuse, texCoords);
 }

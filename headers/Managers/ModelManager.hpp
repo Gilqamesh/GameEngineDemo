@@ -13,11 +13,14 @@ namespace GilqEngine
 
 class ModelManager
 {
-Coordinator                                               *_coordinator;
-unordered_map<Entity, Model *, hash<int> >                _modelEntities;
-unordered_map<string, Model *>                            _loadedModels;
-MaterialManager                                           *_materialManager;
-TextureManager                                            *_textureManager;
+Coordinator                                      *_coordinator;
+unordered_map<Entity, Model *, hash<int> >       _modelEntities;
+unordered_map<Entity, Shader *, hash<int> >      _modelShaders;
+// TODO(david): think about this. how to have the Model* able to be drawn with different materials
+// unordered_map<Entity, Material *, hash<int> >    _modelMaterials;
+unordered_map<string, Model *>                   _loadedModels;
+MaterialManager                                  *_materialManager;
+TextureManager                                   *_textureManager;
 public:
     ModelManager();
     ~ModelManager();
@@ -41,7 +44,20 @@ public:
      */
     Entity createModel(const string &name);
 
-    Model *getModel(Entity entity);
+    Shader *getShader(Entity entity);
+
+    void drawModel(Entity entity);
+
+    /*
+     * Calculates a new matrix of the shader model matrix depending
+     * on what components the entity has
+     */
+    Matrix<float, 4, 4> getModelMatrix(Entity entity);
+
+    /*
+     * Set up all the component shader uniforms for the entity
+     */
+    void setUniforms(Entity entity);
 
     void setModelShader(Entity entity, Shader *shader);
 

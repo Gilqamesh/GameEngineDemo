@@ -159,6 +159,19 @@ Matrix<T, ROWS, COLUMNS> identity_matrix(void)
     return (m);
 }
 
+// 2D-version, need to TEST THIS!!
+template <typename T>
+Matrix<T, 4, 4> rotation_matrix(const T &angleRad, const Vector<T, 2> &point)
+{
+    Vector<T, 2> _p = normalize(point);
+    return (Matrix<T, 4, 4>(
+        cos(angleRad) + _p[0] * _p[0] * (1 - cos(angleRad)),     _p[0] * _p[1] * (1 - cos(angleRad)),                    _p[1] * sin(angleRad),             0.0f,
+        _p[0] * _p[1] * (1 - cos(angleRad)),                     cos(angleRad) + _p[1] * _p[1] * (1 - cos(angleRad)),    -_p[0] * sin(angleRad),            0.0f,
+        -_p[1] * sin(angleRad),                                  _p[0] * sin(angleRad),                                  cos(angleRad),                     0.0f,
+        0.0f,                                                    0.0f,                                                   0.0f,                              1.0f
+    ));
+}
+
 template <typename T>
 Matrix<T, 4, 4> rotation_matrix(const T &angleRad, const Vector<T, 3> &axis)
 {
@@ -168,20 +181,6 @@ Matrix<T, 4, 4> rotation_matrix(const T &angleRad, const Vector<T, 3> &axis)
         _axis[0] * _axis[1] * (1 - cos(angleRad)) + _axis[2] * sin(angleRad),   cos(angleRad) + _axis[1] * _axis[1] * (1 - cos(angleRad)),              _axis[1] * _axis[2] * (1 - cos(angleRad)) - _axis[0] * sin(angleRad),  0.0f,
         _axis[0] * _axis[2] * (1 - cos(angleRad)) - _axis[1] * sin(angleRad),   _axis[1] * _axis[2] * (1 - cos(angleRad)) + _axis[0] * sin(angleRad),   cos(angleRad) + _axis[2] * _axis[2] * (1 - cos(angleRad)),             0.0f,
         0.0f,                                                                   0.0f,                                                                   0.0f,                                                                  1.0f
-    ));
-}
-
-/*
- * 2D rotation matrix around x-axis counter-clockwise
- */
-template <typename T>
-Matrix<T, 4, 4> rotation_matrix(const T &angleRad)
-{
-    return (Matrix<T, 4, 4>(
-        cos(angleRad),      -sin(angleRad),    static_cast<T>(0), static_cast<T>(0),
-        sin(angleRad),      cos(angleRad),     static_cast<T>(0), static_cast<T>(0),
-        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(1), static_cast<T>(0),
-        static_cast<T>(0),  static_cast<T>(0), static_cast<T>(0), static_cast<T>(1)
     ));
 }
 

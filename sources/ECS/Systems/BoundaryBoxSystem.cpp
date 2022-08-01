@@ -3,7 +3,7 @@
 #include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Components/EnergyComponent.hpp"
 #include "ECS/Components/MassComponent.hpp"
-#include "ECS/Components/RotationalComponent.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
 #include "ECS/Coordinator.hpp"
 
 namespace GilqEngine
@@ -24,7 +24,7 @@ void BoundaryBoxSystem::onUpdate(float dt)
     {
         PositionComponent3D &position = _coordinator->getComponent<PositionComponent3D>(entity);
         VelocityComponent3D &velocity = _coordinator->getComponent<VelocityComponent3D>(entity);
-        RotationalComponent &rotation = _coordinator->getComponent<RotationalComponent>(entity);
+        RotationalComponent3D &rotation = _coordinator->getComponent<RotationalComponent3D>(entity);
         MassComponent &mass = _coordinator->getComponent<MassComponent>(entity);
         EnergyComponent &energy = _coordinator->getComponent<EnergyComponent>(entity);
         // Check next event and prevent going over the Boundary Box
@@ -72,7 +72,7 @@ void BoundaryBoxSystem::setSystemSignature()
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<PositionComponent3D>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<VelocityComponent3D>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<EnergyComponent>(), true);
-    boundaryBoxSystemSignature.set(_coordinator->getComponentId<RotationalComponent>(), true);
+    boundaryBoxSystemSignature.set(_coordinator->getComponentId<RotationalComponent3D>(), true);
     boundaryBoxSystemSignature.set(_coordinator->getComponentId<MassComponent>(), true);
     _coordinator->setSystemSignature<BoundaryBoxSystem>(boundaryBoxSystemSignature);
 }
@@ -83,7 +83,7 @@ void BoundaryBoxSystem::registerComponents()
     _coordinator->registerComponent<PositionComponent3D>();
     _coordinator->registerComponent<VelocityComponent3D>();
     _coordinator->registerComponent<EnergyComponent>();
-    _coordinator->registerComponent<RotationalComponent>();
+    _coordinator->registerComponent<RotationalComponent3D>();
     _coordinator->registerComponent<MassComponent>();
 }
 

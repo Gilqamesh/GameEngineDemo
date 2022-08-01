@@ -1,7 +1,12 @@
 #include "Managers/ModelManager.hpp"
 #include "Debug/Trace.hpp"
+#include "ECS/Components/RotationalComponent2D.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
+#include "ECS/Components/SizeComponent2D.hpp"
+#include "ECS/Components/SizeComponent3D.hpp"
+#include "ECS/Components/PositionComponent2D.hpp"
 #include "ECS/Components/PositionComponent3D.hpp"
-#include "ECS/Components/RotationalComponent.hpp"
+#include "ECS/Components/ColorComponent.hpp"
 #include "Log.hpp"
 
 namespace GilqEngine
@@ -38,7 +43,8 @@ void ModelManager::loadModel(
     const string &materialName)
 {
     TRACE();
-    ASSERT(_loadedModels.count(name) == 0);
+    if (_loadedModels.count(name)) // model already loaded -> do nothing
+        return ;
     _loadedModels[name] = new Model(meshFactory, name);
     _loadedModels[name]->setMaterialManager(_materialManager);
     _loadedModels[name]->setTextureManager(_textureManager);
@@ -60,6 +66,7 @@ void ModelManager::unloadModel(const string& name)
         if (it->second == model)
         {
             it = _modelEntities.erase(it);
+            _coordinator->destroyEntity(it->first);
         }
         else
         {
@@ -80,16 +87,74 @@ Entity ModelManager::createModel(const string &name)
     return (model);
 }
 
-Model *ModelManager::getModel(Entity model)
+Shader *ModelManager::getShader(Entity entity)
 {
     TRACE();
-    return (_modelEntities[model]);
+    ASSERT(_modelShaders.count(entity));
+    return (_modelShaders[entity]);
+}
+
+void ModelManager::drawModel(Entity entity)
+{
+    TRACE();
+    ASSERT(_modelShaders.count(entity));
+    _modelEntities[entity]->draw(_modelShaders[entity]);
+}
+
+Matrix<float, 4, 4> ModelManager::getModelMatrix(Entity entity)
+{
+    TRACE();
+    ComponentSignature &componentSignature = _coordinator->getComponentSignature(entity);
+    Matrix<float, 4, 4> result = identity_matrix<float, 4, 4>();
+
+    if (componentSignature[_coordinator->getComponentId<RotationalComponent2D>()] == true)
+    {
+        // NOT TESTED
+        RotationalComponent2D &rotationalComponent2D = _coordinator->getComponent<RotationalComponent2D>(entity);
+        result *= rotation_matrix(rotationalComponent2D.angle, rotationalComponent2D.p);
+    }
+    else if (componentSignature[_coordinator->getComponentId<RotationalComponent3D>()] == true)
+    {
+        RotationalComponent3D &rotationalComponent3D = _coordinator->getComponent<RotationalComponent3D>(entity);
+        result *= rotation_matrix(rotationalComponent3D.angle, rotationalComponent3D.axis);
+    }
+    if (componentSignature[_coordinator->getComponentId<SizeComponent2D>()] == true)
+    {
+        result *= scale_matrix(_coordinator->getComponent<SizeComponent2D>(entity).size);
+    }
+    else if (componentSignature[_coordinator->getComponentId<SizeComponent3D>()] == true)
+    {
+        result *= scale_matrix(_coordinator->getComponent<SizeComponent3D>(entity).size);
+    }
+    if (componentSignature[_coordinator->getComponentId<PositionComponent2D>()] == true)
+    {
+        result *= translation_matrix(_coordinator->getComponent<PositionComponent2D>(entity).p);
+    }
+    else if (componentSignature[_coordinator->getComponentId<PositionComponent3D>()] == true)
+    {
+        result *= translation_matrix(_coordinator->getComponent<PositionComponent3D>(entity).p);
+    }
+
+    return (result);
+}
+
+void ModelManager::setUniforms(Entity entity)
+{
+    TRACE();
+    ComponentSignature &componentSignature = _coordinator->getComponentSignature(entity);
+    ASSERT(_modelShaders.count(entity));
+    Shader *shader = _modelShaders[entity];
+
+    if (componentSignature[_coordinator->getComponentId<ColorComponent>()] == true)
+    {
+        shader->setFloat4("u_color", _coordinator->getComponent<ColorComponent>(entity).c);
+    }
 }
 
 void ModelManager::setModelShader(Entity model, Shader *shader)
 {
     TRACE();
-    _modelEntities[model]->setShader(shader);
+    _modelShaders[model] = shader;
 }
 
 void ModelManager::hideEntity(Entity entity)

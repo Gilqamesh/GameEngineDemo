@@ -3,6 +3,9 @@
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
 #include "Factories/QuadMeshFactory3D.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
+#include "ECS/Components/SizeComponent3D.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
+#include "ECS/Components/PositionComponent3D.hpp"
 #include "Log.hpp"
 
 namespace GilqEngine
@@ -70,16 +73,16 @@ void BytecodeLayer::onAttach()
     float width = 100.0f;
     float height = 50.0f;
     _rectangleElements.push_back({upperLeftX, upperLeftY, width, height});
-    _objectCoordinator.createModel3D("AddModel", "BoxShader",
-        rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        scale_matrix(width, 1.0f, height) *
-        translation_matrix(upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
+    Entity addBox = _objectCoordinator.createModel3D("AddModel", "BoxShader");
+    _objectCoordinator.attachComponent<PositionComponent3D>(addBox, { upperLeftX + width / 2.0f, 0.0f, upperLeftY + height / 2.0f });
+    _objectCoordinator.attachComponent<SizeComponent3D>(addBox, { width, 1.0f, height });
+    _objectCoordinator.attachComponent<RotationalComponent3D>(addBox, { degToRad(90.0f), 0.0f, Vector<float, 3>(1.0f, 0.0f, 0.0f) });
     float upperLeftX2 = 410.0f;
     _rectangleElements.push_back({upperLeftX2, upperLeftY, width, height});
-    _objectCoordinator.createModel3D("ShowTopValueModel", "BoxShader",
-        rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        scale_matrix(width, 1.0f, height) *
-        translation_matrix(upperLeftX2 + width / 2.0f, 0.0f, upperLeftY + height / 2.0f));
+    Entity showBox = _objectCoordinator.createModel3D("ShowTopValueModel", "BoxShader");
+    _objectCoordinator.attachComponent<PositionComponent3D>(showBox, { upperLeftX2 + width / 2.0f, 0.0f, upperLeftY + height / 2.0f });
+    _objectCoordinator.attachComponent<SizeComponent3D>(showBox, { width, 1.0f, height });
+    _objectCoordinator.attachComponent<RotationalComponent3D>(showBox, { degToRad(90.0f), 0.0f, Vector<float, 3>(1.0f, 0.0f, 0.0f) });
     
     PointLightSourceComponent pointLightSourceComponent;
     pointLightSourceComponent._color = Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f);
@@ -91,10 +94,10 @@ void BytecodeLayer::onAttach()
     pointLightSourceComponent._attenuationFactor_linear = 0.003f;
     pointLightSourceComponent._attenuationFactor_quadratic = 0.00001f;
 
-    Entity pointLightSourceEntity = _objectCoordinator.createModel3D("AddModel", "LightShader",
-        rotation_matrix(degToRad(90.0f), Vector<float, 3>(1.0f, 0.0f, 0.0f)) *
-        translation_matrix(0.0f, 10.0f, 0.0f));
+    Entity pointLightSourceEntity = _objectCoordinator.createModel3D("AddModel", "LightShader");
     _objectCoordinator.attachComponent<PointLightSourceComponent>(pointLightSourceEntity, pointLightSourceComponent);
+    _objectCoordinator.attachComponent<PositionComponent3D>(pointLightSourceEntity, { 0.0f, 10.0f, 0.0f });
+    _objectCoordinator.attachComponent<RotationalComponent3D>(pointLightSourceEntity, { degToRad(90.0f), 0.0f, Vector<float, 3>(1.0f, 0.0f, 0.0f) });
 }
 
 void BytecodeLayer::onDetach()

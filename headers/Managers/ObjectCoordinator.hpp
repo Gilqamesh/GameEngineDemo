@@ -13,10 +13,10 @@
 # include "ECS/Components/Light/DirectionalLightSourceComponent.hpp"
 # include "ECS/Components/Light/PointLightSourceComponent.hpp"
 # include "ECS/Components/Light/SpotLightSourceComponent.hpp"
-# include "ECS/Components/ModelMatrixComponent.hpp"
 # include "ECS/Components/PositionComponent2D.hpp"
 # include "ECS/Components/PositionComponent3D.hpp"
 # include "ECS/Components/ColorComponent.hpp"
+# include "ECS/Components/SizeComponent2D.hpp"
 
 namespace GilqEngine
 {
@@ -138,21 +138,9 @@ public:
 
     /*
      * Returns an already loaded model as a model object
-     * Opacity is opaque by default
-     * Each transparent object adds extra computing overhead during drawing
      */
-    Entity createModel2D(
-        const string &modelName,
-        const string &shaderName,
-        const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
-        const Vector<float, 2>& position = Vector<float, 2>(0.0f, 0.0f),
-        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
-    Entity createModel3D(
-        const string &modelName,
-        const string &shaderName,
-        const Matrix<float, 4, 4> &modelMatrix = identity_matrix<float, 4, 4>(),
-        const Vector<float, 3>& position = Vector<float, 3>(0.0f, 0.0f, 0.0f),
-        const Vector<float, 4>& color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
+    Entity createModel2D(const string &modelName, const string &shaderName);
+    Entity createModel3D(const string &modelName, const string &shaderName);
     
     /*
      * Disable/Enable entity for update and render

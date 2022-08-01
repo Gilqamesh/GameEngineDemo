@@ -39,7 +39,7 @@ void EntityManager::setComponentSignature(Entity entity, ComponentSignature comp
     entityComponentSignature[entity._id] = componentSignature;
 }
 
-ComponentSignature EntityManager::getComponentSignature(Entity entity) const
+ComponentSignature &EntityManager::getComponentSignature(Entity entity)
 {
     TRACE();
     // Entity does not exist in the EntityManager

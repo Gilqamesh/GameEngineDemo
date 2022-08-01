@@ -5,6 +5,8 @@
 #include "Log.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
+#include "ECS/Components/SizeComponent2D.hpp"
+#include "ECS/Components/ColorComponent.hpp"
 #include "ECS/Systems/CollisionSystem2D.hpp"
 #include "Inputs/GLFWInput.hpp"
 
@@ -27,39 +29,47 @@ void CollisionDevLayer::onAttach()
 
     registerSystems();
 
-    // _window->enablePolygonMode_Line();
+    _window->enablePolygonMode_Line();
     _window->enableBlending();
 
     LOG("Resolution: " << _window->getWidth() << " " << _window->getHeight());
 
-    _rectangle = { {800.0f, 450.0f}, {100.0f, 60.0f} };
-    _rect = _objectCoordinator.createModel2D("WhiteRectangleModel", "RectangleShader",
-        scale_matrix(_rectangle.size),
-        _rectangle.position,
-        Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
+    int nOfRectangles = 5;
+    for (int i = 0; i < nOfRectangles; ++i)
+    {
+        Vector<float, 2> rectSize(100.0f, 60.0f);
+        Vector<float, 2> rectPos(800.0f + rectSize[0] * i, 450.0f);
+        _rectangles.push_back({ rectPos, rectSize });
+        Entity rect = _objectCoordinator.createModel2D("RectangleModel", "ColorShader");
+        _rects.push_back(rect);
+        _objectCoordinator.attachComponent<ColorComponent>(rect, Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
+        _objectCoordinator.attachComponent<PositionComponent2D>(rect, _rectangles[i].position);
+        _objectCoordinator.attachComponent<SizeComponent2D>(rect, _rectangles[i].size);
+    }
 
-    _line = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader",
-        identity_matrix<float, 4, 4>(),
-        Vector<float, 2>(0.0f, 0.0f),
-        Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
-    
-    Vector<float, 2> circleOrigin = {200.0f, 300.0f};
-    _circle = _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader",
-        scale_matrix(200.0f, 200.0f),
-        circleOrigin,
-        Vector<float, 4>(1.0f, 0.0f, 0.0f, 1.0f));
+    _line = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader");
+    _objectCoordinator.attachComponent<ColorComponent>(_line, Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
+
+    Vector<float, 2> circleOrigin = { 200.0f, 300.0f };
+    _circle = _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader");
     _objectCoordinator.addFloat("CircleShader", "radius", 6.0f);
     _objectCoordinator.addFloat2("CircleShader", "origin", circleOrigin);
+    _objectCoordinator.attachComponent<ColorComponent>(_circle, { 1.0f, 0.0f, 0.0f, 1.0f });
+    _objectCoordinator.attachComponent<PositionComponent2D>(_circle, circleOrigin);
+    _objectCoordinator.attachComponent<SizeComponent2D>(_circle, { 200.0f, 200.0f });
 
-    _normalLine = _objectCoordinator.createModel2D("WhiteLineModel2", "LineShader");
+    _normalLine = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader");
     _objectCoordinator.hideEntity(_normalLine);
+    _objectCoordinator.attachComponent<ColorComponent>(_normalLine, { 1.0f, 1.0f, 1.0f, 1.0f });
 
-    _mouseRectangle = { {0.0f, 0.0f}, {50.0f, 75.0f} };
-    _mouseRect = _objectCoordinator.createModel2D("WhiteRectangleModel2", "RectangleShader",
-        scale_matrix(_mouseRectangle.size),
-        _mouseRectangle.position,
-        {1.0f, 0.0f, 0.0f, 1.0f});
+    _mouseRectangle = { { 0.0f, 0.0f }, { 50.0f, 75.0f } };
+    _mouseRect = _objectCoordinator.createModel2D("WhiteRectangleModel", "TextureShader");
     _objectCoordinator.attachComponent<VelocityComponent2D>(_mouseRect, {});
+    _objectCoordinator.attachComponent<PositionComponent2D>(_mouseRect, _mouseRectangle.position);
+    _objectCoordinator.attachComponent<SizeComponent2D>(_mouseRect, _mouseRectangle.size);
+
+    Entity idk = _objectCoordinator.createModel2D("RedRectangleModel", "TextureShader");
+    _objectCoordinator.attachComponent<SizeComponent2D>(idk, { 300.0f, 300.0f });
 }
 
 void CollisionDevLayer::onDetach()
@@ -96,44 +106,48 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     VelocityComponent2D &prevVelocity = _objectCoordinator.getComponent<VelocityComponent2D>(_mouseRect);
     if (GLFWInput::getInstance(_window->getWindow())->isMousePressed(0))
         prevVelocity.v += mouseRecVelocity;
-    if (_mouseRectangle.dynamicRecIntersect(prevVelocity.v, _rectangle, contactPoint, contactNormal, tHitNear, deltaTime))
+    
+    bool showCircle = false;
+    vector<Vector<float, 2>> normalLine;
+    for (uint32 i = 0; i < _rectangles.size(); ++i)
     {
-        // bounce
-        // if (contactNormal[0] != 0.0f)
-        // {
-        //     prevVelocity.v[0] *= -1.0f;    
-        // }
-        // if (contactNormal[1] != 0.0f)
-        // {
-        //     prevVelocity.v[1] *= -1.0f;
-        // }
+        if (_mouseRectangle.dynamicRecIntersect(prevVelocity.v, _rectangles[i], contactPoint, contactNormal, tHitNear, deltaTime))
+        {
+            // stop & slide
+            prevVelocity.v += element_wise_multiply(contactNormal, element_wise_abs(prevVelocity.v)) * (1.0f - tHitNear);
+        }
 
-        // stop & slide
-        prevVelocity.v += element_wise_multiply(contactNormal, Vector<float, 2>(abs(prevVelocity.v[0]), abs(prevVelocity.v[1])))
-            * (1.0f - tHitNear);
+        // mouseRay collision with rect
+        if (_rectangles[i].doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
+        {
+            _objectCoordinator.updateComponent<ColorComponent>(_rects[i], Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
+            if (showCircle == false)
+            {
+                showCircle |= true;
+                _objectCoordinator.showEntity(_circle);
+                _objectCoordinator.updateComponent<PositionComponent2D>(_circle, contactPoint);
+                _objectCoordinator.updateFloat2("CircleShader", "origin", contactPoint);
+
+                normalLine = { contactPoint + contactNormal * 30.0f, contactPoint };
+            }
+        }
+        else
+        {
+            _objectCoordinator.updateComponent<ColorComponent>(_rects[i], Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
+        }
     }
     Vector<float, 2> newMouseRectPosition = _mouseRectangle.position + prevVelocity.v * deltaTime;
     _objectCoordinator.updateComponent<PositionComponent2D>(_mouseRect, newMouseRectPosition);
     _mouseRectangle.position = newMouseRectPosition;
 
-    // mouseRay collision with rect
-    if (_rectangle.doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
+    if (showCircle)
     {
-        _objectCoordinator.updateComponent<ColorComponent>(_rect, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
         _objectCoordinator.showEntity(_circle);
-        _objectCoordinator.updateComponent<PositionComponent2D>(_circle, contactPoint);
-        _objectCoordinator.updateFloat2("CircleShader", "origin", contactPoint);
-
         _objectCoordinator.showEntity(_normalLine);
-        vector<Vector<float, 2>> normalLine = {
-            contactPoint + contactNormal * 30.0f,
-            contactPoint
-        };
         _objectCoordinator.updateVBO_position2D(_normalLine, normalLine.data(), normalLine.size() * sizeof(normalLine[0]));
     }
     else
     {
-        _objectCoordinator.updateComponent<ColorComponent>(_rect, Vector<float, 4>(0.0f, 0.0f, 1.0f, 1.0f));
         _objectCoordinator.hideEntity(_circle);
         _objectCoordinator.hideEntity(_normalLine);
     }
@@ -152,7 +166,13 @@ void CollisionDevLayer::loadShaders(void)
 {
     _objectCoordinator.addShader(getShaderDir() + "2D/TriangleTexture/vs.glsl",
                                  getShaderDir() + "2D/TriangleTexture/fs.glsl",
-                                 "RectangleShader");
+                                 "TextureShader");
+    _objectCoordinator.addShader(getShaderDir() + "2D/TriangleColor/vs.glsl",
+                                 getShaderDir() + "2D/TriangleColor/fs.glsl",
+                                 "ColorShader");
+    _objectCoordinator.addShader(getShaderDir() + "2D/TriangleTextureColor/vs.glsl",
+                                 getShaderDir() + "2D/TriangleTextureColor/fs.glsl",
+                                 "TextureColorShader");
     _objectCoordinator.addShader(getShaderDir() + "2D/LineColor/vs.glsl",
                                  getShaderDir() + "2D/LineColor/fs.glsl",
                                  "LineShader");
@@ -164,12 +184,19 @@ void CollisionDevLayer::loadShaders(void)
 void CollisionDevLayer::loadTextures(void)
 {
     _objectCoordinator.addTexture(getTextureDir() + "White.png", "WhiteTexture");
+
+    _objectCoordinator.addTexture(getTextureDir() + "Red.png", "RedTexture");
 }
 
 void CollisionDevLayer::loadMaterials(void)
 {
     _objectCoordinator.addMaterial("WhiteMaterial");
     _objectCoordinator.setDiffuse("WhiteMaterial", "WhiteTexture");
+
+    _objectCoordinator.addMaterial("RedMaterial");
+    _objectCoordinator.setDiffuse("RedMaterial", "RedTexture");
+
+    _objectCoordinator.addMaterial("NullMaterial");
 }
 
 void CollisionDevLayer::loadModels(void)
@@ -179,10 +206,10 @@ void CollisionDevLayer::loadModels(void)
     CircleMeshFactory2DTexture circleMeshFactory;
 
     _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel", "WhiteMaterial");
-    _objectCoordinator.loadModel(&circleMeshFactory, "WhiteCircleModel", "WhiteMaterial");
-    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "WhiteMaterial");
-    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel2", "WhiteMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel2", "WhiteMaterial");
+    _objectCoordinator.loadModel(&quadMeshFactory, "RedRectangleModel", "RedMaterial");
+    _objectCoordinator.loadModel(&quadMeshFactory, "RectangleModel", "NullMaterial");
+    _objectCoordinator.loadModel(&circleMeshFactory, "WhiteCircleModel", "NullMaterial");
+    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "NullMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

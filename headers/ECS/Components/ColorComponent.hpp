@@ -12,7 +12,7 @@ struct ColorComponent
     ColorComponent(float r, float g, float b, float a);
     ColorComponent(const Vector<float, 4>& color);
 
-    Vector<float, 4> _color;
+    Vector<float, 4> c;
 };
 
 ostream &operator<<(ostream &os, const ColorComponent& a);

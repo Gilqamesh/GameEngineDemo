@@ -1,15 +1,9 @@
-quadtree collision detection
 cache align on Matrix class
 monte carlo maybe for AI
 dynamic shader generation
 refine VertexData + lock/unlock attributes
-use ModelManager for models and separate Texture/Material manager
-tie together the box with how the movement system works..
-    in general movement system should only misplace the entities and there should be another system that takes care of the collisions
 abstract mesh and model draw order, 1. draw opaques, 2. sort transparents, 3. draw transparents
 refine Material class, there can be more than 1 Texture for each type (why?) and also a lot more Texture types
-remove registerComponent from ObjectManager and let each system register its prerequired components..
-    if a component gets registered twice nothing happens
 store opacity in each model object, and in object coordinator map from Entity to distance from camera
 stop calling every base class an interface
 precompute angle between light sources and entities maybe?
@@ -25,4 +19,4 @@ better logging system: use files maybe and log function parameter values as well
 shader class definition should include setting up its predefined uniforms, so each Model can have its own uniforms it wants
     to use along with its shader
 have better api to create primitives
-naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/model
+naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/modelb

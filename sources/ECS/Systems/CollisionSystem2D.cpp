@@ -1,7 +1,6 @@
 #include "ECS/Systems/CollisionSystem2D.hpp"
 #include "ECS/Coordinator.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
-#include "ECS/Components/ModelMatrixComponent.hpp"
 #include "Log.hpp"
 
 namespace GilqEngine
@@ -17,8 +16,7 @@ CollisionSystem2D::CollisionSystem2D(Coordinator *coordinator, IWindow *window)
 void CollisionSystem2D::onUpdate(float dt)
 {
     (void)dt;
-    vector<unordered_set<uint32>> collidedPairs(3000, unordered_set<uint32>());
-    QuadTree quadTree({Vector<float, 2>(0.0f, 0.0f), Vector<float, 2>((float)_window->getWidth(), (float)_window->getHeight())}, 5, _coordinator, dt, collidedPairs);
+    QuadTree quadTree({Vector<float, 2>(0.0f, 0.0f), Vector<float, 2>((float)_window->getWidth(), (float)_window->getHeight())}, 5, _coordinator, dt);
     for (auto entity : entities)
     {
         quadTree.insert(entity);
@@ -26,7 +24,7 @@ void CollisionSystem2D::onUpdate(float dt)
     quadTree.checkIntersections();
     for (auto entity : entities)
     {
-        auto& velocityComponent = _coordinator->getComponent<VelocityComponent2D>(entity);
+    auto& velocityComponent = _coordinator->getComponent<VelocityComponent2D>(entity);
         auto& positionComponent = _coordinator->getComponent<PositionComponent2D>(entity);
         auto& rectangleColliderComponent = _coordinator->getComponent<RectangleColliderComponent>(entity);
 
@@ -57,7 +55,6 @@ void CollisionSystem2D::setSystemSignature()
     CollisionSystemSignature.set(_coordinator->getComponentId<RectangleColliderComponent>(), true);
     CollisionSystemSignature.set(_coordinator->getComponentId<VelocityComponent2D>(), true);
     CollisionSystemSignature.set(_coordinator->getComponentId<PositionComponent2D>(), true);
-    CollisionSystemSignature.set(_coordinator->getComponentId<ModelMatrixComponent>(), true);
     _coordinator->setSystemSignature<CollisionSystem2D>(CollisionSystemSignature);
 }
 
@@ -66,15 +63,13 @@ void CollisionSystem2D::registerComponents()
     _coordinator->registerComponent<RectangleColliderComponent>();
     _coordinator->registerComponent<VelocityComponent2D>();
     _coordinator->registerComponent<PositionComponent2D>();
-    _coordinator->registerComponent<ModelMatrixComponent>();
 }
 
 QuadTree::QuadTree(
     const RectangleColliderComponent& boundary,
     uint8 _nodeCapacity,
     Coordinator *coordinator,
-    float dt,
-    vector<unordered_set<uint32>> &collidedPairs)
+    float dt)
     : _nodeCapacity(_nodeCapacity),
       _boundary(boundary),
       _dt(dt),
@@ -82,8 +77,7 @@ QuadTree::QuadTree(
       _northEast(nullptr),
       _southWest(nullptr),
       _southEast(nullptr),
-      _coordinator(coordinator),
-      _collidedPairs(collidedPairs)
+      _coordinator(coordinator)
 {
 
 }
@@ -106,14 +100,8 @@ bool QuadTree::insert(Entity rectangleIndex)
     VelocityComponent2D velocity = _coordinator->getComponent<VelocityComponent2D>(rectangleIndex);
     PositionComponent2D nextPosition = extendedRectangle.position + velocity.v * _dt;
     extendedRectangle.size += element_wise_abs(nextPosition.p - extendedRectangle.position);
-    if (nextPosition.p[0] < extendedRectangle.position[0])
-    {
-        extendedRectangle.position[0] = nextPosition.p[0];
-    }
-    if (nextPosition.p[1] < extendedRectangle.position[1])
-    {
-        extendedRectangle.position[1] = nextPosition.p[1];
-    }
+    extendedRectangle.position[0] = min(extendedRectangle.position[0], nextPosition.p[0]);
+    extendedRectangle.position[1] = min(extendedRectangle.position[1], nextPosition.p[1]);
 
     if (_boundary.doesRecIntersect(extendedRectangle) == false)
     {
@@ -141,10 +129,10 @@ bool QuadTree::insert(Entity rectangleIndex)
 void QuadTree::subdivide()
 {
     Vector<float, 2> halfSize(_boundary.size / 2.0f);
-    _northWest = new QuadTree({_boundary.position, halfSize}, _nodeCapacity, _coordinator, _dt, _collidedPairs);
-    _northEast = new QuadTree({Vector<float, 2>(_boundary.position[0] + halfSize[0], _boundary.position[1]), halfSize}, _nodeCapacity, _coordinator, _dt, _collidedPairs);
-    _southWest = new QuadTree({Vector<float, 2>(_boundary.position[0], _boundary.position[1] + halfSize[1]), halfSize}, _nodeCapacity, _coordinator, _dt, _collidedPairs);
-    _southEast = new QuadTree({_boundary.position + halfSize, halfSize}, _nodeCapacity, _coordinator, _dt, _collidedPairs);
+    _northWest = new QuadTree({_boundary.position, halfSize}, _nodeCapacity, _coordinator, _dt);
+    _northEast = new QuadTree({Vector<float, 2>(_boundary.position[0] + halfSize[0], _boundary.position[1]), halfSize}, _nodeCapacity, _coordinator, _dt);
+    _southWest = new QuadTree({Vector<float, 2>(_boundary.position[0], _boundary.position[1] + halfSize[1]), halfSize}, _nodeCapacity, _coordinator, _dt);
+    _southEast = new QuadTree({_boundary.position + halfSize, halfSize}, _nodeCapacity, _coordinator, _dt);
 
     for (Entity rectangleIndex : _rectangleIndices)
     {
@@ -163,10 +151,6 @@ uint32 QuadTree::checkIntersections(void)
     {
         for (uint8 j = i + 1; j < _rectangleIndices.size(); ++j)
         {
-            if (_collidedPairs[_rectangleIndices[i]].count(_rectangleIndices[j]))
-                continue ;
-            // check dynamic i against dynamic j
-
             // construct i's and j's rectangles based on their next position
             RectangleColliderComponent rec_i = _coordinator->getComponent<RectangleColliderComponent>(_rectangleIndices[i]);
             RectangleColliderComponent rec_j = _coordinator->getComponent<RectangleColliderComponent>(_rectangleIndices[j]);
@@ -178,65 +162,9 @@ uint32 QuadTree::checkIntersections(void)
             Vector<float, 2> contactPoint;
             Vector<float, 2> contactNormal;
             float tHitNear;
-
-            Vector<float, 2> old_i = vel_i.v;
-            Vector<float, 2> old_j = vel_j.v;
             if (rec_i.dynamicRecIntersect(vel_i.v - vel_j.v, rec_j, contactPoint, contactNormal, tHitNear, _dt))
             {
                 // bounce
-                // if (contactNormal[0] > 0.0f)
-                // {
-                //     if (vel_i.v[0] < 0.0f)
-                //     {
-                //         vel_i.v[0] = old_j[0];
-                //         // vel_i.v[0] *= -1.0f;
-                //     }
-                //     if (vel_j.v[0] > 0.0f)
-                //     {
-                //         vel_j.v[0] = old_i[0];
-                //         // vel_j.v[0] *= -1.0f;
-                //     }
-                // }
-                // else if (contactNormal[0] < 0.0f)
-                // {
-                //     if (vel_i.v[0] > 0.0f)
-                //     {
-                //         vel_i.v[0] = old_j[0];
-                //         // vel_i.v[0] *= -1.0f;
-                //     }
-                //     if (vel_j.v[0] < 0.0f)
-                //     {
-                //         vel_j.v[0] = old_i[0];
-                //         // vel_j.v[0] *= -1.0f;
-                //     }
-                // }
-                // else if (contactNormal[1] > 0.0f)
-                // {
-                //     if (vel_i.v[1] < 0.0f)
-                //     {
-                //         vel_i.v[1] = old_j[1];
-                //         // vel_i.v[1] *= -1.0f;
-                //     }
-                //     if (vel_j.v[1] > 0.0f)
-                //     {
-                //         vel_j.v[1] = old_i[1];
-                //         // vel_j.v[1] *= -1.0f;
-                //     }
-                // }
-                // else if (contactNormal[1] < 0.0f)
-                // {
-                //     if (vel_i.v[1] > 0.0f)
-                //     {
-                //         vel_i.v[1] = old_j[1];
-                //         // vel_i.v[1] *= -1.0f;
-                //     }
-                //     if (vel_j.v[1] < 0.0f)
-                //     {
-                //         vel_j.v[1] = old_i[1];
-                //         // vel_j.v[1] *= -1.0f;
-                //     }
-                // }
-
                 if (contactNormal[0] != 0.0f)
                 {
                     swap(vel_i.v[0], vel_j.v[0]);
@@ -245,10 +173,6 @@ uint32 QuadTree::checkIntersections(void)
                 {
                     swap(vel_i.v[1], vel_j.v[1]);
                 }
-
-                // both i's and j's collision against each other are resolved after this
-                _collidedPairs[_rectangleIndices[i]].insert(_rectangleIndices[j]);
-                _collidedPairs[_rectangleIndices[j]].insert(_rectangleIndices[i]);
             }
 
             ++nOfIntersections;

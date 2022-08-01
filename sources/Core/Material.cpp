@@ -59,23 +59,23 @@ void Material::setShaderUniforms(Shader *shader)
 {
     TRACE();
     uint8 textureSlot = 0;
-    if (_ambient->getGL_ID())
+    if (_ambient != NullTexture::getInstance())
     {
         _ambient->setUniform(shader, "u_ambient", textureSlot++);
     }
-    if (_diffuse->getGL_ID())
+    if (_diffuse != NullTexture::getInstance())
     {
         _diffuse->setUniform(shader, "u_diffuse", textureSlot++);
     }
-    if (_specular->getGL_ID())
+    if (_specular != NullTexture::getInstance())
     {
         _specular->setUniform(shader, "u_specular", textureSlot++);
+        shader->setFloat("shininess", _shininess);
     }
-    if (_emission->getGL_ID())
+    if (_emission != NullTexture::getInstance())
     {
         _emission->setUniform(shader, "u_emission", textureSlot++);
     }
-    shader->setFloat("shininess", _shininess);
 }
 
 }

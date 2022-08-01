@@ -14,7 +14,6 @@ Model::Model(const string &path, const string &name)
     _name(name),
     _materialManager(nullptr),
     _textureManager(nullptr),
-    _shader(nullptr),
     _loaded(false)
 {
     TRACE();
@@ -24,7 +23,6 @@ Model::Model(IMeshFactory *meshFactory, const string &name)
     : _name(name),
     _materialManager(nullptr),
     _textureManager(nullptr),
-    _shader(nullptr),
     _loaded(true)
 {
     TRACE();
@@ -38,7 +36,6 @@ Model::Model(Model &&other)
     _directory(other._directory),
     _materialManager(other._materialManager),
     _textureManager(other._textureManager),
-    _shader(other._shader),
     _loaded(other._loaded)
 {
     TRACE();
@@ -46,7 +43,6 @@ Model::Model(Model &&other)
     other._name = "";
     other._materialManager = nullptr;
     other._textureManager = nullptr;
-    other._shader = nullptr;
     other._loaded = false;
 }
 
@@ -61,14 +57,12 @@ Model &Model::operator=(Model &&other)
         _directory = other._directory;
         _materialManager = other._materialManager;
         _textureManager = other._textureManager;
-        _shader = other._shader;
         _loaded = other._loaded;
 
         other._path = "";
         other._name = "";
         other._materialManager = nullptr;
         other._textureManager = nullptr;
-        other._shader = nullptr;
         other._loaded = false;
     }
     return (*this);
@@ -84,12 +78,12 @@ void Model::setMaterial(const string &materialName)
     }
 }
 
-void Model::draw()
+void Model::draw(Shader *shader)
 {
     TRACE();
     for (auto &mesh : _meshes)
     {
-        mesh.draw(_shader);
+        mesh.draw(shader);
     }
 }
 

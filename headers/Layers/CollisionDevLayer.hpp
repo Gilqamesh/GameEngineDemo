@@ -14,8 +14,8 @@ class CollisionDevLayer : public ILayer
     MacWindow         *_window;
     ObjectCoordinator _objectCoordinator;
 
-    Entity _rect;
-    RectangleColliderComponent _rectangle;
+    vector<Entity> _rects;
+    vector<RectangleColliderComponent> _rectangles;
 
     Entity _mouseRect;
     RectangleColliderComponent _mouseRectangle;

@@ -1,11 +1,12 @@
 #include "Layers/ModelLoadLayer.hpp"
 #include "Math/Utils.hpp"
 #include "Debug/Trace.hpp"
-#include "ECS/Components/RotationalComponent.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
 #include "ECS/Components/PositionComponent3D.hpp"
 #include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Components/EnergyComponent.hpp"
 #include "ECS/Components/MassComponent.hpp"
+#include "ECS/Components/SizeComponent3D.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
 #include "ECS/Systems/RotationSystem.hpp"
 #include "ECS/Systems/DisplacementSystem.hpp"
@@ -56,22 +57,13 @@ void ModelLoadLayer::onAttach()
         float scale = getRand(0.1f, 1.0f);
         Vector<float, 3> position(getRand(-100.0f, 100.0f), getRand(0.0f, 100.0f), getRand(-100.0f, 100.0f));
         position -= Vector<float, 3>(+100.0f, 0.0f, +100.0f);
-        Entity sphere = _objectCoordinator.createModel3D(
-            "Backpack Model",
-            "Triangle Shader",
-            scale_matrix(Vector<float, 3>(scale, scale, scale))
-        );
+        Entity sphere = _objectCoordinator.createModel3D("Backpack Model", "Triangle Shader");
         _models.insert(sphere);
+        _objectCoordinator.attachComponent<SizeComponent3D>(sphere, Vector<float, 3>(scale, scale, scale));
         _objectCoordinator.attachComponent<PositionComponent3D>(sphere, position);
-        _objectCoordinator.attachComponent<VelocityComponent3D>(sphere, {
-            getRand(-20.0f, 20.0f), getRand(-40.0f, 40.0f), getRand(-20.0f, 20.0f)
-        });
-        _objectCoordinator.attachComponent<RotationalComponent>(sphere, {
-            0.0f, getRand(10.0f, 50.0f), Vector<float, 3>()
-        });
-        _objectCoordinator.attachComponent<MassComponent>(sphere, {
-            scale * 10.0f
-        });
+        _objectCoordinator.attachComponent<VelocityComponent3D>(sphere, { getRand(-20.0f, 20.0f), getRand(-40.0f, 40.0f), getRand(-20.0f, 20.0f) });
+        _objectCoordinator.attachComponent<RotationalComponent3D>(sphere, { 0.0f, getRand(10.0f, 50.0f), Vector<float, 3>() });
+        _objectCoordinator.attachComponent<MassComponent>(sphere, { scale * 10.0f });
         _objectCoordinator.attachComponent<EnergyComponent>(sphere, {0.0f});
     }
     
@@ -98,12 +90,10 @@ void ModelLoadLayer::onAttach()
         for (unsigned int j = 0; j < 20; ++j)
         {
             float scale = 10.0f;
-            Entity dirt = _objectCoordinator.createModel3D(
-                "Dirt Model",
-                "Triangle Shader",
-                rotation_matrix(degToRad(90.0f), Vector<float, 3>(-1.0f, 0.0f, 0.0f))
-                * scale_matrix(Vector<float, 3>(scale, scale, scale))
-                * translation_matrix(Vector<float, 3>((float)i * scale - 10.0f * scale, -15.0f, (float)j * scale - 10.0f * scale)));
+            Entity dirt = _objectCoordinator.createModel3D("Dirt Model", "Triangle Shader");
+            _objectCoordinator.attachComponent<SizeComponent3D>(dirt, Vector<float, 3>(scale, scale, scale));
+            _objectCoordinator.attachComponent<PositionComponent3D>(dirt, Vector<float, 3>((float)i * scale - 10.0f * scale, -15.0f, (float)j * scale - 10.0f * scale));
+            _objectCoordinator.attachComponent<RotationalComponent3D>(dirt, { degToRad(90.0f), 0.0f, Vector<float, 3>(-1.0f, 0.0f, 0.0f) });
             _models.insert(dirt);
         }
     }
@@ -123,12 +113,8 @@ void ModelLoadLayer::onAttach()
 
     for (int i = 0; i < 4; ++i)
     {
-        Vector<float, 3> position(((i & 1) * 2 - 1) * 20.0f, 100.0f, (((i & 2) >> 1) * 2 - 1) * 20.0f);
-        Entity sun = _objectCoordinator.createModel3D(
-            "White Box Model",
-            "LightSource Shader",
-            translation_matrix(position)
-        );
+        Vector<float, 3> position = { ((i & 1) * 2 - 1) * 20.0f, 100.0f, (((i & 2) >> 1) * 2 - 1) * 20.0f };
+        Entity sun = _objectCoordinator.createModel3D("White Box Model", "LightSource Shader");
         _models.insert(sun);
         PointLightSourceComponent pointLight;
         pointLight._color = Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f);
@@ -141,6 +127,7 @@ void ModelLoadLayer::onAttach()
         pointLight._specularStrength = 0.5f;
 
         _objectCoordinator.attachComponent<PointLightSourceComponent>(sun, pointLight);
+        _objectCoordinator.attachComponent<PositionComponent3D>(sun, position);
     }
 }
 

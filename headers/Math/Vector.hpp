@@ -137,38 +137,6 @@ Vector<T, LENGTH> element_wise_abs(const Vector<T, LENGTH>& v)
     return (result);
 }
 
-enum DIRECTION
-{
-    UP,
-    RIGHT,
-    DOWN,
-    LEFT
-};
-
-template <typename T>
-DIRECTION vectorDirection(Vector<T, 2> v)
-{
-    Vector<T, 2> directions[4] = {
-        {static_cast<T>(0), static_cast<T>(1)},
-        {static_cast<T>(1), static_cast<T>(0)},
-        {static_cast<T>(0), static_cast<T>(-1)},
-        {static_cast<T>(-1), static_cast<T>(0)}
-    };
-
-    T maxDotProduct = static_cast<T>(-1);
-    DIRECTION direction;
-    for (int i = 0; i < 4; ++i)
-    {
-        if (dot_product(v, directions[i]) > maxDotProduct)
-        {
-            direction = static_cast<DIRECTION>(i);
-            maxDotProduct = dot_product(v, directions[i]);
-        }
-    }
-
-    return (direction);
-}
-
 template <typename T, unsigned int LENGTH>
 Vector<T, LENGTH> element_wise_divide(const Vector<T, LENGTH> &v1, const Vector<T, LENGTH>& v2)
 {

@@ -75,12 +75,14 @@ void QuadTreeLayer::onAttach()
 
         // Create rectangle
         string modelName = modelNames[rand() % modelNames.size()];
-        Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader", scale_matrix(size), position,
-            Vector<float, 4>(getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), 1.0f));
+        Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader");
         _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, { position, size });
         float lowVelocity = -40.0f;
         float highVelocity = 100.0f;
         _objectCoordinator.attachComponent<VelocityComponent2D>(rectangle, {getRand(lowVelocity, highVelocity), getRand(lowVelocity, highVelocity)});
+        _objectCoordinator.attachComponent<ColorComponent>(rectangle, Vector<float, 4>(getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), getRand(0.3f, 1.0f), 1.0f));
+        _objectCoordinator.attachComponent<PositionComponent2D>(rectangle, position);
+        _objectCoordinator.attachComponent<SizeComponent2D>(rectangle, size);
     }
 }
 

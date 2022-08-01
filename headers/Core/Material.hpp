@@ -34,8 +34,8 @@ public:
     inline Texture *getDiffuse() const { return (_diffuse); }
     inline Texture *getSpecular() const { return (_specular); }
     inline Texture *getEmission() const { return (_emission); }
-    inline float getShininess() const { return (_shininess); }
-    inline const string &getName() const { return (_name); }
+    inline float getShininess() const { return (_shininess);  }
+    inline const string &getName() const { return (_name);    }
 
     inline void setAmbient(Texture *ambient) { this->_ambient = ambient; }
     inline void setDiffuse(Texture *diffuse) { this->_diffuse = diffuse; }

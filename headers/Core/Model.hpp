@@ -21,7 +21,6 @@ string              _name;
 string              _directory;
 MaterialManager     *_materialManager;
 TextureManager      *_textureManager;
-Shader              *_shader;
 bool                _loaded;
 public:
     Model();
@@ -34,12 +33,10 @@ public:
     Model(Model &&other);
     Model &operator=(Model &&other);
 
-    inline void setShader(Shader *shader) { _shader = shader; }
     inline void setMaterialManager(MaterialManager *materialManager) { _materialManager = materialManager; }
     inline void setTextureManager(TextureManager *textureManager) { _textureManager = textureManager; }
 
     inline const string &getName() const { TRACE(); return (_name); }
-    inline Shader *getShader() const { TRACE(); return (_shader); }
 
     inline bool loaded() const { return (_loaded); }
 
@@ -48,7 +45,7 @@ public:
      */
     void setMaterial(const string &materialName);
 
-    void draw();
+    void draw(Shader *shader);
 
     void load();
 

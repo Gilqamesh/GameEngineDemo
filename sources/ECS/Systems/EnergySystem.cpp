@@ -1,5 +1,5 @@
 #include "ECS/Systems/EnergySystem.hpp"
-#include "ECS/Components/RotationalComponent.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
 #include "ECS/Components/MassComponent.hpp"
 #include "ECS/Components/VelocityComponent3D.hpp"
 #include "ECS/Components/EnergyComponent.hpp"
@@ -40,7 +40,7 @@ void EnergySystem::setSystemSignature()
     ComponentSignature energySystemSignature;
     energySystemSignature.set(_coordinator->getComponentId<MassComponent>(), true);
     energySystemSignature.set(_coordinator->getComponentId<VelocityComponent3D>(), true);
-    energySystemSignature.set(_coordinator->getComponentId<RotationalComponent>(), true);
+    energySystemSignature.set(_coordinator->getComponentId<RotationalComponent3D>(), true);
     energySystemSignature.set(_coordinator->getComponentId<EnergyComponent>(), true);
     _coordinator->setSystemSignature<EnergySystem>(energySystemSignature);
 }
@@ -50,7 +50,7 @@ void EnergySystem::registerComponents()
     TRACE();
     _coordinator->registerComponent<MassComponent>();
     _coordinator->registerComponent<VelocityComponent3D>();
-    _coordinator->registerComponent<RotationalComponent>();
+    _coordinator->registerComponent<RotationalComponent3D>();
     _coordinator->registerComponent<EnergyComponent>();
 }
 

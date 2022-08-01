@@ -1,6 +1,5 @@
 #include "ECS/Systems/RotationSystem.hpp"
-#include "ECS/Components/RotationalComponent.hpp"
-#include "ECS/Components/ModelMatrixComponent.hpp"
+#include "ECS/Components/RotationalComponent3D.hpp"
 #include "ECS/Components/PositionComponent3D.hpp"
 #include "ECS/Coordinator.hpp"
 
@@ -19,10 +18,8 @@ void RotationSystem::onUpdate(float dt)
     TRACE();
     for (auto entity : entities)
     {
-        RotationalComponent &rotation = _coordinator->getComponent<RotationalComponent>(entity);
-        ModelMatrixComponent &model = _coordinator->getComponent<ModelMatrixComponent>(entity);
+        RotationalComponent3D &rotation = _coordinator->getComponent<RotationalComponent3D>(entity);
         rotation.angle += dt * rotation.speed;
-        model.m *= rotation_matrix(rotation.angle, rotation.axis);
     }
 }
 
@@ -36,8 +33,7 @@ void RotationSystem::setSystemSignature()
 {
     TRACE();
     ComponentSignature rotationSystemSignature;
-    rotationSystemSignature.set(_coordinator->getComponentId<RotationalComponent>(), true);
-    rotationSystemSignature.set(_coordinator->getComponentId<ModelMatrixComponent>(), true);
+    rotationSystemSignature.set(_coordinator->getComponentId<RotationalComponent3D>(), true);
     rotationSystemSignature.set(_coordinator->getComponentId<PositionComponent3D>(), true);
     _coordinator->setSystemSignature<RotationSystem>(rotationSystemSignature);
 }
@@ -45,8 +41,7 @@ void RotationSystem::setSystemSignature()
 void RotationSystem::registerComponents()
 {
     TRACE();
-    _coordinator->registerComponent<RotationalComponent>();
-    _coordinator->registerComponent<ModelMatrixComponent>();
+    _coordinator->registerComponent<RotationalComponent3D>();
     _coordinator->registerComponent<PositionComponent3D>();
 }
 

@@ -44,12 +44,11 @@ public:
      * Returns the id (essentially the bit in the bitset) held for the component of type Component
      */
     template <typename Component>
-    ComponentId getComponentId() const
+    ComponentId getComponentId()
     {
         TRACE();
         const char *componentName = typeid(Component).name();
-        // Component type is not registered
-        ASSERT(NameToId.count(componentName));
+        registerComponent<Component>();
         return (NameToId.at(componentName));
     }
 
