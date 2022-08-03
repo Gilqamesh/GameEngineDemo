@@ -179,6 +179,8 @@ public:
     /* Currently this updates all the meshes owned by the model.. not good..
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
+     * Also important note: one instance of a model that has dynamic vbo cant be used on
+     * multiple entities as they'd transform each others data.
      */
     void updateVBO_position2D(Entity object, const void *data, GLuint size);
     void updateVBO_position3D(Entity object, const void *data, GLuint size);

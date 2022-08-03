@@ -6,6 +6,7 @@
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
 #include "ECS/Components/SizeComponent2D.hpp"
+#include "ECS/Components/RotationalComponent2D.hpp"
 #include "ECS/Components/ColorComponent.hpp"
 #include "ECS/Systems/CollisionSystem2D.hpp"
 #include "Inputs/GLFWInput.hpp"
@@ -47,7 +48,7 @@ void CollisionDevLayer::onAttach()
         _objectCoordinator.attachComponent<SizeComponent2D>(rect, _rectangles[i].size);
     }
 
-    _line = _objectCoordinator.createModel2D("LineModel", "LineShader");
+    _line = _objectCoordinator.createModel2D("LineModel1", "LineShader");
     _objectCoordinator.attachComponent<ColorComponent>(_line, Vector<float, 4>(0.0f, 1.0f, 1.0f, 1.0f));
 
     Vector<float, 2> circleOrigin = { 200.0f, 300.0f };
@@ -58,7 +59,7 @@ void CollisionDevLayer::onAttach()
     _objectCoordinator.attachComponent<PositionComponent2D>(_circle, circleOrigin);
     _objectCoordinator.attachComponent<SizeComponent2D>(_circle, { 200.0f, 200.0f });
 
-    _normalLine = _objectCoordinator.createModel2D("LineModel", "LineShader");
+    _normalLine = _objectCoordinator.createModel2D("LineModel2", "LineShader");
     _objectCoordinator.hideEntity(_normalLine);
     _objectCoordinator.attachComponent<ColorComponent>(_normalLine, { 1.0f, 1.0f, 1.0f, 1.0f });
 
@@ -208,7 +209,8 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&quadMeshPrimitive, "RedRectangleModel", "RedMaterial");
     _objectCoordinator.loadModel(&quadMeshPrimitive, "RectangleModel", "NullMaterial");
     _objectCoordinator.loadModel(&circleMeshPrimitive, "WhiteCircleModel", "NullMaterial");
-    _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel", "NullMaterial");
+    _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel1", "NullMaterial");
+    _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel2", "NullMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)
