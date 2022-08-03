@@ -1,12 +1,12 @@
 #ifndef QUADMESHFACTORY2D_HPP
 # define QUADMESHFACTORY2D_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class QuadMeshFactory2D : public IMeshFactory
+class QuadMeshPrimitive2D : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

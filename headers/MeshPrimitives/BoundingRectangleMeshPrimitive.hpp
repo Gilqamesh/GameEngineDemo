@@ -2,12 +2,12 @@
 # define BOUNDINGRECTANGLEMESHFACTORY_HPP
 
 # include "pch.hpp"
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class BoundingRectangleMeshFactory : public IMeshFactory
+class BoundingRectangleMeshPrimitive : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

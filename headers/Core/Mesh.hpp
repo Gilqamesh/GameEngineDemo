@@ -12,7 +12,6 @@ class Mesh
 {
 VertexData              _vertexData;
 Material                _material;
-GLenum                  _mode;
 public:
     Mesh();
 
@@ -28,13 +27,6 @@ public:
 
     inline void setVertexData(VertexData &&vertexData) { _vertexData = move(vertexData); }
     inline void setMaterial(const Material &material) { _material = material; }
-
-    /*
-     * Modes: GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY,
-     *        GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
-     *        GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY, GL_PATCHES
-     */
-    void setDrawMode(GLenum mode);
 
     void draw(Shader *shader);
 

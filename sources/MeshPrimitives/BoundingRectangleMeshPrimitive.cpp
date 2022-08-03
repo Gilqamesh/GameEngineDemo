@@ -1,10 +1,10 @@
-#include "Factories/BoundingRectangleMeshFactory.hpp"
+#include "MeshPrimitives/BoundingRectangleMeshPrimitive.hpp"
 #include "Core/VertexData.hpp"
 
 namespace GilqEngine
 {
 
-Mesh BoundingRectangleMeshFactory::createMesh()
+Mesh BoundingRectangleMeshPrimitive::createMesh()
 {
     TRACE();
 
@@ -55,8 +55,8 @@ Mesh BoundingRectangleMeshFactory::createMesh()
     vertexData.configureVAO();
 
     Mesh mesh;
+    vertexData.setMode(GL_TRIANGLES);
     mesh.setVertexData(move(vertexData));
-    mesh.setDrawMode(GL_TRIANGLES);
 
     return (mesh);
 }

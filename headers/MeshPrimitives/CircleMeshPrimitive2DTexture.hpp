@@ -1,12 +1,12 @@
 #ifndef CIRCLEMESHFACTORY2DTEXTURE_HPP
 # define CIRCLEMESHFACTORY2DTEXTURE_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class CircleMeshFactory2DTexture : public IMeshFactory
+class CircleMeshPrimitive2DTexture : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

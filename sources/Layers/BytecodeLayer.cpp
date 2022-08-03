@@ -1,7 +1,7 @@
 #include "Layers/BytecodeLayer.hpp"
 #include "Events/EventDispatcher.hpp"
 #include "Events/MouseEvents/MouseButtonPressedEvent.hpp"
-#include "Factories/QuadMeshFactory3D.hpp"
+#include "MeshPrimitives/QuadMeshPrimitive3D.hpp"
 #include "ECS/Components/Light/PointLightSourceComponent.hpp"
 #include "ECS/Components/SizeComponent3D.hpp"
 #include "ECS/Components/RotationalComponent3D.hpp"
@@ -49,10 +49,10 @@ void BytecodeLayer::loadMaterials(void)
 
 void BytecodeLayer::loadModels(void)
 {
-    QuadMeshFactory3D quadMeshFactory;
+    QuadMeshPrimitive3D quadMeshPrimitive;
 
-    _objectCoordinator.loadModel(&quadMeshFactory, "AddModel", "AddMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "ShowTopValueModel", "ShowTopValueMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "AddModel", "AddMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "ShowTopValueModel", "ShowTopValueMaterial");
 }
 
 void BytecodeLayer::registerSystems(void)

@@ -1,12 +1,12 @@
 #ifndef QUADMESHFACTORY2DTEXTURE_HPP
 # define QUADMESHFACTORY2DTEXTURE_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class QuadMeshFactory2DTexture : public IMeshFactory
+class QuadMeshPrimitive2DTexture : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

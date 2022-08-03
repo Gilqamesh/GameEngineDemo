@@ -1,12 +1,12 @@
 #ifndef CUBEMESHFACTORY_HPP
 # define CUBEMESHFACTORY_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class CubeMeshFactory : public IMeshFactory
+class CubeMeshPrimitive : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

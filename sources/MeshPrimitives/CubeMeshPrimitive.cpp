@@ -1,11 +1,11 @@
-#include "Factories/CubeMeshFactory.hpp"
+#include "MeshPrimitives/CubeMeshPrimitive.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
 namespace GilqEngine
 {
 
-Mesh CubeMeshFactory::createMesh()
+Mesh CubeMeshPrimitive::createMesh()
 {
     TRACE();
     vector<Vector<GLfloat, 4>>         preVertices{
@@ -111,8 +111,8 @@ Mesh CubeMeshFactory::createMesh()
     vertexData.configureVAO();
 
     Mesh mesh;
+    vertexData.setMode(GL_TRIANGLES);
     mesh.setVertexData(move(vertexData));
-    mesh.setDrawMode(GL_TRIANGLES);
     
     return (mesh);
 }

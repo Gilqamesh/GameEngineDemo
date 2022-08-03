@@ -6,7 +6,7 @@
 # include <assimp/scene.h>
 # include <assimp/postprocess.h>
 # include "Core/Mesh.hpp"
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 # include "Managers/MaterialManager.hpp"
 # include "Managers/TextureManager.hpp"
 
@@ -25,7 +25,7 @@ bool                _loaded;
 public:
     Model();
     Model(const string &path, const string &name);
-    Model(IMeshFactory *meshFactory, const string &name);
+    Model(IMeshPrimitive *meshPrimitive, const string &name);
 
     Model(const Model &other) = delete;
     Model &operator=(const Model &other) = delete;

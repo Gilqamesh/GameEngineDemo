@@ -1,12 +1,12 @@
 #ifndef LINEMESHFACTORY2D_HPP
 # define LINEMESHFACTORY2D_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class LineMeshFactory2D : public IMeshFactory
+class LineMeshPrimitive2D : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

@@ -12,8 +12,7 @@ Mesh::Mesh()
 Mesh::Mesh(Mesh &&other)
     // invoke the copy move operator for each OpenGL context objects
     : _vertexData(move(other._vertexData)),
-      _material(other._material),
-      _mode(other._mode)
+      _material(other._material)
 {
     TRACE();
 }
@@ -26,25 +25,17 @@ Mesh &Mesh::operator=(Mesh &&other)
         // invoke the move assignment operator for each OpenGL context objects
         _vertexData = move(other._vertexData);
         _material = other._material;
-        _mode = other._mode;
     }
     return (*this);
-}
-
-void Mesh::setDrawMode(GLenum mode)
-{
-    _mode = mode;
 }
 
 void Mesh::draw(Shader *shader)
 {
     TRACE();
     _vertexData.bind();
-    shader->bind();
     _material.setShaderUniforms(shader);
-    GLCall(glDrawElements(_mode, _vertexData.getCountOfIndeces(), GL_UNSIGNED_INT, nullptr));
+    GLCall(glDrawElements(_vertexData.getMode(), _vertexData.getCountOfIndeces(), GL_UNSIGNED_INT, nullptr));
     _vertexData.unbind();
-    shader->unbind();
 }
 
 void Mesh::updateVBO_position2D(const void *data, GLuint size)

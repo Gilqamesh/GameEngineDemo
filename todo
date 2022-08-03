@@ -8,10 +8,8 @@ store opacity in each model object, and in object coordinator map from Entity to
 stop calling every base class an interface
 precompute angle between light sources and entities maybe?
 load models with material and attach material shouldn't take in an entity because it overrides the original model's material
-segfault upon quitting the application
 continuous edit & continue: make game layer a dll and have the platform layer check the dll and when it changes load the new dll
 rename MacApplication since it isnt OS specific at all
-rename Factories to primitives or something
 2d: combine position and texture into 1 vec4
 change const& function parameter for types which its faster to create a copy (for example there is a lot of Matrix.hpp)
 batch rendering entities
@@ -20,3 +18,5 @@ shader class definition should include setting up its predefined uniforms, so ea
     to use along with its shader
 have better api to create primitives
 naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/modelb
+instancing rendering: https://learnopengl.com/Advanced-OpenGL/Instancing
+particle system: https://learnopengl.com/In-Practice/2D-Game/Particles

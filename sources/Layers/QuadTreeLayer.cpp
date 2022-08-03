@@ -1,5 +1,5 @@
 #include "Layers/QuadTreeLayer.hpp"
-#include "Factories/QuadMeshFactory2D.hpp"
+#include "MeshPrimitives/QuadMeshPrimitive2D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
@@ -149,14 +149,14 @@ void QuadTreeLayer::loadMaterials(void)
 
 void QuadTreeLayer::loadModels(void)
 {
-    QuadMeshFactory2D quadMeshFactory;
+    QuadMeshPrimitive2D quadMeshPrimitive;
 
-    _objectCoordinator.loadModel(&quadMeshFactory, "BlackRectangleModel", "BlackMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "RedRectangleModel", "RedMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "GreenRectangleModel", "GreenMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "BlueRectangleModel", "BlueMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "YellowRectangleModel", "YellowMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "PurpleRectangleModel", "PurpleMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "BlackRectangleModel", "BlackMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "RedRectangleModel", "RedMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "GreenRectangleModel", "GreenMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "BlueRectangleModel", "BlueMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "YellowRectangleModel", "YellowMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "PurpleRectangleModel", "PurpleMaterial");
 }
 
 void QuadTreeLayer::registerSystems(void)

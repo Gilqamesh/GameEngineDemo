@@ -5,7 +5,7 @@
 # include "Managers/ModelManager.hpp"
 # include "Managers/ShaderManager.hpp"
 # include "Managers/TextureManager.hpp"
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 # include "Math/Matrix.hpp"
 # include "ECS/Systems/Light/DirectionalLightSourceSystem.hpp"
 # include "ECS/Systems/Light/PointLightSourceSystem.hpp"
@@ -129,10 +129,10 @@ public:
         const string &modelName);
 
     /*
-     * Loads model from a meshFactory
+     * Loads model from a meshPrimitive
      */
     void loadModel(
-        IMeshFactory *meshFactory,
+        IMeshPrimitive *meshPrimitive,
         const string &modelName,
         const string &materialName);
 

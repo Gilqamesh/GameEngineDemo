@@ -27,7 +27,8 @@ VertexData::VertexData(VertexData &&other)
     _vertexVectorNormal(other._vertexVectorNormal),
     _vertexVectorTexture(other._vertexVectorTexture),
     _indices(other._indices),
-    _nOfIndices(other._nOfIndices)
+    _nOfIndices(other._nOfIndices),
+    _mode(other._mode)
 {
     TRACE();
 }
@@ -49,6 +50,7 @@ VertexData &VertexData::operator=(VertexData &&other)
         _vertexVectorTexture = other._vertexVectorTexture;
         _indices = other._indices;
         _nOfIndices = other._nOfIndices;
+        _mode = other._mode;
     }
     return (*this);
 }

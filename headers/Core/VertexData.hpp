@@ -30,6 +30,8 @@ VertexVector<TextureVertexAttribute>    _vertexVectorTexture;
 vector<unsigned int>                    _indices;
 
 uint32 _nOfIndices;
+
+GLenum                                 _mode;
 public:
     VertexData();
     ~VertexData();
@@ -63,6 +65,14 @@ public:
     inline VertexBuffer &getNormalBuffer() { return (_vertexNormalBuffer); }
     inline VertexBuffer &getTextureBuffer() { return (_vertexTextureBuffer); }
     inline IndexBuffer &getIndexBuffer() { return (_indexBuffer); }
+
+    /*
+     * Modes: GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY,
+     *        GL_LINES_ADJACENCY, GL_TRIANGLE_STRIP, GL_TRIANGLE_FAN, GL_TRIANGLES,
+     *        GL_TRIANGLE_STRIP_ADJACENCY, GL_TRIANGLES_ADJACENCY, GL_PATCHES
+     */
+    inline void setMode(GLenum mode) { _mode = mode; }
+    inline GLenum getMode() const { return (_mode); }
 
     /*
      * Call it after all VBOs and the IBO are configured

@@ -19,14 +19,14 @@ Model::Model(const string &path, const string &name)
     TRACE();
 }
 
-Model::Model(IMeshFactory *meshFactory, const string &name)
+Model::Model(IMeshPrimitive *meshPrimitive, const string &name)
     : _name(name),
     _materialManager(nullptr),
     _textureManager(nullptr),
     _loaded(true)
 {
     TRACE();
-    _meshes.push_back(meshFactory->createMesh());
+    _meshes.push_back(meshPrimitive->createMesh());
 }
 
 Model::Model(Model &&other)

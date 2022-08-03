@@ -162,12 +162,12 @@ void ObjectCoordinator::loadModel(const string &modelPath, const string &modelNa
 }
 
 void ObjectCoordinator::loadModel(
-    IMeshFactory *meshFactory,
+    IMeshPrimitive *meshPrimitive,
     const string &modelName,
     const string &materialName)
 {
     TRACE();
-    _modelManager.loadModel(meshFactory, modelName, materialName);
+    _modelManager.loadModel(meshPrimitive, modelName, materialName);
 }
 
 Entity ObjectCoordinator::createModel2D(const string &modelName, const string &shaderName)
@@ -254,6 +254,7 @@ void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
         shader->setMat4("model", _modelManager.getModelMatrix(entity));
         shader->setMat4("projection", projection);
         _modelManager.drawModel(entity);
+        shader->unbind();
     }
 }
 

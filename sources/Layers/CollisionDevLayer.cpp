@@ -1,7 +1,7 @@
 #include "Layers/CollisionDevLayer.hpp"
-#include "Factories/QuadMeshFactory2DTexture.hpp"
-#include "Factories/CircleMeshFactory2DTexture.hpp"
-#include "Factories/LineMeshFactory2D.hpp"
+#include "MeshPrimitives/QuadMeshPrimitive2DTexture.hpp"
+#include "MeshPrimitives/CircleMeshPrimitive2DTexture.hpp"
+#include "MeshPrimitives/LineMeshPrimitive2D.hpp"
 #include "Log.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
@@ -47,8 +47,8 @@ void CollisionDevLayer::onAttach()
         _objectCoordinator.attachComponent<SizeComponent2D>(rect, _rectangles[i].size);
     }
 
-    _line = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader");
-    _objectCoordinator.attachComponent<ColorComponent>(_line, Vector<float, 4>(0.0f, 1.0f, 0.0f, 1.0f));
+    _line = _objectCoordinator.createModel2D("LineModel", "LineShader");
+    _objectCoordinator.attachComponent<ColorComponent>(_line, Vector<float, 4>(0.0f, 1.0f, 1.0f, 1.0f));
 
     Vector<float, 2> circleOrigin = { 200.0f, 300.0f };
     _circle = _objectCoordinator.createModel2D("WhiteCircleModel", "CircleShader");
@@ -58,7 +58,7 @@ void CollisionDevLayer::onAttach()
     _objectCoordinator.attachComponent<PositionComponent2D>(_circle, circleOrigin);
     _objectCoordinator.attachComponent<SizeComponent2D>(_circle, { 200.0f, 200.0f });
 
-    _normalLine = _objectCoordinator.createModel2D("WhiteLineModel", "LineShader");
+    _normalLine = _objectCoordinator.createModel2D("LineModel", "LineShader");
     _objectCoordinator.hideEntity(_normalLine);
     _objectCoordinator.attachComponent<ColorComponent>(_normalLine, { 1.0f, 1.0f, 1.0f, 1.0f });
 
@@ -94,7 +94,6 @@ void CollisionDevLayer::onUpdate(float deltaTime)
         mousePos
     };
     _objectCoordinator.updateVBO_position2D(_line, line.data(), line.size() * sizeof(line[0]));
-
 
     Vector<float, 2> contactPoint;
     Vector<float, 2> contactNormal;
@@ -201,15 +200,15 @@ void CollisionDevLayer::loadMaterials(void)
 
 void CollisionDevLayer::loadModels(void)
 {
-    QuadMeshFactory2DTexture quadMeshFactory;
-    LineMeshFactory2D lineMeshFactory;
-    CircleMeshFactory2DTexture circleMeshFactory;
+    QuadMeshPrimitive2DTexture quadMeshPrimitive;
+    LineMeshPrimitive2D lineMeshPrimitive;
+    CircleMeshPrimitive2DTexture circleMeshPrimitive;
 
-    _objectCoordinator.loadModel(&quadMeshFactory, "WhiteRectangleModel", "WhiteMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "RedRectangleModel", "RedMaterial");
-    _objectCoordinator.loadModel(&quadMeshFactory, "RectangleModel", "NullMaterial");
-    _objectCoordinator.loadModel(&circleMeshFactory, "WhiteCircleModel", "NullMaterial");
-    _objectCoordinator.loadModel(&lineMeshFactory, "WhiteLineModel", "NullMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "WhiteRectangleModel", "WhiteMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "RedRectangleModel", "RedMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "RectangleModel", "NullMaterial");
+    _objectCoordinator.loadModel(&circleMeshPrimitive, "WhiteCircleModel", "NullMaterial");
+    _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel", "NullMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

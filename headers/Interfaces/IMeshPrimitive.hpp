@@ -8,10 +8,10 @@
 namespace GilqEngine
 {
 
-class IMeshFactory
+class IMeshPrimitive
 {
 public:
-    virtual ~IMeshFactory() = default;
+    virtual ~IMeshPrimitive() = default;
 
     /*
      * 'transform' is initial transform matrix used to create the Mesh object

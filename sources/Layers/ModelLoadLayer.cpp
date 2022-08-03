@@ -13,8 +13,8 @@
 #include "ECS/Systems/GravitySystem.hpp"
 #include "ECS/Systems/EnergySystem.hpp"
 #include "ECS/Systems/BoundaryBoxSystem.hpp"
-#include "Factories/CubeMeshFactory.hpp"
-#include "Factories/QuadMeshFactory3D.hpp"
+#include "MeshPrimitives/CubeMeshPrimitive.hpp"
+#include "MeshPrimitives/QuadMeshPrimitive3D.hpp"
 #include "Log.hpp"
 
 namespace GilqEngine
@@ -245,12 +245,12 @@ TRACE();
     //     "C:/Users/Gilqamesh/Desktop/Projects/GameEngine/resources/models/grass/Grass.fbx",
     //     "Grass Model"
     // );
-    CubeMeshFactory cubeMeshFactory; // there is no purpose for this object to exist
-    _objectCoordinator.loadModel(&cubeMeshFactory, "Red Box Model", "Red Material");
-    _objectCoordinator.loadModel(&cubeMeshFactory, "White Box Model", "White Material");
-    _objectCoordinator.loadModel(&cubeMeshFactory, "Window Box Model", "Window Material");
-    QuadMeshFactory3D quadMeshFactory;
-    _objectCoordinator.loadModel(&quadMeshFactory, "Dirt Model", "Dirt Material");
+    CubeMeshPrimitive cubeMeshPrimitive; // there is no purpose for this object to exist
+    _objectCoordinator.loadModel(&cubeMeshPrimitive, "Red Box Model", "Red Material");
+    _objectCoordinator.loadModel(&cubeMeshPrimitive, "White Box Model", "White Material");
+    _objectCoordinator.loadModel(&cubeMeshPrimitive, "Window Box Model", "Window Material");
+    QuadMeshPrimitive3D quadMeshPrimitive;
+    _objectCoordinator.loadModel(&quadMeshPrimitive, "Dirt Model", "Dirt Material");
 }
 
 }

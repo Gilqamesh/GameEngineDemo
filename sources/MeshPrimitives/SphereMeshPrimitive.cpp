@@ -1,4 +1,4 @@
-#include "Factories/SphereMeshFactory.hpp"
+#include "MeshPrimitives/SphereMeshPrimitive.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 #include "Math/Utils.hpp"
@@ -6,7 +6,7 @@
 namespace GilqEngine
 {
 
-Mesh SphereMeshFactory::createMesh()
+Mesh SphereMeshPrimitive::createMesh()
 {
     TRACE();
     int lats = 10, longs = 10;
@@ -58,8 +58,8 @@ Mesh SphereMeshFactory::createMesh()
     vertexData.configureVAO();
     
     Mesh mesh;
+    vertexData.setMode(GL_TRIANGLES);
     mesh.setVertexData(move(vertexData));
-    mesh.setDrawMode(GL_TRIANGLES);
     
     return (mesh);
 }

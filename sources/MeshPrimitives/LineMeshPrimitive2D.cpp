@@ -1,11 +1,11 @@
-#include "Factories/LineMeshFactory2D.hpp"
+#include "MeshPrimitives/LineMeshPrimitive2D.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
 namespace GilqEngine
 {
 
-Mesh LineMeshFactory2D::createMesh()
+Mesh LineMeshPrimitive2D::createMesh()
 {
     TRACE();
 
@@ -23,8 +23,8 @@ Mesh LineMeshFactory2D::createMesh()
     vertexData.configureVAO();
 
     Mesh mesh;
+    vertexData.setMode(GL_LINES);
     mesh.setVertexData(move(vertexData));
-    mesh.setDrawMode(GL_LINES);
 
     return (mesh);
 }

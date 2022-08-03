@@ -1,12 +1,12 @@
 #ifndef TRIANGLEMESHFACTORY3D_HPP
 # define TRIANGLEMESHFACTORY3D_HPP
 
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
 
-class TriangleMeshFactory3D : public IMeshFactory
+class TriangleMeshPrimitive3D : public IMeshPrimitive
 {
 public:
     virtual Mesh createMesh() override;

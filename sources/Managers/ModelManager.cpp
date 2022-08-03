@@ -38,14 +38,14 @@ void ModelManager::loadModel(const string &path, const string &name)
 }
 
 void ModelManager::loadModel(
-    IMeshFactory *meshFactory,
+    IMeshPrimitive *meshPrimitive,
     const string &name,
     const string &materialName)
 {
     TRACE();
     if (_loadedModels.count(name)) // model already loaded -> do nothing
         return ;
-    _loadedModels[name] = new Model(meshFactory, name);
+    _loadedModels[name] = new Model(meshPrimitive, name);
     _loadedModels[name]->setMaterialManager(_materialManager);
     _loadedModels[name]->setTextureManager(_textureManager);
     _loadedModels[name]->setMaterial(materialName);

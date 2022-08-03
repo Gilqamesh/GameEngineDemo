@@ -6,7 +6,7 @@
 # include "Interfaces/ICamera.hpp"
 # include "Managers/MaterialManager.hpp"
 # include "Managers/TextureManager.hpp"
-# include "Interfaces/IMeshFactory.hpp"
+# include "Interfaces/IMeshPrimitive.hpp"
 
 namespace GilqEngine
 {
@@ -32,7 +32,7 @@ public:
     inline void setTextureManager(TextureManager *textureManager) { _textureManager = textureManager; }
 
     void loadModel(const string &path, const string &name);
-    void loadModel(IMeshFactory *meshFactory, const string &name, const string &materialName);
+    void loadModel(IMeshPrimitive *meshPrimitive, const string &name, const string &materialName);
     /* NOTE(david): Not tested!!
      * Unloads model from the memory and destroys all entities associated with it.
      */
