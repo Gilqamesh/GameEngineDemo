@@ -92,6 +92,9 @@ public:
     void updateFloat4(const string &shaderName, const string& uniformName, const Vector<GLfloat, 4> &value);
     void updateMat4(const string &shaderName, const string& uniformName, const Matrix<GLfloat, 4, 4> &value);
 
+    // TODO(david): This is only used in ParticleGenerator at the moment, get rid of this
+    Shader *getShader(const string& shaderName);
+
     // ************************************************************************** //
     //                              Texture Methods                               //
     // ************************************************************************** //
@@ -135,6 +138,9 @@ public:
         IMeshPrimitive *meshPrimitive,
         const string &modelName,
         const string &materialName);
+
+    // TODO(david): This is only used in ParticleGenerator at the moment, get rid of this
+    Model *getModel(const string& modelName);
 
     /*
      * Returns an already loaded model as a model object

@@ -144,6 +144,12 @@ void ObjectCoordinator::updateMat4(const string &shaderName, const string& unifo
     _shaderManager.getShader(shaderName)->updateMat4(uniformName, value);
 }
 
+Shader *ObjectCoordinator::getShader(const string& shaderName)
+{
+    TRACE();
+    return (_shaderManager.getShader(shaderName));
+}
+
 void ObjectCoordinator::addTexture(const string &texturePath, const string &textureName)
 {
     TRACE();
@@ -168,6 +174,12 @@ void ObjectCoordinator::loadModel(
 {
     TRACE();
     _modelManager.loadModel(meshPrimitive, modelName, materialName);
+}
+
+Model *ObjectCoordinator::getModel(const string& modelName)
+{
+    TRACE();
+    return (_modelManager.getModel(modelName));
 }
 
 Entity ObjectCoordinator::createModel2D(const string &modelName, const string &shaderName)

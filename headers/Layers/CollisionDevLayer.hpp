@@ -5,6 +5,7 @@
 # include "Windows/MacWindow.hpp"
 # include "Managers/ObjectCoordinator.hpp"
 # include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
+# include "Managers/ParticleGenerator.hpp"
 
 namespace GilqEngine
 {
@@ -25,6 +26,8 @@ class CollisionDevLayer : public ILayer
     Entity _circle;
 
     Entity _normalLine;
+
+    ParticleGenerator _particleGenerator;
 public:
     CollisionDevLayer(MacWindow *macWindow);
     virtual void onAttach() override;

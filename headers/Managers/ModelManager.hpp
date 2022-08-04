@@ -39,7 +39,7 @@ public:
     void unloadModel(const string& name);
 
     /*
-     * Creates an already loaded model
+     * Creates an already loaded model and bookkeeps it as an Entity
      * 'modelMatrix' is initial model matrix for the Model
      */
     Entity createModel(const string &name);
@@ -47,6 +47,9 @@ public:
     Shader *getShader(Entity entity);
 
     void drawModel(Entity entity);
+
+    // TODO(david): Only used in Particle Generator, get rid of this
+    Model *getModel(const string& modelName);
 
     /*
      * Calculates a new matrix of the shader model matrix depending

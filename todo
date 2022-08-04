@@ -20,3 +20,4 @@ have better api to create primitives
 naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/modelb
 instancing rendering: https://learnopengl.com/Advanced-OpenGL/Instancing
 particle system: https://learnopengl.com/In-Practice/2D-Game/Particles
+need proper 2d rotation before being able to remove the need for dynamic VBO. Problem is that entities cant share the same Model instance that has dynamic VBO, as transforming it would transform all entities

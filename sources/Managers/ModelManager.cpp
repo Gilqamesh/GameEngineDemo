@@ -101,6 +101,15 @@ void ModelManager::drawModel(Entity entity)
     _modelEntities[entity]->draw(_modelShaders[entity]);
 }
 
+Model *ModelManager::getModel(const string& modelName)
+{
+    TRACE();
+    if (_loadedModels.count(modelName) == 0)
+        throw Exception("Model is not loaded: " + modelName);
+
+    return (_loadedModels[modelName]);
+}
+
 Matrix<float, 4, 4> ModelManager::getModelMatrix(Entity entity)
 {
     TRACE();
