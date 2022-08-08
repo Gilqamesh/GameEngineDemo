@@ -1,10 +1,12 @@
 #ifndef LOG_HPP
 # define LOG_HPP
 
-# include "pch.hpp"
+# include <iostream>
 
 namespace GilqEngine
 {
+
+using namespace std;
 
 # define LOG(x) (cout << x << endl)
 # define LOG_E(x) (cerr << x << endl)

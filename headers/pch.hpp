@@ -54,10 +54,12 @@
 # include <cstdint>
 # include <list>
 # include <cassert>
+# include <random>
 # include "Math/Matrix.hpp"
 # include "Math/Quaternion.hpp"
 # include "Math/Utils.hpp"
 # include "Math/Vector.hpp"
+# include "Log.hpp"
 
 typedef int8_t int8;
 typedef int16_t int16;
@@ -72,6 +74,8 @@ typedef uint64_t uint64;
 
 typedef float real32;
 typedef double real64;
+
+# define TARGET_FPS 60
 
 using namespace std;
 

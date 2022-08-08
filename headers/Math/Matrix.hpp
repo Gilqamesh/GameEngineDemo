@@ -25,50 +25,61 @@ Matrix<T, ROWS, COLUMNS> adjugate(const Matrix<T, ROWS, COLUMNS> &m);
 template <typename T, unsigned int ROWS, unsigned int COLUMNS>
 class Matrix
 {
-    private:
-        array<T, ROWS * COLUMNS>                   entries;
-    public:
-        Matrix() = default;
-        Matrix(T* a)
+private:
+    array<T, ROWS * COLUMNS> _data;
+    
+public:
+    typedef typename array<T, ROWS * COLUMNS>::iterator       iterator;
+    typedef typename array<T, ROWS * COLUMNS>::const_iterator const_iterator;
+    
+public:
+    Matrix() = default;
+    Matrix(T* a)
+    {
+        for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
+            _data[i] = a[i];
+    }
+    template <typename... Args>
+    Matrix(const Args & ... args):                  _data({ args... })  { }
+    ~Matrix() = default;
+    Matrix(const Matrix &m)
+    {
+        for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
         {
-            for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
-                entries[i] = a[i];
+            _data[i] = m._data[i];
         }
-        template <typename... Args>
-        Matrix(const Args & ... args):                  entries({ args... })  { }
-        ~Matrix() = default;
-        Matrix(const Matrix &m)
-        {
-            for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)
-            {
-                entries[i] = m.entries[i];
-            }
-        }
-        Matrix &operator=(const Matrix &m)                                  { if (this != &m) entries = m.entries; return (*this); }
+    }
+    Matrix &operator=(const Matrix &m)                                  { if (this != &m) _data = m._data; return (*this); }
 
-        T*        data(void)        { return (entries.data()); }
-        const T*  data(void) const  { return (entries.data()); }
+    iterator begin() { return (_data.begin()); }
+    const_iterator begin() const { return (_data.begin()); }
 
-        // ONLY FOR SQUARE MATRICES
-        T       determinant(void)       { return (GilqEngine::determinant(*this)); }
-        Matrix &cofactor(void)          { *this = GilqEngine::cofactor(*this); return (*this); }
-        Matrix &adjugate(void)          { return (cofactor().transpose()); }
-        Matrix &inverse(void)           { *this = GilqEngine::adjugate(*this) / determinant(); return (*this); }
-        Matrix &transpose(void)
-        {
-            for (unsigned int r = ROWS - 1; r > 0; --r)
-                for (unsigned int c = 0; c < r; ++c)
-                    swap((*this)(r, c), (*this)(c, r));
-            return (*this);
-        }
+    iterator end() { return (_data.end()); }
+    const_iterator end() const { return (_data.end()); }
 
-        Matrix &operator+=(const Matrix &m) { *this = *this + m; return (*this); }
-        Matrix &operator-=(const Matrix &m) { *this = *this - m; return (*this); }
-        Matrix &operator*=(const T &f)      { *this = *this * f; return (*this); }
-        Matrix &operator*=(const Matrix &m) { *this = *this * m; return (*this); }
+    T*        data(void)        { return (_data.data()); }
+    const T*  data(void) const  { return (_data.data()); }
 
-        T       &operator()(unsigned int r, unsigned int c)       { return (entries.at(r * COLUMNS + c)); }
-        T const &operator()(unsigned int r, unsigned int c) const { return (entries.at(r * COLUMNS + c)); }
+    // ONLY FOR SQUARE MATRICES
+    T       determinant(void)       { return (GilqEngine::determinant(*this)); }
+    Matrix &cofactor(void)          { *this = GilqEngine::cofactor(*this); return (*this); }
+    Matrix &adjugate(void)          { return (cofactor().transpose()); }
+    Matrix &inverse(void)           { *this = GilqEngine::adjugate(*this) / determinant(); return (*this); }
+    Matrix &transpose(void)
+    {
+        for (unsigned int r = ROWS - 1; r > 0; --r)
+            for (unsigned int c = 0; c < r; ++c)
+                swap((*this)(r, c), (*this)(c, r));
+        return (*this);
+    }
+
+    Matrix &operator+=(const Matrix &m) { *this = *this + m; return (*this); }
+    Matrix &operator-=(const Matrix &m) { *this = *this - m; return (*this); }
+    Matrix &operator*=(const T &f)      { *this = *this * f; return (*this); }
+    Matrix &operator*=(const Matrix &m) { *this = *this * m; return (*this); }
+
+    T       &operator()(unsigned int r, unsigned int c)       { return (_data.at(r * COLUMNS + c)); }
+    T const &operator()(unsigned int r, unsigned int c) const { return (_data.at(r * COLUMNS + c)); }
 };
 
 template <typename T, unsigned int LENGTH>

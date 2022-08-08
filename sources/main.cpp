@@ -2,13 +2,13 @@
 #include "Simulators/QuadTreeSimulator.hpp"
 #include "Simulators/CollisionDevSimulator.hpp"
 #include "Log.hpp"
+#include "Debug/Stopwatch.hpp"
 
 using namespace GilqEngine;
 
 int main(void)
 {
     TRACE();
-    srand(42);
 
     try
     {

@@ -41,7 +41,8 @@ public:
 
     virtual inline bool isVSync() override { return (_windowProps.VSync); }
 
-    inline void enableBlending() const { GLCall(glEnable(GL_BLEND)); setBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA); }
+    inline void enableBlending() const { GLCall(glEnable(GL_BLEND)); setDefaultBlending(); }
+    inline void setDefaultBlending() const { setBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA); }
     inline void setBlendFunc(GLenum sfactor, GLenum dfactor) const { GLCall(glBlendFunc(sfactor, dfactor)); }
 
     inline void disableBlending() const { GLCall(glDisable(GL_BLEND)); }

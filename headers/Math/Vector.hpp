@@ -18,19 +18,31 @@ class Matrix;
 template <typename T, unsigned int LENGTH>
 class Vector
 {
-Matrix<T, 1, LENGTH>    entries;
+private:
+    Matrix<T, 1, LENGTH>    _data;
+
+public:
+    typedef typename Matrix<T, 1, LENGTH>::iterator         iterator;
+    typedef typename Matrix<T, 1, LENGTH>::const_iterator   const_iterator;
+
 public:
     Vector() = default;
-    Vector(T* v):                           entries(v)          { }
-    explicit Vector(const Matrix<T, 1, LENGTH> &m):  entries(m)          { }
+    Vector(T* v): _data(v) { }
+    explicit Vector(const Matrix<T, 1, LENGTH> &m):  _data(m) { }
     template<typename... Args, typename enable_if<sizeof...(Args) == LENGTH, bool>::type = true>
-    Vector(const Args & ... args):          entries(args...)    { }
-    Vector(const Vector &v):                entries(v.entries)  { }
+    Vector(const Args & ... args) : _data(args...) { }
+    Vector(const Vector &v) : _data(v._data) { }
     ~Vector() = default;
-    Vector &operator=(const Vector &v) { if (this != &v) entries = v.entries; return (*this); }
+    Vector &operator=(const Vector &v) { if (this != &v) _data = v._data; return (*this); }
 
-    T*       data(void)       { return (entries.data()); }
-    const T* data(void) const { return (entries.data()); }
+    iterator begin() { return (_data.begin()); }
+    const_iterator begin() const { return (_data.begin()); }
+
+    iterator end() { return (_data.end()); }
+    const_iterator end() const { return (_data.end()); }
+
+    T*       data(void)       { return (_data.data()); }
+    const T* data(void) const { return (_data.data()); }
 
     size_t size() const { return (LENGTH); }
 
@@ -39,8 +51,8 @@ public:
     Vector &operator*=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] * a;    return (*this); }
     Vector &operator/=(const T &a)      { for (unsigned int i = 0; i < LENGTH; ++i) (*this)[i] = (*this)[i] / a;    return (*this); }
 
-    T       &operator[](unsigned int index)       { return (entries(0, index)); }
-    T const &operator[](unsigned int index) const { return (entries(0, index)); }
+    T       &operator[](unsigned int index)       { return (_data(0, index)); }
+    T const &operator[](unsigned int index) const { return (_data(0, index)); }
 };
 
 template <typename T, unsigned int LENGTH>

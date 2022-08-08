@@ -11,6 +11,7 @@ class MaterialManager
 unordered_map<string, Material> _materials;
 public:
     ~MaterialManager();
+    
     void addMaterial(const string &materialName);
     
     void deleteMaterial(const string &materialName);

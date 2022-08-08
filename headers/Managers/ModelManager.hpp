@@ -48,7 +48,6 @@ public:
 
     void drawModel(Entity entity);
 
-    // TODO(david): Only used in Particle Generator, get rid of this
     Model *getModel(const string& modelName);
 
     /*

@@ -16,8 +16,7 @@ namespace GilqEngine
 
 CollisionDevLayer::CollisionDevLayer(MacWindow *window)
     : ILayer("QuadTree Layer", LayerType::overlay),
-      _window(window),
-      _particleGenerator(500)
+      _window(window)
 {
 
 }
@@ -73,9 +72,10 @@ void CollisionDevLayer::onAttach()
     Entity idk = _objectCoordinator.createModel2D("RedRectangleModel", "TextureShader");
     _objectCoordinator.attachComponent<SizeComponent2D>(idk, { 300.0f, 300.0f });
 
-    _particleGenerator.setObjectCoordinator(&_objectCoordinator);
-    _particleGenerator.setParticleModel("ParticleModel");
-    _particleGenerator.setShader("ParticleShader");
+    _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
+        "ParticleModel",
+        "ParticleShader",
+        30, 1.0f);
 }
 
 void CollisionDevLayer::onDetach()
@@ -90,7 +90,7 @@ void CollisionDevLayer::onEvent(IEvent &e)
 
 void CollisionDevLayer::onUpdate(float deltaTime)
 {
-    // LOG(deltaTime);
+    LOG(deltaTime);
 
     // mouseRay line
     Vector<float, 2> mousePos = _window->getMousePosition();
@@ -110,7 +110,9 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     Vector<float, 2> mouseRecVelocity = normalize(rayDirection) * 10.0f;
     VelocityComponent2D &prevVelocity = _objectCoordinator.getComponent<VelocityComponent2D>(_mouseRect);
     if (GLFWInput::getInstance(_window->getWindow())->isMousePressed(0))
+    {
         prevVelocity.v += mouseRecVelocity;
+    }
     
     bool showCircle = false;
     vector<Vector<float, 2>> normalLine;
@@ -145,7 +147,8 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     _objectCoordinator.updateComponent<PositionComponent2D>(_mouseRect, newMouseRectPosition);
     _mouseRectangle.position = newMouseRectPosition;
 
-    _particleGenerator.update(deltaTime, _mouseRectangle.position, Vector<float, 2>(0.0f, 0.0f), 2, Vector<float, 2>(0.0f, 0.0f));
+    _objectCoordinator.updateGenerator(_mouseParticleGenerator, 2,
+        { _mouseRectangle.position, {}, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f), 1.0f }, deltaTime);
 
     if (showCircle)
     {
@@ -165,7 +168,6 @@ void CollisionDevLayer::onUpdate(float deltaTime)
 void CollisionDevLayer::onRender()
 {
     Matrix<float, 4, 4> projection = projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f);
-    _particleGenerator.draw(projection);
     _objectCoordinator.drawObjects2D(projection);
 }
 
@@ -196,6 +198,8 @@ void CollisionDevLayer::loadTextures(void)
     _objectCoordinator.addTexture(getTextureDir() + "White.png", "WhiteTexture");
 
     _objectCoordinator.addTexture(getTextureDir() + "Red.png", "RedTexture");
+
+    _objectCoordinator.addTexture(getTextureDir() + "Grass.png", "GrassTexture");
 }
 
 void CollisionDevLayer::loadMaterials(void)
@@ -205,6 +209,9 @@ void CollisionDevLayer::loadMaterials(void)
 
     _objectCoordinator.addMaterial("RedMaterial");
     _objectCoordinator.setDiffuse("RedMaterial", "RedTexture");
+
+    _objectCoordinator.addMaterial("GrassMaterial");
+    _objectCoordinator.setDiffuse("GrassMaterial", "GrassTexture");
 
     _objectCoordinator.addMaterial("NullMaterial");
 }
@@ -221,7 +228,7 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&circleMeshPrimitive, "WhiteCircleModel", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel1", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel2", "NullMaterial");
-    _objectCoordinator.loadModel(&quadMeshPrimitive2DTexture, "ParticleModel", "RedMaterial");
+    _objectCoordinator.loadModel(&quadMeshPrimitive2DTexture, "ParticleModel", "GrassMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

@@ -23,9 +23,9 @@ void ECSCoordinatorSimulator::main()
     {
         entities.push_back(coordinator->createEntity());
         coordinator->attachComponent<PositionComponent3D>(entities[i],
-            { (float)(rand() % 100), (float)(rand() % 100), (float)(rand() % 100) });
+            { getRand(0.0f, 100.0f), getRand(0.0f, 100.0f), getRand(0.0f, 100.0f) });
         coordinator->attachComponent<VelocityComponent3D>(entities[i],
-            { (float)(rand() % 10), (float)(rand() % 10), (float)(rand() % 10) });
+            { getRand(0.0f, 10.0f), getRand(0.0f, 10.0f), getRand(0.0f, 10.0f) });
     }
     float dt = 1.0f;
     clock_t prevClock = clock();

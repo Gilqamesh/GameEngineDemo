@@ -20,7 +20,18 @@ inline float radToDeg(float rad)
 
 inline float getRand(float low, float high)
 {
-    return (low + static_cast<float>(rand()) / RAND_MAX * (high - low));
+    static random_device dev;
+    static mt19937 rng(dev());
+    uniform_real_distribution<float> dist(low, high);
+    return (dist(rng));
+}
+
+inline int getRand(int low, int high)
+{
+    static random_device dev;
+    static mt19937 rng(dev());
+    uniform_int_distribution<int> dist(low, high);
+    return (dist(rng));
 }
 
 }

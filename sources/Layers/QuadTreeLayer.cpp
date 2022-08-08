@@ -74,7 +74,8 @@ void QuadTreeLayer::onAttach()
             size[1] = maxHeight - position[1];
 
         // Create rectangle
-        string modelName = modelNames[rand() % modelNames.size()];
+        ASSERT(modelNames.size());
+        string modelName = modelNames[getRand(0, modelNames.size() - 1)];
         Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader");
         _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, { position, size });
         float lowVelocity = -40.0f;

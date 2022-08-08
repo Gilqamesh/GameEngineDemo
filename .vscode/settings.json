@@ -79,6 +79,7 @@
         "regex": "cpp",
         "set": "cpp",
         "strstream": "cpp",
-        "thread": "cpp"
+        "thread": "cpp",
+        "filesystem": "cpp"
     }
 }

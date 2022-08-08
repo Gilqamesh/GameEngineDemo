@@ -5,6 +5,7 @@
 # include "Managers/ModelManager.hpp"
 # include "Managers/ShaderManager.hpp"
 # include "Managers/TextureManager.hpp"
+# include "Managers/ParticleGeneratorManager.hpp"
 # include "Interfaces/IMeshPrimitive.hpp"
 # include "Math/Matrix.hpp"
 # include "ECS/Systems/Light/DirectionalLightSourceSystem.hpp"
@@ -24,14 +25,19 @@ namespace GilqEngine
 // goal: make this class as user friendly as possible
 class ObjectCoordinator
 {
-MaterialManager         _materialManager;
-ShaderManager           _shaderManager;
-TextureManager          _textureManager;
-ModelManager            _modelManager;
+MaterialManager          _materialManager;
+ShaderManager            _shaderManager;
+TextureManager           _textureManager;
+ModelManager             _modelManager;
+ParticleGeneratorManager _particleGeneratorManager;
 
 unordered_set<Entity, hash<int>>   _aliveEntities;
 // NOTE(david): Currently I don't technically need this as the caller knows the Entities to set alive
 unordered_set<Entity, hash<int>>   _deadEntities;
+
+unordered_set<GeneratorId>  _runningGenerators;
+// NOTE(david): This is not needed currently as technically the caller knows about the GeneratorId
+unordered_set<GeneratorId>  _idleGenerators;
 
 DirectionalLightSourceSystem *_directionalLightSourceSystem;
 PointLightSourceSystem       *_pointLightSourceSystem;
@@ -153,6 +159,48 @@ public:
      */
     void hideEntity(Entity entity);
     void showEntity(Entity entity);
+
+    // ************************************************************************** //
+    //                          ParticleGenerator Methods                         //
+    // ************************************************************************** //
+
+    /**
+     * @brief Registers an existing particle generator to the update / render queue with a unique name.
+     * @param generatorName     Name of the particle generator.
+     * @param modelName         Name of the Model the particle generator will use to spawn particles.
+     * @param shaderName        Name of the Shader to be used to render the particles.
+     * @param maxNewParticlesPerFrame   Max number of new particles spawned each frame.
+     * @param maxLifeTime               Max life of particle when spawned.
+     * @param particleTransform Optional, name of the Particle Transform.
+     *                          If not supplied, a default one is used.
+     * @return unique id for the generator registered
+     */
+    GeneratorId registerParticleGenerator(
+        const string& modelName,
+        const string& shaderName,
+        uint32 maxNewParticlesPerFrame,
+        float maxLifeTime,
+        const string& particleTransform = "DefaultParticleTransform");
+
+    template <typename ParticleTransform>
+    void addParticleTransform(const string& transformName)
+    {
+        TRACE();
+        _particleGeneratorManager.addParticleTransform<ParticleTransform>(transformName);
+    }
+
+    void setGeneratorParticleTransform(GeneratorId generatorId, const string& transformName);
+    void setGeneratorShader(GeneratorId generatorId, const string& shaderName);
+    void setGeneratorModel(GeneratorId generatorId, const string& modelName);
+
+    void updateGenerator(
+        GeneratorId generatorId,
+        uint32 nOfParticlesToSpawn,
+        const Particle& particleToSpawn,
+        float deltaTime);
+    
+    void stopGenerator(GeneratorId generatorId);
+    void startGenerator(GeneratorId generatorId);
 
     // ************************************************************************** //
     //                                 Own Methods                                //

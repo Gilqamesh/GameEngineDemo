@@ -20,6 +20,10 @@ ObjectCoordinator::~ObjectCoordinator()
     TRACE();
 }
 
+// ************************************************************************** //
+//                              Material Methods                              //
+// ************************************************************************** //
+
 void ObjectCoordinator::addMaterial(const string &materialName)
 {
     TRACE();
@@ -53,6 +57,10 @@ void ObjectCoordinator::setEmission(const string &materialName, const string &te
     Material &material = _materialManager.getMaterial(materialName);
     material.setEmission(_textureManager.getTexture(textureName));
 }
+
+// ************************************************************************** //
+//                               Shader Methods                               //
+// ************************************************************************** //
 
 void ObjectCoordinator::addShader(const string &vsPath, const string &fsPath, const string &shaderName)
 {
@@ -150,6 +158,10 @@ Shader *ObjectCoordinator::getShader(const string& shaderName)
     return (_shaderManager.getShader(shaderName));
 }
 
+// ************************************************************************** //
+//                              Texture Methods                               //
+// ************************************************************************** //
+
 void ObjectCoordinator::addTexture(const string &texturePath, const string &textureName)
 {
     TRACE();
@@ -160,6 +172,10 @@ void ObjectCoordinator::addTexture(const char *texturePath, const string &textur
 {
     addTexture(string(texturePath), textureName);
 }
+
+// ************************************************************************** //
+//                               Model Methods                                //
+// ************************************************************************** //
 
 void ObjectCoordinator::loadModel(const string &modelPath, const string &modelName)
 {
@@ -218,6 +234,78 @@ void ObjectCoordinator::showEntity(Entity entity)
     _aliveEntities.insert(entity);
 }
 
+// ************************************************************************** //
+//                          ParticleGenerator Methods                         //
+// ************************************************************************** //
+
+GeneratorId ObjectCoordinator::registerParticleGenerator(
+    const string& modelName,
+    const string& shaderName,
+    uint32 maxNewParticlesPerFrame,
+    float maxLifeTime,
+    const string& particleTransform)
+{
+    TRACE();
+    GeneratorId generatorId = _particleGeneratorManager.addParticleGenerator(maxNewParticlesPerFrame, maxLifeTime);
+    _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
+    _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
+    _particleGeneratorManager.setParticleTransform(generatorId, particleTransform);
+    _particleGeneratorManager.setParticlesPerFrame(generatorId, 2);
+    _particleGeneratorManager.setParticleToSpawn(generatorId, Particle());
+
+    _runningGenerators.insert(generatorId);
+
+    return (generatorId);
+}
+
+void ObjectCoordinator::setGeneratorParticleTransform(GeneratorId generatorId, const string& transformName)
+{
+    TRACE();
+    _particleGeneratorManager.setParticleTransform(generatorId, transformName);
+}
+
+void ObjectCoordinator::setGeneratorShader(GeneratorId generatorId, const string& shaderName)
+{
+    TRACE();
+    _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
+}
+
+void ObjectCoordinator::setGeneratorModel(GeneratorId generatorId, const string& modelName)
+{
+    TRACE();
+    _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
+}
+
+void ObjectCoordinator::updateGenerator(
+    GeneratorId generatorId,
+    uint32 nOfParticlesToSpawn,
+    const Particle& particleToSpawn,
+    float deltaTime)
+{
+    TRACE();
+    _particleGeneratorManager.setParticlesPerFrame(generatorId, nOfParticlesToSpawn);
+    _particleGeneratorManager.setParticleToSpawn(generatorId, particleToSpawn);
+    _particleGeneratorManager.update(generatorId, deltaTime);
+}
+
+void ObjectCoordinator::stopGenerator(GeneratorId generatorId)
+{
+    TRACE();
+    _runningGenerators.erase(generatorId);
+    _idleGenerators.insert(generatorId);
+}
+
+void ObjectCoordinator::startGenerator(GeneratorId generatorId)
+{
+    TRACE();
+    _idleGenerators.erase(generatorId);
+    _runningGenerators.insert(generatorId);
+}
+
+// ************************************************************************** //
+//                                 Own Methods                                //
+// ************************************************************************** //
+
 void ObjectCoordinator::updateVBO_position2D(Entity object, const void *data, GLuint size)
 {
     TRACE();
@@ -257,6 +345,14 @@ void ObjectCoordinator::updateSystems(float deltaTime)
 void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
 {
     TRACE();
+    for (GeneratorId generatorId : _runningGenerators)
+    {
+        // Shader *shader = _modelManager.getShader(entity);
+        // shader->bind();
+        // shader->setUniforms();
+        // _modelManager.setUniforms(entity);
+        _particleGeneratorManager.draw(generatorId, projection);
+    }
     for (auto &entity : _aliveEntities)
     {
         Shader *shader = _modelManager.getShader(entity);
@@ -276,6 +372,7 @@ void ObjectCoordinator::drawObjects3D(
     const Matrix<float, 4, 4> &projection)
 {
     TRACE();
+    /* TODO(david): support for particle generation */
     for (auto &entity : _aliveEntities)
     {
         Shader *shader = _modelManager.getShader(entity);
