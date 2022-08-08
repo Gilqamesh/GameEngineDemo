@@ -18,7 +18,8 @@ shader class definition should include setting up its predefined uniforms, so ea
     to use along with its shader
 have better api to create primitives
 naming in ObjectCoordinator is inconsistent.. name everything entity maybe instead of object/modelb
-instancing rendering: https://learnopengl.com/Advanced-OpenGL/Instancing, most of the performance is lost because of all the draw cals, even a 1000 draw calls already is enough to lower the frame rate from 60 to 50
+instancing rendering: https://learnopengl.com/Advanced-OpenGL/Instancing, most of the performance is lost because of all the draw cals, even a 1000 draw calls already is enough to lower the frame rate from 60 to 50, instancing: reduce the number of CPU->GPU draw calls
 particle system: https://learnopengl.com/In-Practice/2D-Game/Particles
 need proper 2d rotation before being able to remove the need for dynamic VBO. Problem is that entities cant share the same Model instance that has dynamic VBO, as transforming it would transform all entities
-make ParticleGenerator a component as it makes sense for the particlegenerator to track the PositionComponent of the entity, the prerequisite of a particlegenerator component then will be a positioncomponent.. maybe it makes sense to add a positioncomponent to the entity no matter what?
+make a particle generator attachable to an entity
+make IVertexAttribute abstract with pure virtual functions as we dont need to use this class runtime

@@ -68,6 +68,7 @@ void CollisionDevLayer::onAttach()
     _objectCoordinator.attachComponent<VelocityComponent2D>(_mouseRect, {});
     _objectCoordinator.attachComponent<PositionComponent2D>(_mouseRect, _mouseRectangle.position);
     _objectCoordinator.attachComponent<SizeComponent2D>(_mouseRect, _mouseRectangle.size);
+    _objectCoordinator.hideEntity(_mouseRect);
 
     Entity idk = _objectCoordinator.createModel2D("RedRectangleModel", "TextureShader");
     _objectCoordinator.attachComponent<SizeComponent2D>(idk, { 300.0f, 300.0f });
@@ -76,6 +77,8 @@ void CollisionDevLayer::onAttach()
         "ParticleModel",
         "ParticleShader",
         30, 1.0f);
+    _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
+        { _mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f });
 }
 
 void CollisionDevLayer::onDetach()
@@ -147,9 +150,6 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     _objectCoordinator.updateComponent<PositionComponent2D>(_mouseRect, newMouseRectPosition);
     _mouseRectangle.position = newMouseRectPosition;
 
-    _objectCoordinator.updateGenerator(_mouseParticleGenerator, 2,
-        { _mouseRectangle.position, {}, Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f), 1.0f }, deltaTime);
-
     if (showCircle)
     {
         _objectCoordinator.showEntity(_circle);
@@ -162,7 +162,8 @@ void CollisionDevLayer::onUpdate(float deltaTime)
         _objectCoordinator.hideEntity(_normalLine);
     }
 
-    _objectCoordinator.updateSystems(deltaTime);
+    _objectCoordinator.updateGeneratorParticlePosition(_mouseParticleGenerator, _mouseRectangle.position);
+    _objectCoordinator.update(deltaTime);
 }
 
 void CollisionDevLayer::onRender()

@@ -14,6 +14,7 @@ ParticleGenerator::ParticleGenerator(uint32 maxNewParticlesPerFrame, float maxLi
     
     // (TARGET_FPS + 5) so that the particle pool is a little bit larger than necessary
     _particles.assign(static_cast<uint32>(ceil(maxLifeTime)) * maxNewParticlesPerFrame * (TARGET_FPS + 5), Particle());
+
 }
 
 void ParticleGenerator::update(
@@ -37,7 +38,6 @@ void ParticleGenerator::update(
 
 void ParticleGenerator::draw(
     const Matrix<float, 4, 4>& projection,
-    // const Matrix<float, 4, 4>& model,
     Model *particleModel,
     Shader *particleShader)
 {
@@ -50,9 +50,8 @@ void ParticleGenerator::draw(
         {
             particleShader->setMat4("projection", projection);
             particleShader->setMat4("model",
-                scale_matrix(10.0f, 10.0f) *
+                scale_matrix(particle.size) *
                 translation_matrix(particle.position));
-            // particleShader->setMat4("model", model);
             particleShader->setFloat4("u_color", particle.color);
             particleModel->draw(particleShader);
         }

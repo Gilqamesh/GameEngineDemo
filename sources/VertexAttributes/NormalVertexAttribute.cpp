@@ -23,14 +23,13 @@ NormalVertexAttribute::NormalVertexAttribute(const Vector<GLfloat, 3> &direction
 VertexLayout NormalVertexAttribute::getLayout()
 {
     TRACE();
-    return (VertexLayout(3, GL_FLOAT, GL_FALSE, 3 * sizeof(GL_FLOAT)));
+    return (VertexLayout(3, GL_FLOAT, GL_FALSE, 3 * sizeof(float)));
 }
 
 size_t NormalVertexAttribute::getSize()
 {
     TRACE();
-    ASSERT(_direction.size());
-    return (_direction.size() * sizeof(_direction[0]));
+    return (3 * sizeof(float));
 }
 
 }

@@ -189,15 +189,25 @@ public:
         _particleGeneratorManager.addParticleTransform<ParticleTransform>(transformName);
     }
 
-    void setGeneratorParticleTransform(GeneratorId generatorId, const string& transformName);
-    void setGeneratorShader(GeneratorId generatorId, const string& shaderName);
-    void setGeneratorModel(GeneratorId generatorId, const string& modelName);
+    /**
+     * Update methods for the generator
+     */
+    void updateGeneratorParticleTransform(GeneratorId generatorId, const string& transformName);
+    void updateGeneratorShader(GeneratorId generatorId, const string& shaderName);
+    void updateGeneratorModel(GeneratorId generatorId, const string& modelName);
+    void updateGeneratorSpawnRate(GeneratorId generatorId, uint32 nOfParticlesToSpawn);
+    void updateGeneratorParticle(GeneratorId generatorId, const Particle& particle);
+    void updateGeneratorParticlePosition(GeneratorId generatorId, Vector<float, 2> position);
+    void updateGeneratorParticleVelocity(GeneratorId generatorId, Vector<float, 2> velocity);
+    void updateGeneratorParticleColor(GeneratorId generatorId, const Vector<float, 4>& color);
+    void updateGeneratorParticleSize(GeneratorId generatorId, Vector<float, 2> size);
+    void updateGeneratorParticleLife(GeneratorId generatorId, float life);
 
-    void updateGenerator(
-        GeneratorId generatorId,
-        uint32 nOfParticlesToSpawn,
-        const Particle& particleToSpawn,
-        float deltaTime);
+    /**
+     * Before calling this, it is adviced to update the particle for the generator being spawned with
+     * 'updateGeneratorParticle'
+     */
+    void updateGenerator(GeneratorId generatorId, float deltaTime);
     
     void stopGenerator(GeneratorId generatorId);
     void startGenerator(GeneratorId generatorId);
@@ -242,10 +252,11 @@ public:
     void updateVBO_texture(Entity object, const void *data, GLuint size);
     void updateIBO(Entity object, const void *data, GLuint count);
 
-    /*
-     * Updates all registered systems in the order of registration
+    /**
+     * 1. Updates Particle Generators
+     * 2. Updates all systems by order of their registration
      */
-    void updateSystems(float deltaTime);
+    void update(float deltaTime);
 
     /*
      * 1. Draw opaque objects

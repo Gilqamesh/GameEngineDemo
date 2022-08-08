@@ -1,7 +1,6 @@
 #ifndef VERTEXDATA_HPP
 # define VERTEXDATA_HPP
 
-# include "Core/VertexLayout.hpp"
 # include "Core/VertexArray.hpp"
 # include "Core/VertexBuffer.hpp"
 # include "Core/IndexBuffer.hpp"
@@ -10,6 +9,7 @@
 # include "VertexAttributes/PositionVertexAttribute3D.hpp"
 # include "VertexAttributes/NormalVertexAttribute.hpp"
 # include "VertexAttributes/TextureVertexAttribute.hpp"
+# include "VertexAttributes/ModelMatrixVertexAttribute.hpp"
 
 namespace GilqEngine
 {
@@ -20,14 +20,16 @@ VertexArray                             _vertexArray;
 VertexBuffer                            _vertexPositionBuffer;
 VertexBuffer                            _vertexNormalBuffer;
 VertexBuffer                            _vertexTextureBuffer;
+VertexBuffer                            _vertexModelMatrixBuffer;
 
 IndexBuffer                             _indexBuffer;
 
-VertexVector<PositionVertexAttribute2D> _vertexVectorPosition2D;
-VertexVector<PositionVertexAttribute3D> _vertexVectorPosition3D;
-VertexVector<NormalVertexAttribute>     _vertexVectorNormal;
-VertexVector<TextureVertexAttribute>    _vertexVectorTexture;
-vector<unsigned int>                    _indices;
+VertexVector<PositionVertexAttribute2D>     _vertexVectorPosition2D;
+VertexVector<PositionVertexAttribute3D>     _vertexVectorPosition3D;
+VertexVector<NormalVertexAttribute>         _vertexVectorNormal;
+VertexVector<TextureVertexAttribute>        _vertexVectorTexture;
+VertexVector<ModelMatrixVertexAttribute>    _vertexVectorModelMatrix;
+vector<unsigned int>                        _indices;
 
 uint32 _nOfIndices;
 
@@ -47,6 +49,7 @@ public:
     void pushPositionAttribute3D(const PositionVertexAttribute3D &data);
     void pushNormalAttribute(const NormalVertexAttribute &data);
     void pushTextureAttribute(const TextureVertexAttribute &data);
+    void pushModelMatrixAttribute(const ModelMatrixVertexAttribute &data);
     void pushIndices(const vector<unsigned int> &indices);
     void pushIndex(unsigned int index);
 
@@ -58,13 +61,10 @@ public:
     void configurePositionAttributeDynamic(); // Creates Dynamic VertexBuffer so later it can be updated
     void configureNormalAttribute();
     void configureTextureAttribute();
+    void configureModelMatrixAttribute();
     void configureIndices();
 
     inline GLuint getCountOfIndeces() const { return (_nOfIndices); }
-    inline VertexBuffer &getPositionBuffer() { return (_vertexPositionBuffer); }
-    inline VertexBuffer &getNormalBuffer() { return (_vertexNormalBuffer); }
-    inline VertexBuffer &getTextureBuffer() { return (_vertexTextureBuffer); }
-    inline IndexBuffer &getIndexBuffer() { return (_indexBuffer); }
 
     /*
      * Modes: GL_POINTS, GL_LINE_STRIP, GL_LINE_LOOP, GL_LINES, GL_LINE_STRIP_ADJACENCY,
@@ -87,6 +87,7 @@ public:
     void updateVBO_position3D(const void *data, GLuint size);
     void updateVBO_normal(const void *data, GLuint size);
     void updateVBO_texture(const void *data, GLuint size);
+    void updateVBO_modelMatrix(const void *data, GLuint size);
     void updateIBO(const void *data, GLuint count);
 
     void bind();

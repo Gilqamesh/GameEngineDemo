@@ -79,6 +79,12 @@ void VertexData::pushTextureAttribute(const TextureVertexAttribute &data)
     _vertexVectorTexture.push_back(data);
 }
 
+void VertexData::pushModelMatrixAttribute(const ModelMatrixVertexAttribute &data)
+{
+    TRACE();
+    _vertexVectorModelMatrix.push_back(data);
+}
+
 void VertexData::pushIndices(const vector<unsigned int> &indices)
 {
     TRACE();
@@ -133,6 +139,12 @@ void VertexData::configureTextureAttribute()
     _vertexTextureBuffer = VertexBuffer(_vertexVectorTexture.getData(), _vertexVectorTexture.getSize());
 }
 
+void VertexData::configureModelMatrixAttribute()
+{
+    TRACE();
+    _vertexModelMatrixBuffer = VertexBuffer(_vertexVectorModelMatrix.getSize());
+}
+
 void VertexData::configureIndices()
 {
     TRACE();
@@ -150,28 +162,39 @@ void VertexData::configureVAO()
     _vertexPositionBuffer.bind();
     if (_vertexVectorPosition2D.getSize())
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition2D.getLayout(), layoutIndex++);
+        _vertexArray.pushVertexAttribute(_vertexVectorPosition2D.getLayout(), layoutIndex++, 0);
         _vertexVectorPosition2D.clear();
     }
     if (_vertexVectorPosition3D.getSize())
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition3D.getLayout(), layoutIndex++);
+        _vertexArray.pushVertexAttribute(_vertexVectorPosition3D.getLayout(), layoutIndex++, 0);
         _vertexVectorPosition3D.clear();
     }
 
     if (_vertexVectorNormal.getSize())
     {
         _vertexNormalBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorNormal.getLayout(), layoutIndex++);
+        _vertexArray.pushVertexAttribute(_vertexVectorNormal.getLayout(), layoutIndex++, 0);
         _vertexVectorNormal.clear();
     }
 
     if (_vertexVectorTexture.getSize())
     {
         _vertexTextureBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorTexture.getLayout(), layoutIndex++);
+        _vertexArray.pushVertexAttribute(_vertexVectorTexture.getLayout(), layoutIndex++, 0);
         _vertexTextureBuffer.unbind();
         _vertexVectorTexture.clear();
+    }
+
+    if (_vertexVectorModelMatrix.getSize())
+    {
+        _vertexModelMatrixBuffer.bind();
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 4 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 8 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 12 * sizeof(float));
+        _vertexModelMatrixBuffer.unbind();
+        _vertexVectorModelMatrix.clear();
     }
 
     unbind();
@@ -207,6 +230,14 @@ void VertexData::updateVBO_texture(const void *data, GLuint size)
     _vertexTextureBuffer.bind();
     _vertexTextureBuffer.update(data, size);
     _vertexTextureBuffer.unbind();
+}
+
+void VertexData::updateVBO_modelMatrix(const void *data, GLuint size)
+{
+    TRACE();
+    _vertexModelMatrixBuffer.bind();
+    _vertexModelMatrixBuffer.update(data, size);
+    _vertexModelMatrixBuffer.unbind();    
 }
 
 void VertexData::updateIBO(const void *data, GLuint count)

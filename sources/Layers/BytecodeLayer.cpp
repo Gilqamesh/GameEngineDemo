@@ -127,7 +127,7 @@ void BytecodeLayer::onEvent(IEvent &e)
 
 void BytecodeLayer::onUpdate(float deltaTime)
 {
-    _objectCoordinator.updateSystems(deltaTime);
+    _objectCoordinator.update(deltaTime);
 }
 
 void BytecodeLayer::onRender()

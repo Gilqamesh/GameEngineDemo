@@ -2,7 +2,6 @@
 # define POSITIONVERTEXATTRIBUTE3D_HPP
 
 # include "Interfaces/IVertexAttribute.hpp"
-# include "Math/Vector.hpp"
 
 namespace GilqEngine
 {

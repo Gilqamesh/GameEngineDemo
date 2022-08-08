@@ -41,11 +41,11 @@ void VertexArray::create()
     GLCall(glGenVertexArrays(1, &GL_ID));
 }
 
-void VertexArray::pushVertexAttribute(const VertexLayout &layout, GLuint index)
+void VertexArray::pushVertexAttribute(const VertexLayout &layout, GLuint index, uint32 offset)
 {
     TRACE();
     GLCall(glEnableVertexAttribArray(index));
-    GLCall(glVertexAttribPointer(index, layout._count, layout._type, layout._normalized, layout._stride, 0));
+    GLCall(glVertexAttribPointer(index, layout._count, layout._type, layout._normalized, layout._stride, (void *)offset));
 }
 
 void VertexArray::bind()

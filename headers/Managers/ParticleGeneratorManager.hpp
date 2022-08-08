@@ -18,7 +18,7 @@ class ParticleGeneratorManager
         Model               *model;
         IParticleTransform  *particleTransform;
         uint32              particlesPerFrame;
-        Particle            particleToSpawn;
+        Particle            particle;
     };
 
     unordered_map<GeneratorId, GeneratorParameters> _generatorParameters;
@@ -48,7 +48,9 @@ public:
     void setModel(GeneratorId generatorId, Model *model);
     void setParticleTransform(GeneratorId generatorId, const string& transformName);
     void setParticlesPerFrame(GeneratorId generatorId, uint32 particlesPerFrame);
-    void setParticleToSpawn(GeneratorId generatorId, const Particle& particleToSpawn);
+    void setParticle(GeneratorId generatorId, const Particle& particleToSpawn);
+
+    Particle& getParticle(GeneratorId generatorId);
 
     void update(GeneratorId generatorId, float deltaTime);
 

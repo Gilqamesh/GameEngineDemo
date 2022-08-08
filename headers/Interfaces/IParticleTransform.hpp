@@ -11,6 +11,7 @@ struct Particle
     Vector<float, 2> position;
     Vector<float, 2> velocity;
     Vector<float, 4> color;
+    Vector<float, 2> size;
     float            life;
 
     Particle();
@@ -18,6 +19,7 @@ struct Particle
         Vector<float, 2> position,
         Vector<float, 2> velocity,
         Vector<float, 4> color,
+        Vector<float, 2> size,
         float            life);
 };
 

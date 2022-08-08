@@ -100,7 +100,7 @@ void QuadTreeLayer::onEvent(IEvent &e)
 void QuadTreeLayer::onUpdate(float deltaTime)
 {
     LOG(deltaTime);
-    _objectCoordinator.updateSystems(deltaTime);
+    _objectCoordinator.update(deltaTime);
 }
 
 void QuadTreeLayer::onRender()

@@ -9,11 +9,13 @@ void DefaultParticleTransform::reviveTransformFunction(const Particle& inputPart
     Vector<float, 2> positionFluctuation(getRand(-5.0f, 5.0f), getRand(-5.0f, 5.0f));
     Vector<float, 2> velocityMultiplier(getRand(0.9f, 1.1f), getRand(0.9f, 1.1f));
     Vector<float, 4> colorFluctuation(getRand(-0.2f, 0.2f), getRand(-0.2f, 0.2f), getRand(-0.2f, 0.2f), getRand(-0.2f, 0.2f));
+    Vector<float, 2> sizeFluctuation(getRand(0.9f, 1.1f), getRand(0.9f, 1.1f));
     float lifeMultiplier = getRand(0.9f, 1.1f);
 
     outputParticle.position = inputParticle.position + positionFluctuation;
     outputParticle.velocity = element_wise_multiply(inputParticle.velocity, velocityMultiplier);
     outputParticle.color    = inputParticle.color + colorFluctuation;
+    outputParticle.size     = element_wise_multiply(inputParticle.size, sizeFluctuation);
     outputParticle.life     = inputParticle.life * lifeMultiplier;
 
     // bound checking on color

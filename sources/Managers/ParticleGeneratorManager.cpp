@@ -66,10 +66,16 @@ void ParticleGeneratorManager::setParticlesPerFrame(GeneratorId generatorId, uin
     _generatorParameters[generatorId].particlesPerFrame = particlesPerFrame;
 }
 
-void ParticleGeneratorManager::setParticleToSpawn(GeneratorId generatorId, const Particle& particleToSpawn)
+void ParticleGeneratorManager::setParticle(GeneratorId generatorId, const Particle& particle)
 {
     TRACE();
-    _generatorParameters[generatorId].particleToSpawn = particleToSpawn;
+    _generatorParameters[generatorId].particle = particle;
+}
+
+Particle& ParticleGeneratorManager::getParticle(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].particle);
 }
 
 void ParticleGeneratorManager::update(GeneratorId generatorId, float deltaTime)
@@ -78,7 +84,7 @@ void ParticleGeneratorManager::update(GeneratorId generatorId, float deltaTime)
     _generatorParameters[generatorId].particleGenerator->update(
         deltaTime,
         _generatorParameters[generatorId].particlesPerFrame,
-        _generatorParameters[generatorId].particleToSpawn,
+        _generatorParameters[generatorId].particle,
         _generatorParameters[generatorId].particleTransform);
 }
 

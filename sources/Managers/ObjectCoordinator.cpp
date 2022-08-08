@@ -251,40 +251,81 @@ GeneratorId ObjectCoordinator::registerParticleGenerator(
     _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
     _particleGeneratorManager.setParticleTransform(generatorId, particleTransform);
     _particleGeneratorManager.setParticlesPerFrame(generatorId, 2);
-    _particleGeneratorManager.setParticleToSpawn(generatorId, Particle());
+    _particleGeneratorManager.setParticle(generatorId, Particle());
 
     _runningGenerators.insert(generatorId);
 
     return (generatorId);
 }
 
-void ObjectCoordinator::setGeneratorParticleTransform(GeneratorId generatorId, const string& transformName)
+void ObjectCoordinator::updateGeneratorParticleTransform(GeneratorId generatorId, const string& transformName)
 {
     TRACE();
     _particleGeneratorManager.setParticleTransform(generatorId, transformName);
 }
 
-void ObjectCoordinator::setGeneratorShader(GeneratorId generatorId, const string& shaderName)
+void ObjectCoordinator::updateGeneratorShader(GeneratorId generatorId, const string& shaderName)
 {
     TRACE();
     _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
 }
 
-void ObjectCoordinator::setGeneratorModel(GeneratorId generatorId, const string& modelName)
+void ObjectCoordinator::updateGeneratorModel(GeneratorId generatorId, const string& modelName)
 {
     TRACE();
     _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
 }
 
-void ObjectCoordinator::updateGenerator(
-    GeneratorId generatorId,
-    uint32 nOfParticlesToSpawn,
-    const Particle& particleToSpawn,
-    float deltaTime)
+void ObjectCoordinator::updateGeneratorSpawnRate(GeneratorId generatorId, uint32 nOfParticlesToSpawn)
 {
     TRACE();
     _particleGeneratorManager.setParticlesPerFrame(generatorId, nOfParticlesToSpawn);
-    _particleGeneratorManager.setParticleToSpawn(generatorId, particleToSpawn);
+}
+
+void ObjectCoordinator::updateGeneratorParticle(GeneratorId generatorId, const Particle& particle)
+{
+    TRACE();
+    _particleGeneratorManager.setParticle(generatorId, particle);
+}
+
+void ObjectCoordinator::updateGeneratorParticlePosition(GeneratorId generatorId, Vector<float, 2> position)
+{
+    TRACE();
+    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+    particle.position = position;
+}
+
+void ObjectCoordinator::updateGeneratorParticleVelocity(GeneratorId generatorId, Vector<float, 2> velocity)
+{
+    TRACE();
+    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+    particle.velocity = velocity;
+}
+
+void ObjectCoordinator::updateGeneratorParticleColor(GeneratorId generatorId, const Vector<float, 4>& color)
+{
+    TRACE();
+    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+    particle.color = color;
+}
+
+void ObjectCoordinator::updateGeneratorParticleSize(GeneratorId generatorId, Vector<float, 2> size)
+{
+    TRACE();
+    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+    particle.size = size;
+}
+
+void ObjectCoordinator::updateGeneratorParticleLife(GeneratorId generatorId, float life)
+{
+    TRACE();
+    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+    particle.life = life;
+}
+
+void ObjectCoordinator::updateGenerator(GeneratorId generatorId, float deltaTime)
+{
+    TRACE();
     _particleGeneratorManager.update(generatorId, deltaTime);
 }
 
@@ -336,9 +377,13 @@ void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
     _modelManager.updateIBO(object, data, count);
 }
 
-void ObjectCoordinator::updateSystems(float deltaTime)
+void ObjectCoordinator::update(float deltaTime)
 {
     TRACE();
+    for (GeneratorId generatorId : _runningGenerators)
+    {
+        _particleGeneratorManager.update(generatorId, deltaTime);
+    }
     _modelManager.updateSystems(deltaTime);
 }
 
@@ -347,10 +392,6 @@ void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
     TRACE();
     for (GeneratorId generatorId : _runningGenerators)
     {
-        // Shader *shader = _modelManager.getShader(entity);
-        // shader->bind();
-        // shader->setUniforms();
-        // _modelManager.setUniforms(entity);
         _particleGeneratorManager.draw(generatorId, projection);
     }
     for (auto &entity : _aliveEntities)

@@ -147,7 +147,7 @@ void ModelLoadLayer::onEvent(IEvent &e)
 void ModelLoadLayer::onUpdate(float deltaTime)
 {
     TRACE();
-    _objectCoordinator.updateSystems(deltaTime);
+    _objectCoordinator.update(deltaTime);
 }
 
 void ModelLoadLayer::onRender()
