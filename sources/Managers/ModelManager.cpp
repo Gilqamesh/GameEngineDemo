@@ -218,6 +218,12 @@ void ModelManager::updateVBO_texture(Entity model, const void *data, GLuint size
     _modelEntities[model]->updateVBO_texture(data, size);
 }
 
+void ModelManager::updateVBO_modelMatrix(Entity model, const void *data, GLuint size)
+{
+    TRACE();
+    _modelEntities[model]->updateVBO_modelMatrix(data, size);
+}
+
 void ModelManager::updateIBO(Entity model, const void *data, GLuint count)
 {
     TRACE();

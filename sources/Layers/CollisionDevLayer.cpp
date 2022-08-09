@@ -2,6 +2,7 @@
 #include "MeshPrimitives/QuadMeshPrimitive2DTexture.hpp"
 #include "MeshPrimitives/CircleMeshPrimitive2DTexture.hpp"
 #include "MeshPrimitives/LineMeshPrimitive2D.hpp"
+#include "MeshPrimitives/ParticleQuadMeshPrimitive2DTexture.hpp"
 #include "Log.hpp"
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
@@ -76,7 +77,7 @@ void CollisionDevLayer::onAttach()
     _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
         "ParticleModel",
         "ParticleShader",
-        30, 1.0f);
+        1, 1.0f);
     _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
         { _mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f });
 }
@@ -222,6 +223,7 @@ void CollisionDevLayer::loadModels(void)
     QuadMeshPrimitive2DTexture quadMeshPrimitive2DTexture;
     LineMeshPrimitive2D lineMeshPrimitive;
     CircleMeshPrimitive2DTexture circleMeshPrimitive;
+    ParticleQuadMeshPrimitive2DTexture particleQuadMeshPrimitive2DTexture;
 
     _objectCoordinator.loadModel(&quadMeshPrimitive2DTexture, "WhiteRectangleModel", "WhiteMaterial");
     _objectCoordinator.loadModel(&quadMeshPrimitive2DTexture, "RedRectangleModel", "RedMaterial");
@@ -229,7 +231,7 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&circleMeshPrimitive, "WhiteCircleModel", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel1", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel2", "NullMaterial");
-    _objectCoordinator.loadModel(&quadMeshPrimitive2DTexture, "ParticleModel", "GrassMaterial");
+    _objectCoordinator.loadModel(&particleQuadMeshPrimitive2DTexture, "ParticleModel", "GrassMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

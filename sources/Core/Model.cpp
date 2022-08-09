@@ -39,8 +39,10 @@ Model::Model(Model &&other)
     _loaded(other._loaded)
 {
     TRACE();
+    other._meshes.clear();
     other._path = "";
     other._name = "";
+    other._directory = "";
     other._materialManager = nullptr;
     other._textureManager = nullptr;
     other._loaded = false;
@@ -59,8 +61,10 @@ Model &Model::operator=(Model &&other)
         _textureManager = other._textureManager;
         _loaded = other._loaded;
 
+        other._meshes.clear();
         other._path = "";
         other._name = "";
+        other._directory = "";
         other._materialManager = nullptr;
         other._textureManager = nullptr;
         other._loaded = false;
@@ -85,6 +89,13 @@ void Model::draw(Shader *shader)
     {
         mesh.draw(shader);
     }
+}
+
+void Model::drawInstanced(Shader *shader, uint32 numberOfInstances)
+{
+    TRACE();
+    ASSERT(_meshes.size());
+    _meshes[0].drawInstanced(shader, numberOfInstances);
 }
 
 void Model::load()
@@ -266,6 +277,15 @@ void Model::updateVBO_texture(const void *data, GLuint size)
     for (auto& mesh : _meshes)
     {
         mesh.updateVBO_texture(data, size);
+    }
+}
+
+void Model::updateVBO_modelMatrix(const void *data, GLuint size)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateVBO_modelMatrix(data, size);
     }
 }
 

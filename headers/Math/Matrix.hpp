@@ -60,6 +60,11 @@ public:
     T*        data(void)        { return (_data.data()); }
     const T*  data(void) const  { return (_data.data()); }
 
+    /**
+     * Returns size of data in bytes
+     */
+    size_t size() const { return (sizeof(T) * ROWS * COLUMNS); }
+
     // ONLY FOR SQUARE MATRICES
     T       determinant(void)       { return (GilqEngine::determinant(*this)); }
     Matrix &cofactor(void)          { *this = GilqEngine::cofactor(*this); return (*this); }

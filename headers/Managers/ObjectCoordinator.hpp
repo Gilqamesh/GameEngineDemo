@@ -202,12 +202,6 @@ public:
     void updateGeneratorParticleColor(GeneratorId generatorId, const Vector<float, 4>& color);
     void updateGeneratorParticleSize(GeneratorId generatorId, Vector<float, 2> size);
     void updateGeneratorParticleLife(GeneratorId generatorId, float life);
-
-    /**
-     * Before calling this, it is adviced to update the particle for the generator being spawned with
-     * 'updateGeneratorParticle'
-     */
-    void updateGenerator(GeneratorId generatorId, float deltaTime);
     
     void stopGenerator(GeneratorId generatorId);
     void startGenerator(GeneratorId generatorId);
@@ -250,6 +244,7 @@ public:
     void updateVBO_position3D(Entity object, const void *data, GLuint size);
     void updateVBO_normal(Entity object, const void *data, GLuint size);
     void updateVBO_texture(Entity object, const void *data, GLuint size);
+    void updateVBO_modelMatrix(Entity object, const void *data, GLuint size);
     void updateIBO(Entity object, const void *data, GLuint count);
 
     /**

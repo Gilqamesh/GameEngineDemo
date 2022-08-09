@@ -8,13 +8,15 @@ namespace GilqEngine
 
 class TextureVertexAttribute : public IVertexAttribute
 {
-Vector<GLfloat, 2> _position; // x, y
+Vector<float, 2> _position; // x, y
 public:
     TextureVertexAttribute();
-    TextureVertexAttribute(GLfloat x, GLfloat y);
-    TextureVertexAttribute(const Vector<GLfloat, 2> &position);
-    static VertexLayout getLayout();
-    size_t getSize();
+    TextureVertexAttribute(float x, float y);
+    TextureVertexAttribute(const Vector<float, 2> &position);
+
+    size_t size();
+    
+    static VertexLayout layout();
 };
 
 }

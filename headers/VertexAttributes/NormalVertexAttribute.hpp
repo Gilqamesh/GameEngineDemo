@@ -12,8 +12,10 @@ public:
     NormalVertexAttribute();
     NormalVertexAttribute(float x, float y, float z);
     NormalVertexAttribute(const Vector<float, 3> &direction);
-    static VertexLayout getLayout();
-    size_t getSize();
+
+    size_t size();
+    
+    static VertexLayout layout();
 };
 
 }

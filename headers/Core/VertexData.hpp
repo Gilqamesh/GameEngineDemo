@@ -28,12 +28,17 @@ VertexVector<PositionVertexAttribute2D>     _vertexVectorPosition2D;
 VertexVector<PositionVertexAttribute3D>     _vertexVectorPosition3D;
 VertexVector<NormalVertexAttribute>         _vertexVectorNormal;
 VertexVector<TextureVertexAttribute>        _vertexVectorTexture;
+// For instancing, dynamic vertex buffers
 VertexVector<ModelMatrixVertexAttribute>    _vertexVectorModelMatrix;
+VertexVector<SizeVertexAttribute>           _vertexVectorSize;
+VertexVector<ColorVertexAttribute>          _vertexVectorColor;
+
 vector<unsigned int>                        _indices;
 
 uint32 _nOfIndices;
 
-GLenum                                 _mode;
+GLenum _mode; // what primitive should be used for the draw call (I believe for shape assembly?)
+
 public:
     VertexData();
     ~VertexData();

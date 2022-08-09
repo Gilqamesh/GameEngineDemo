@@ -168,6 +168,7 @@ public:
     void updateVBO_position3D(Entity model, const void *data, GLuint size);
     void updateVBO_normal(Entity model, const void *data, GLuint size);
     void updateVBO_texture(Entity model, const void *data, GLuint size);
+    void updateVBO_modelMatrix(Entity model, const void *data, GLuint size);
     void updateIBO(Entity model, const void *data, GLuint count);
 };
 

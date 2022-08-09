@@ -78,6 +78,18 @@ Particle& ParticleGeneratorManager::getParticle(GeneratorId generatorId)
     return (_generatorParameters[generatorId].particle);
 }
 
+const vector<Particle> &ParticleGeneratorManager::getParticles(GeneratorId generatorId) const
+{
+    TRACE();
+    return (_generatorParameters.at(generatorId).particleGenerator->getParticles());
+}
+
+const string &ParticleGeneratorManager::getGeneratorModelName(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].model->getName());
+}
+
 void ParticleGeneratorManager::update(GeneratorId generatorId, float deltaTime)
 {
     TRACE();

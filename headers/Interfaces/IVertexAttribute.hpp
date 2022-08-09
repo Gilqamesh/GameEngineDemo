@@ -6,11 +6,22 @@
 namespace GilqEngine
 {
 
+/**
+ * This class can't have vtable as it ruins the data layout otherwise
+ * Maybe think about a solution that can have dispatching.
+ */
 class IVertexAttribute
 {
 public:
-    size_t getSize();
-    static VertexLayout getLayout();
+    /**
+     * Returns the size of the vertex attribute in bytes.
+     */
+    size_t size();
+
+    /**
+     * Returns the layout needed for 'glVertexAttribPointer'
+     */
+    static VertexLayout layout();
 };
 
 }

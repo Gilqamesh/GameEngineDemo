@@ -13,12 +13,31 @@ class VertexVector
 vector<VertexAttribute> _vertexAttributes;
 VertexLayout            _layout;
 public:
-    VertexVector() : _layout(VertexAttribute::getLayout()) { }
+    VertexVector() : _layout(VertexAttribute::layout()) { }
+
+    /**
+     * Adds a vertex attribute to the end of the array.
+     */
     inline void push_back(const VertexAttribute &vertexAttribute) { _vertexAttributes.push_back(vertexAttribute); }
-    inline const VertexLayout &getLayout() const { return (_layout); }
-    inline const void *getData() const { return (_vertexAttributes.data()); }
-    inline GLuint getSize() const { return ((GLuint)(_vertexAttributes.size() * sizeof(VertexAttribute))); }
-    inline const vector<VertexAttribute> &getVertexAttributes() const { return (_vertexAttributes); }
+
+    /**
+     * Returns the vertex layout needed for 'glVertexAttribPointer'
+     */
+    inline const VertexLayout &layout() const { return (_layout); }
+
+    /**
+     * Returns the raw data to the array of vertex attributes.
+     */
+    inline const void *data() const { return (_vertexAttributes.data()); }
+
+    /**
+     * Returns the array of vertex attributes size in bytes.
+     */
+    inline GLuint size() const { return ((GLuint)(_vertexAttributes.size() * sizeof(VertexAttribute))); }
+
+    /**
+     * Clears the data.
+     */
     inline void clear() { _vertexAttributes.clear(); }
 };
 

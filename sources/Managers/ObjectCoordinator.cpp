@@ -323,12 +323,6 @@ void ObjectCoordinator::updateGeneratorParticleLife(GeneratorId generatorId, flo
     particle.life = life;
 }
 
-void ObjectCoordinator::updateGenerator(GeneratorId generatorId, float deltaTime)
-{
-    TRACE();
-    _particleGeneratorManager.update(generatorId, deltaTime);
-}
-
 void ObjectCoordinator::stopGenerator(GeneratorId generatorId)
 {
     TRACE();
@@ -371,6 +365,12 @@ void ObjectCoordinator::updateVBO_texture(Entity object, const void *data, GLuin
     _modelManager.updateVBO_texture(object, data, size);
 }
 
+void ObjectCoordinator::updateVBO_modelMatrix(Entity object, const void *data, GLuint size)
+{
+    TRACE();
+    _modelManager.updateVBO_modelMatrix(object, data, size);
+}
+
 void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
 {
     TRACE();
@@ -383,6 +383,18 @@ void ObjectCoordinator::update(float deltaTime)
     for (GeneratorId generatorId : _runningGenerators)
     {
         _particleGeneratorManager.update(generatorId, deltaTime);
+        const vector<Particle>& particles = _particleGeneratorManager.getParticles(generatorId);
+        vector<Matrix<float, 4, 4>> modelMatrices;
+        for (const Particle& particle : particles)
+        {
+            modelMatrices.push_back(scale_matrix(particle.size) * translation_matrix(particle.position));
+        }
+        Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
+        ASSERT(modelMatrices.size());
+        LOG(modelMatrices.size());
+        LOG(sizeof(modelMatrices[0]));
+        LOG(modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
+        particleModel->updateVBO_modelMatrix(modelMatrices.data(), modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
     }
     _modelManager.updateSystems(deltaTime);
 }

@@ -8,12 +8,14 @@ namespace GilqEngine
 class PositionVertexAttribute2D : public IVertexAttribute
 {
 public:
-Vector<GLfloat, 2> _coordinates; // x, y
+Vector<float, 2> _coordinates; // x, y
     PositionVertexAttribute2D();
-    PositionVertexAttribute2D(GLfloat x, GLfloat y);
-    PositionVertexAttribute2D(const Vector<GLfloat, 2> &position);
-    static VertexLayout getLayout();
-    size_t getSize();
+    PositionVertexAttribute2D(float x, float y);
+    PositionVertexAttribute2D(const Vector<float, 2> &position);
+
+    size_t size();
+
+    static VertexLayout layout();
 };
 
 }

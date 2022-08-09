@@ -3,14 +3,14 @@
 namespace GilqEngine
 {
 
-VertexLayout getLayout()
+VertexLayout layout()
 {
     TRACE();
     ASSERT(false);
     return (VertexLayout());
 }
 
-size_t IVertexAttribute::getSize()
+size_t IVertexAttribute::size()
 {
     TRACE();
     ASSERT(false);

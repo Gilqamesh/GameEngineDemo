@@ -30,6 +30,11 @@ public:
 
     void draw(Shader *shader);
 
+    /**
+     * Draw instanced arrays
+     */
+    void drawInstanced(Shader *shader, uint32 numberOfInstances);
+
     /*
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
@@ -38,6 +43,7 @@ public:
     void updateVBO_position3D(const void *data, GLuint size);
     void updateVBO_normal(const void *data, GLuint size);
     void updateVBO_texture(const void *data, GLuint size);
+    void updateVBO_modelMatrix(const void *data, GLuint size);
     void updateIBO(const void *data, GLuint count);
 };
 

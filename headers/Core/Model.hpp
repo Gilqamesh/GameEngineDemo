@@ -47,6 +47,12 @@ public:
 
     void draw(Shader *shader);
 
+    /**
+     * Draws the first mesh of the model in an instanced arrays way
+     * Need support: multiple meshes instead of one maybe?
+     */
+    void drawInstanced(Shader *shader, uint32 numberOfInstances);
+
     void load();
 
     /*
@@ -58,6 +64,7 @@ public:
     void updateVBO_position3D(const void *data, GLuint size);
     void updateVBO_normal(const void *data, GLuint size);
     void updateVBO_texture(const void *data, GLuint size);
+    void updateVBO_modelMatrix(const void *data, GLuint size);
     void updateIBO(const void *data, GLuint count);
 private:
     void loadModel(const string &path);

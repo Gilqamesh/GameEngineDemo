@@ -38,6 +38,15 @@ void Mesh::draw(Shader *shader)
     _vertexData.unbind();
 }
 
+void Mesh::drawInstanced(Shader *shader, uint32 numberOfInstances)
+{
+    TRACE();
+    _vertexData.bind();
+    _material.setShaderUniforms(shader);
+    GLCall(glDrawArraysInstanced(_vertexData.getMode(), 0, 6, numberOfInstances));
+    _vertexData.unbind();
+}
+
 void Mesh::updateVBO_position2D(const void *data, GLuint size)
 {
     TRACE();
@@ -60,6 +69,12 @@ void Mesh::updateVBO_texture(const void *data, GLuint size)
 {
     TRACE();
     _vertexData.updateVBO_texture(data, size);
+}
+
+void Mesh::updateVBO_modelMatrix(const void *data, GLuint size)
+{
+    TRACE();
+    _vertexData.updateVBO_modelMatrix(data, size);
 }
 
 void Mesh::updateIBO(const void *data, GLuint count)

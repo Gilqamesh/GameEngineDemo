@@ -21,11 +21,13 @@ VertexData::VertexData(VertexData &&other)
     _vertexPositionBuffer(move(other._vertexPositionBuffer)),
     _vertexNormalBuffer(move(other._vertexNormalBuffer)),
     _vertexTextureBuffer(move(other._vertexTextureBuffer)),
+    _vertexModelMatrixBuffer(move(other._vertexModelMatrixBuffer)),
     _indexBuffer(move(other._indexBuffer)),
     _vertexVectorPosition2D(other._vertexVectorPosition2D),
     _vertexVectorPosition3D(other._vertexVectorPosition3D),
     _vertexVectorNormal(other._vertexVectorNormal),
     _vertexVectorTexture(other._vertexVectorTexture),
+    _vertexVectorModelMatrix(other._vertexVectorModelMatrix),
     _indices(other._indices),
     _nOfIndices(other._nOfIndices),
     _mode(other._mode)
@@ -43,11 +45,13 @@ VertexData &VertexData::operator=(VertexData &&other)
         _vertexPositionBuffer = move(other._vertexPositionBuffer);
         _vertexNormalBuffer = move(other._vertexNormalBuffer);
         _vertexTextureBuffer = move(other._vertexTextureBuffer);
+        _vertexModelMatrixBuffer = move(other._vertexModelMatrixBuffer);
         _indexBuffer = move(other._indexBuffer);
         _vertexVectorPosition2D = other._vertexVectorPosition2D;
         _vertexVectorPosition3D = other._vertexVectorPosition3D;
         _vertexVectorNormal = other._vertexVectorNormal;
         _vertexVectorTexture = other._vertexVectorTexture;
+        _vertexVectorModelMatrix = other._vertexVectorModelMatrix;
         _indices = other._indices;
         _nOfIndices = other._nOfIndices;
         _mode = other._mode;
@@ -102,47 +106,47 @@ void VertexData::pushIndex(unsigned int index)
 void VertexData::configurePositionAttribute()
 {
     TRACE();
-    if (_vertexVectorPosition2D.getSize())
+    if (_vertexVectorPosition2D.size())
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.getData(), _vertexVectorPosition2D.getSize());
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.data(), _vertexVectorPosition2D.size());
     }
-    if (_vertexVectorPosition3D.getSize())
+    if (_vertexVectorPosition3D.size())
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.getData(), _vertexVectorPosition3D.getSize());
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.data(), _vertexVectorPosition3D.size());
     }
 }
 
 void VertexData::configurePositionAttributeDynamic()
 {
     TRACE();
-    if (_vertexVectorPosition2D.getSize())
+    if (_vertexVectorPosition2D.size())
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.getSize());
-        updateVBO_position2D(_vertexVectorPosition2D.getData(), _vertexVectorPosition2D.getSize());
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.size());
+        updateVBO_position2D(_vertexVectorPosition2D.data(), _vertexVectorPosition2D.size());
     }
-    if (_vertexVectorPosition3D.getSize())
+    if (_vertexVectorPosition3D.size())
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.getSize());
-        updateVBO_position3D(_vertexVectorPosition3D.getData(), _vertexVectorPosition2D.getSize());
+        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.size());
+        updateVBO_position3D(_vertexVectorPosition3D.data(), _vertexVectorPosition2D.size());
     }
 }
 
 void VertexData::configureNormalAttribute()
 {
     TRACE();
-    _vertexNormalBuffer = VertexBuffer(_vertexVectorNormal.getData(), _vertexVectorNormal.getSize());
+    _vertexNormalBuffer = VertexBuffer(_vertexVectorNormal.data(), _vertexVectorNormal.size());
 }
 
 void VertexData::configureTextureAttribute()
 {
     TRACE();
-    _vertexTextureBuffer = VertexBuffer(_vertexVectorTexture.getData(), _vertexVectorTexture.getSize());
+    _vertexTextureBuffer = VertexBuffer(_vertexVectorTexture.data(), _vertexVectorTexture.size());
 }
 
 void VertexData::configureModelMatrixAttribute()
 {
     TRACE();
-    _vertexModelMatrixBuffer = VertexBuffer(_vertexVectorModelMatrix.getSize());
+    _vertexModelMatrixBuffer = VertexBuffer(_vertexVectorModelMatrix.size());
 }
 
 void VertexData::configureIndices()
@@ -160,40 +164,42 @@ void VertexData::configureVAO()
     
     uint32 layoutIndex = 0;
     _vertexPositionBuffer.bind();
-    if (_vertexVectorPosition2D.getSize())
+    if (_vertexVectorPosition2D.size())
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition2D.getLayout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorPosition2D.layout(), layoutIndex++, 0);
         _vertexVectorPosition2D.clear();
     }
-    if (_vertexVectorPosition3D.getSize())
+    if (_vertexVectorPosition3D.size())
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition3D.getLayout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorPosition3D.layout(), layoutIndex++, 0);
         _vertexVectorPosition3D.clear();
     }
 
-    if (_vertexVectorNormal.getSize())
+    if (_vertexVectorNormal.size())
     {
         _vertexNormalBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorNormal.getLayout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorNormal.layout(), layoutIndex++, 0);
         _vertexVectorNormal.clear();
     }
 
-    if (_vertexVectorTexture.getSize())
+    if (_vertexVectorTexture.size())
     {
         _vertexTextureBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorTexture.getLayout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorTexture.layout(), layoutIndex++, 0);
         _vertexTextureBuffer.unbind();
         _vertexVectorTexture.clear();
     }
 
-    if (_vertexVectorModelMatrix.getSize())
+    if (_vertexVectorModelMatrix.size())
     {
         _vertexModelMatrixBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 0);
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 4 * sizeof(float));
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 8 * sizeof(float));
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.getLayout(), layoutIndex++, 12 * sizeof(float));
+        uint32 modelMatrixVertexAttributeLocation = layoutIndex;
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 4 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 8 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 12 * sizeof(float));
         _vertexModelMatrixBuffer.unbind();
+        GLCall(glVertexAttribDivisor(modelMatrixVertexAttributeLocation, 1));
         _vertexVectorModelMatrix.clear();
     }
 

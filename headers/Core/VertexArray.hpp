@@ -33,7 +33,7 @@ public:
      *      - prior to calling this function, bind() this object
      *      - prior to calling this function, bind() the specific Buffer Object
      */
-    void pushVertexAttribute(const VertexLayout &layout, GLuint index, uint32 offset);
+    void pushVertexAttribute(const VertexLayout &layout, GLuint index, uint64 offset);
 
     void bind();
     void unbind();

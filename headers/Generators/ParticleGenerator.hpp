@@ -8,6 +8,9 @@
 namespace GilqEngine
 {
 
+/**
+ * Each particle generator has to have a different loaded model, as the model's meshes are updated over time
+ */
 class ParticleGenerator
 {
     vector<Particle>   _particles;
@@ -31,6 +34,9 @@ public:
         const Matrix<float, 4, 4>& projection,
         Model *particleModel,
         Shader *particleShader);
+
+    // temporary while figuring out instancing
+    inline const vector<Particle> &getParticles(void) const { return (_particles); }
 
 private:
     uint32 getNextReviveIndex(void);

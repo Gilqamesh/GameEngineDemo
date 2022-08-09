@@ -24,6 +24,9 @@ void ParticleGenerator::update(
     IParticleTransform *particleTransform)
 {
     TRACE();
+    nOfParticlesToSpawn = static_cast<uint32>(round((static_cast<float>(nOfParticlesToSpawn) * 60.0f * deltaTime)));
+    LINE();
+    LOG("Number of new particles: " << nOfParticlesToSpawn);
     for (uint32 i = 0; i < nOfParticlesToSpawn; ++i)
     {
         uint32 reviveIndex = getNextReviveIndex();
@@ -44,6 +47,9 @@ void ParticleGenerator::draw(
     TRACE();
     GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
     particleShader->bind();
+    // particleShader->setMat4("projection", projection);
+    // particleShader->setFloat4("u_color", Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
+    // particleModel->drawInstanced(particleShader, _particles.size());
     for (Particle &particle : _particles)
     {
         if (particle.life > 0.0f)

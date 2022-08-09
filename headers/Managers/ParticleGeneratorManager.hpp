@@ -52,6 +52,11 @@ public:
 
     Particle& getParticle(GeneratorId generatorId);
 
+    const vector<Particle> &getParticles(GeneratorId generatorId) const;
+
+    // temporary while making instancing work for particle generators
+    const string &getGeneratorModelName(GeneratorId generatorId);
+
     void update(GeneratorId generatorId, float deltaTime);
 
     void draw(GeneratorId generatorId, const Matrix<float, 4, 4>& projection);

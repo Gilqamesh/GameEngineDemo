@@ -8,7 +8,7 @@ store opacity in each model object, and in object coordinator map from Entity to
 stop calling every base class an interface
 precompute angle between light sources and entities maybe?
 load models with material and attach material shouldn't take in an entity because it overrides the original model's material
-continuous edit & continue: make game layer a dll and have the platform layer check the dll and when it changes load the new dll
+continuous edit & continue: make game layer a dll and have the platform layer check the dll and when it changes load the new dll, AKA hot-reloading
 rename MacApplication since it isnt OS specific at all
 2d: combine position and texture into 1 vec4
 change const& function parameter for types which its faster to create a copy (for example there is a lot of Matrix.hpp)
@@ -22,4 +22,7 @@ instancing rendering: https://learnopengl.com/Advanced-OpenGL/Instancing, most o
 particle system: https://learnopengl.com/In-Practice/2D-Game/Particles
 need proper 2d rotation before being able to remove the need for dynamic VBO. Problem is that entities cant share the same Model instance that has dynamic VBO, as transforming it would transform all entities
 make a particle generator attachable to an entity
-make IVertexAttribute abstract with pure virtual functions as we dont need to use this class runtime
+fix vsync (deltaTime varies a lot)
+
+Problems:
+Need different loaded model instances if we want to update the model's meshes dynamically, in this case they can't be shared

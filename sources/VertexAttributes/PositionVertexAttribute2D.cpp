@@ -8,29 +8,28 @@ PositionVertexAttribute2D::PositionVertexAttribute2D()
     TRACE();
 }
 
-PositionVertexAttribute2D::PositionVertexAttribute2D(GLfloat x, GLfloat y)
+PositionVertexAttribute2D::PositionVertexAttribute2D(float x, float y)
     : _coordinates{x, y}
 {
     TRACE();
 }
 
-PositionVertexAttribute2D::PositionVertexAttribute2D(const Vector<GLfloat, 2> &position)
+PositionVertexAttribute2D::PositionVertexAttribute2D(const Vector<float, 2> &position)
     : _coordinates(position)
 {
     TRACE();
 }
 
-VertexLayout PositionVertexAttribute2D::getLayout()
+VertexLayout PositionVertexAttribute2D::layout()
 {
     TRACE();
-    return (VertexLayout(2, GL_FLOAT, GL_FALSE, 2 * sizeof(GL_FLOAT)));
+    return (VertexLayout(2, GL_FLOAT, GL_FALSE, 2 * sizeof(float)));
 }
 
-size_t PositionVertexAttribute2D::getSize()
+size_t PositionVertexAttribute2D::size()
 {
     TRACE();
-    ASSERT(_coordinates.size());
-    return (_coordinates.size() * sizeof(_coordinates[0]));
+    return (2 * sizeof(float));
 }
 
 }
