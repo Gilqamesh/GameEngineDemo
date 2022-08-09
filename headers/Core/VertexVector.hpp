@@ -15,10 +15,26 @@ VertexLayout            _layout;
 public:
     VertexVector() : _layout(VertexAttribute::layout()) { }
 
+    template <typename InputIt>
+    VertexVector(InputIt first, InputIt last)
+        : _vertexAttributes(first, last),
+          _layout(VertexAttribute::layout())
+    {
+    }
+
     /**
      * Adds a vertex attribute to the end of the array.
      */
     inline void push_back(const VertexAttribute &vertexAttribute) { _vertexAttributes.push_back(vertexAttribute); }
+
+    template <typename InputIt>
+    void assign(InputIt first, InputIt last)
+    {
+        for (; first != last; ++first)
+        {
+            _vertexAttributes.push_back(*first);
+        }
+    }
 
     /**
      * Returns the vertex layout needed for 'glVertexAttribPointer'

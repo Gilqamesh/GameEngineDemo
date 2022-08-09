@@ -1,4 +1,6 @@
 #include "MeshPrimitives/SphereMeshPrimitive.hpp"
+#include "VertexAttributes/VertexAttributeFloat2.hpp"
+#include "VertexAttributes/VertexAttributeFloat3.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 #include "Math/Utils.hpp"
@@ -14,6 +16,9 @@ Mesh SphereMeshPrimitive::createMesh()
     vector<GLuint> indices;
     VertexData vertexData;
     int indicator = 0;
+    vector<VertexAttributeFloat3> position;
+    vector<VertexAttributeFloat3> normal;
+    vector<VertexAttributeFloat2> texture;
     for(int i = 0; i <= lats; i++)
     {
         float lat0 = (float)PI * (-0.5f + (float) (i - 1) / lats);
@@ -33,26 +38,30 @@ Mesh SphereMeshPrimitive::createMesh()
             // vertices.push_back(x * zr0);
             // vertices.push_back(y * zr0);
             // vertices.push_back(z0);
-            vertexData.pushPositionAttribute3D({x * zr0, y * zr0, z0});
-            vertexData.pushNormalAttribute({0.0f, 0.0f, 1.0f}); // doesn't matter for now
-            vertexData.pushTextureAttribute({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
+            position.push_back({x * zr0, y * zr0, z0});
+            normal.push_back({0.0f, 0.0f, 1.0f}); // doesn't matter for now
+            texture.push_back({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
             indices.push_back(indicator);
             indicator++;
 
             // vertices.push_back(x * zr1);
             // vertices.push_back(y * zr1);
             // vertices.push_back(z1);
-            vertexData.pushPositionAttribute3D({x * zr1, y * zr1, z1});
-            vertexData.pushNormalAttribute({0.0f, 0.0f, 1.0f}); // doesn't matter for now
-            vertexData.pushTextureAttribute({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
+            position.push_back({x * zr1, y * zr1, z1});
+            normal.push_back({0.0f, 0.0f, 1.0f}); // doesn't matter for now
+            texture.push_back({((j & 2) >> 1) * 1.0f, ((j & 3) >> 1) * 1.0f});
             indices.push_back(indicator);
             indicator++;
         }
     }
+    vertexData.pushAttributeFloat2_static(texture);
+    vertexData.pushAttributeFloat3_static(position);
+    vertexData.pushAttributeFloat3_static(normal);
+
+    vertexData.configureBufferFloat2_static();
+    vertexData.configureBufferFloat3_static();
+
     vertexData.pushIndices(indices);
-    vertexData.configurePositionAttribute();
-    vertexData.configureNormalAttribute();
-    vertexData.configureTextureAttribute();
     vertexData.configureIndices();
 
     vertexData.configureVAO();

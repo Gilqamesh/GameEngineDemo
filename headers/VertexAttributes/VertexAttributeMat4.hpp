@@ -1,16 +1,16 @@
-#ifndef MODELMATRIXVERTEXATTRIBUTE_HPP
-# define MODELMATRIXVERTEXATTRIBUTE_HPP
+#ifndef VERTEXATTRIBUTEMAT4_HPP
+# define VERTEXATTRIBUTEMAT4_HPP
 
 # include "Interfaces/IVertexAttribute.hpp"
 
 namespace GilqEngine
 {
-class ModelMatrixVertexAttribute : public IVertexAttribute
+class VertexAttributeMat4 : public IVertexAttribute
 {
-Matrix<float, 4, 4> _modelMatrix;
+Matrix<float, 4, 4> _m;
 public:
-    ModelMatrixVertexAttribute() = default;
-    ModelMatrixVertexAttribute(const Matrix<float, 4, 4>& modelMatrix);
+    VertexAttributeMat4() = default;
+    VertexAttributeMat4(const Matrix<float, 4, 4>& m);
 
     size_t size();
 

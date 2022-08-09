@@ -240,11 +240,9 @@ public:
      * Also important note: one instance of a model that has dynamic vbo cant be used on
      * multiple entities as they'd transform each others data.
      */
-    void updateVBO_position2D(Entity object, const void *data, GLuint size);
-    void updateVBO_position3D(Entity object, const void *data, GLuint size);
-    void updateVBO_normal(Entity object, const void *data, GLuint size);
-    void updateVBO_texture(Entity object, const void *data, GLuint size);
-    void updateVBO_modelMatrix(Entity object, const void *data, GLuint size);
+    void updateBufferFloat2(Entity object, uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferFloat3(Entity object, uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferMat4(Entity object, uint32 layoutIndex, const void *data, uint32 size);
     void updateIBO(Entity object, const void *data, GLuint count);
 
     /**

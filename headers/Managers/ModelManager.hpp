@@ -164,11 +164,9 @@ public:
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
      */
-    void updateVBO_position2D(Entity model, const void *data, GLuint size);
-    void updateVBO_position3D(Entity model, const void *data, GLuint size);
-    void updateVBO_normal(Entity model, const void *data, GLuint size);
-    void updateVBO_texture(Entity model, const void *data, GLuint size);
-    void updateVBO_modelMatrix(Entity model, const void *data, GLuint size);
+    void updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 size);
     void updateIBO(Entity model, const void *data, GLuint count);
 };
 

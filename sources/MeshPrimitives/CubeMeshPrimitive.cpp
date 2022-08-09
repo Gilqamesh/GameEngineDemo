@@ -1,4 +1,5 @@
 #include "MeshPrimitives/CubeMeshPrimitive.hpp"
+#include "VertexAttributes/VertexAttributeFloat3.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
@@ -8,7 +9,7 @@ namespace GilqEngine
 Mesh CubeMeshPrimitive::createMesh()
 {
     TRACE();
-    vector<Vector<GLfloat, 4>>         preVertices{
+    vector<Vector<float, 4>>         preVertices{
         {-0.5f, -0.5f, -0.5f, 1.0f},
         {0.5f, -0.5f, -0.5f, 1.0f},
         {-0.5f, -0.5f, 0.5f, 1.0f},
@@ -18,7 +19,7 @@ Mesh CubeMeshPrimitive::createMesh()
         {-0.5f, 0.5f, 0.5f, 1.0f},
         {0.5f, 0.5f, 0.5f, 1.0f}
     };
-    vector<Vector<GLfloat, 4>>         preNormals{
+    vector<Vector<float, 4>>         preNormals{
         {0.0f, -1.0f, 0.0f, 1.0f},
         {0.0f, 1.0f, 0.0f, 1.0f},
         {1.0f, 0.0f, 0.0f, 1.0f},
@@ -26,7 +27,7 @@ Mesh CubeMeshPrimitive::createMesh()
         {0.0f, 0.0f, 1.0f, 1.0f},
         {0.0f, 0.0f, -1.0f, 1.0f}
     };
-    vector<Vector<GLfloat, 2>>         t{
+    vector<Vector<float, 2>>         t{
         {0.0f, 0.0f},
         {1.0f, 0.0f},
         {0.0f, 1.0f},
@@ -49,8 +50,8 @@ Mesh CubeMeshPrimitive::createMesh()
         2, 4, 6
     };
 
-    vector<Vector<GLfloat, 3>>         v;
-    vector<Vector<GLfloat, 3>>         n;
+    vector<Vector<float, 3>>         v;
+    vector<Vector<float, 3>>         n;
     VertexData                              vertexData;
     for (auto &vertex : preVertices)
     {
@@ -61,13 +62,15 @@ Mesh CubeMeshPrimitive::createMesh()
         n.push_back({normal[0], normal[1], normal[2]});
     }
 
+    vector<VertexAttributeFloat3> positions;
     for (unsigned int i = 0; i < indices.size(); ++i)
     {
-        vertexData.pushPositionAttribute3D(v[indices[i]]);
+        positions.push_back(v[indices[i]]);
         vertexData.pushIndices({i});
     }
+    vertexData.pushAttributeFloat3_static(positions);
 
-    vector<NormalVertexAttribute>      normals{
+    vector<VertexAttributeFloat3>      normals{
         n[0], n[0], n[0],
         n[0], n[0], n[0],
         n[1], n[1], n[1],
@@ -83,9 +86,9 @@ Mesh CubeMeshPrimitive::createMesh()
         n[3], n[3], n[3],
         n[3], n[3], n[3]
     };
-    for (const auto &normal : normals)
-        vertexData.pushNormalAttribute(normal);
-    vector<TextureVertexAttribute>     textures{
+    vertexData.pushAttributeFloat3_static(normals);
+
+    vector<VertexAttributeFloat2> textures{
         t[0], t[1], t[2],
         t[1], t[2], t[3],
         t[1], t[0], t[3],
@@ -101,11 +104,10 @@ Mesh CubeMeshPrimitive::createMesh()
         t[1], t[0], t[3],
         t[0], t[3], t[2]
     };
-    for (const auto &texture : textures)
-        vertexData.pushTextureAttribute(texture);
-    vertexData.configurePositionAttribute();
-    vertexData.configureNormalAttribute();
-    vertexData.configureTextureAttribute();
+    vertexData.pushAttributeFloat2_static(textures);
+
+    vertexData.configureBufferFloat3_static();
+    vertexData.configureBufferFloat2_static();
     vertexData.configureIndices();
 
     vertexData.configureVAO();

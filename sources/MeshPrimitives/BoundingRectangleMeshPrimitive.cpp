@@ -1,4 +1,6 @@
 #include "MeshPrimitives/BoundingRectangleMeshPrimitive.hpp"
+#include "VertexAttributes/VertexAttributeFloat2.hpp"
+#include "VertexAttributes/VertexAttributeFloat3.hpp"
 #include "Core/VertexData.hpp"
 
 namespace GilqEngine
@@ -10,39 +12,32 @@ Mesh BoundingRectangleMeshPrimitive::createMesh()
 
     VertexData vertexData;
     float w = 0.001f;
-    vector<PositionVertexAttribute3D> positions = {
+    vector<VertexAttributeFloat3> positions = {
         {-0.5f, 0.5f, 0.0f}, {0.5f, 0.5f, 0.0f}, {-0.5f, 0.5f - w, 0.0f},
         {0.5f, 0.5f - w, 0.0f}, {-0.5f + w, 0.5f - w, 0.0f}, {-0.5f, -0.5f, 0.0f},
         {-0.5f + w, -0.5f, 0.0f}, {0.5f - w, 0.5f - w, 0.0f}, {0.5f - w, -0.5f, 0.0f},
         {0.5f, -0.5f, 0.0f}, {-0.5f + w, -0.5f + w, 0.0f}, {0.5f - w, -0.5f + w, 0.0f}
     };
     // These arent checked
-    vector<NormalVertexAttribute> normals = {
+    vector<VertexAttributeFloat3> normals = {
         {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f},
         {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}
     };
     // These arent checked, so use unicolor texture
-    vector<TextureVertexAttribute> textures = {
+    vector<VertexAttributeFloat2> textures = {
         {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f},
         {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f},
         {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f},
         {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f},
     };
 
-    for (unsigned int i = 0;
-        i < 12;
-        ++i)
-    {
-        vertexData.pushPositionAttribute3D(positions[i]);
-        vertexData.pushNormalAttribute(normals[i]);
-        vertexData.pushTextureAttribute(textures[i]);
-    }
-
-    vertexData.configurePositionAttribute();
-    vertexData.configureNormalAttribute();
-    vertexData.configureTextureAttribute();
+    vertexData.pushAttributeFloat3_static(positions);
+    vertexData.pushAttributeFloat3_static(normals);
+    vertexData.pushAttributeFloat2_static(textures);
+    vertexData.configureBufferFloat3_static();
+    vertexData.configureBufferFloat2_static();
 
     vertexData.pushIndices({
         0, 1, 2, 1, 2, 3,

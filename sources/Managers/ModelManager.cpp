@@ -194,34 +194,22 @@ void ModelManager::clear()
     _loadedModels.clear();
 }
 
-void ModelManager::updateVBO_position2D(Entity model, const void *data, GLuint size)
+void ModelManager::updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelEntities[model]->updateVBO_position2D(data, size);
+    _modelEntities[model]->updateBufferFloat2(layoutIndex, data, size);
 }
 
-void ModelManager::updateVBO_position3D(Entity model, const void *data, GLuint size)
+void ModelManager::updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelEntities[model]->updateVBO_position3D(data, size);
+    _modelEntities[model]->updateBufferFloat3(layoutIndex, data, size);
 }
 
-void ModelManager::updateVBO_normal(Entity model, const void *data, GLuint size)
+void ModelManager::updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelEntities[model]->updateVBO_normal(data, size);
-}
-
-void ModelManager::updateVBO_texture(Entity model, const void *data, GLuint size)
-{
-    TRACE();
-    _modelEntities[model]->updateVBO_texture(data, size);
-}
-
-void ModelManager::updateVBO_modelMatrix(Entity model, const void *data, GLuint size)
-{
-    TRACE();
-    _modelEntities[model]->updateVBO_modelMatrix(data, size);
+    _modelEntities[model]->updateBufferMat4(layoutIndex, data, size);
 }
 
 void ModelManager::updateIBO(Entity model, const void *data, GLuint count)

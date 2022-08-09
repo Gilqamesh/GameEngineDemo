@@ -1,4 +1,6 @@
 #include "MeshPrimitives/TriangleMeshPrimitive3D.hpp"
+#include "VertexAttributes/VertexAttributeFloat2.hpp"
+#include "VertexAttributes/VertexAttributeFloat3.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
@@ -10,32 +12,27 @@ Mesh TriangleMeshPrimitive3D::createMesh()
     TRACE();
 
     VertexData vertexData;
-    PositionVertexAttribute3D positionA(-0.5f, -0.5f, 0.5f);
-    PositionVertexAttribute3D positionB(-0.5f, 0.5f, 0.5f);
-    PositionVertexAttribute3D positionC(0.5f, -0.5f, 0.5f);
+    vector<VertexAttributeFloat3> position = {
+        {-0.5f, -0.5f, 0.5f},
+        {-0.5f, 0.5f, 0.5f},
+        {0.5f, -0.5f, 0.5f}
+    };
+    vertexData.pushAttributeFloat3_static(position);
 
-    vertexData.pushPositionAttribute3D(positionA);
-    vertexData.pushPositionAttribute3D(positionB);
-    vertexData.pushPositionAttribute3D(positionC);
-    vertexData.configurePositionAttribute();
+    vector<VertexAttributeFloat3> normal = {
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f}
+    };
+    vertexData.pushAttributeFloat3_static(normal);
 
-    NormalVertexAttribute normalA(0.0f, 0.0f, 1.0f);
-    NormalVertexAttribute normalB(0.0f, 0.0f, 1.0f);
-    NormalVertexAttribute normalC(0.0f, 0.0f, 1.0f);
+    vector<VertexAttributeFloat2> texture = {
+        {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}
+    };
+    vertexData.pushAttributeFloat2_static(texture);
 
-    vertexData.pushNormalAttribute(normalA);
-    vertexData.pushNormalAttribute(normalB);
-    vertexData.pushNormalAttribute(normalC);
-    vertexData.configureNormalAttribute();
-
-    TextureVertexAttribute textureA(0.0f, 0.0f);
-    TextureVertexAttribute textureB(0.0f, 1.0f);
-    TextureVertexAttribute textureC(1.0f, 0.0f);
-
-    vertexData.pushTextureAttribute(textureA);
-    vertexData.pushTextureAttribute(textureB);
-    vertexData.pushTextureAttribute(textureC);
-    vertexData.configureTextureAttribute();
+    vertexData.configureBufferFloat2_static();
+    vertexData.configureBufferFloat3_static();
 
     vertexData.pushIndices({0, 1, 2});
     vertexData.configureIndices();

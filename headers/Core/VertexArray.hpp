@@ -4,7 +4,7 @@
 # include "pch.hpp"
 # include "Core/VertexBuffer.hpp"
 # include "Core/VertexLayout.hpp"
-# include "IndexBuffer.hpp"
+# include "Core/IndexBuffer.hpp"
 
 namespace GilqEngine
 {

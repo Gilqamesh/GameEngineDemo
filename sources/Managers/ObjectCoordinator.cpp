@@ -341,34 +341,20 @@ void ObjectCoordinator::startGenerator(GeneratorId generatorId)
 //                                 Own Methods                                //
 // ************************************************************************** //
 
-void ObjectCoordinator::updateVBO_position2D(Entity object, const void *data, GLuint size)
+void ObjectCoordinator::updateBufferFloat2(Entity object, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelManager.updateVBO_position2D(object, data, size);
+    _modelManager.updateBufferFloat2(object, layoutIndex, data, size);
 }
-
-void ObjectCoordinator::updateVBO_position3D(Entity object, const void *data, GLuint size)
+void ObjectCoordinator::updateBufferFloat3(Entity object, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelManager.updateVBO_position3D(object, data, size);
+    _modelManager.updateBufferFloat3(object, layoutIndex, data, size);
 }
-
-void ObjectCoordinator::updateVBO_normal(Entity object, const void *data, GLuint size)
+void ObjectCoordinator::updateBufferMat4(Entity object, uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _modelManager.updateVBO_normal(object, data, size);
-}
-
-void ObjectCoordinator::updateVBO_texture(Entity object, const void *data, GLuint size)
-{
-    TRACE();
-    _modelManager.updateVBO_texture(object, data, size);
-}
-
-void ObjectCoordinator::updateVBO_modelMatrix(Entity object, const void *data, GLuint size)
-{
-    TRACE();
-    _modelManager.updateVBO_modelMatrix(object, data, size);
+    _modelManager.updateBufferMat4(object, layoutIndex, data, size);
 }
 
 void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
@@ -383,18 +369,18 @@ void ObjectCoordinator::update(float deltaTime)
     for (GeneratorId generatorId : _runningGenerators)
     {
         _particleGeneratorManager.update(generatorId, deltaTime);
-        const vector<Particle>& particles = _particleGeneratorManager.getParticles(generatorId);
-        vector<Matrix<float, 4, 4>> modelMatrices;
-        for (const Particle& particle : particles)
-        {
-            modelMatrices.push_back(scale_matrix(particle.size) * translation_matrix(particle.position));
-        }
-        Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
-        ASSERT(modelMatrices.size());
-        LOG(modelMatrices.size());
-        LOG(sizeof(modelMatrices[0]));
-        LOG(modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
-        particleModel->updateVBO_modelMatrix(modelMatrices.data(), modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
+        // const vector<Particle>& particles = _particleGeneratorManager.getParticles(generatorId);
+        // vector<Matrix<float, 4, 4>> modelMatrices;
+        // for (const Particle& particle : particles)
+        // {
+        //     modelMatrices.push_back(scale_matrix(particle.size) * translation_matrix(particle.position));
+        // }
+        // Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
+        // ASSERT(modelMatrices.size());
+        // LOG(modelMatrices.size());
+        // LOG(sizeof(modelMatrices[0]));
+        // LOG(modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
+        // particleModel->updateBufferMat4(modelMatrices.data(), 2, modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
     }
     _modelManager.updateSystems(deltaTime);
 }

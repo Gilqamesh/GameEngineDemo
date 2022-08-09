@@ -47,34 +47,22 @@ void Mesh::drawInstanced(Shader *shader, uint32 numberOfInstances)
     _vertexData.unbind();
 }
 
-void Mesh::updateVBO_position2D(const void *data, GLuint size)
+void Mesh::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexData.updateVBO_position2D(data, size);
+    _vertexData.updateBufferFloat2(layoutIndex, data, size);
 }
 
-void Mesh::updateVBO_position3D(const void *data, GLuint size)
+void Mesh::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexData.updateVBO_position3D(data, size);
+    _vertexData.updateBufferFloat3(layoutIndex, data, size);
 }
 
-void Mesh::updateVBO_normal(const void *data, GLuint size)
+void Mesh::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexData.updateVBO_normal(data, size);
-}
-
-void Mesh::updateVBO_texture(const void *data, GLuint size)
-{
-    TRACE();
-    _vertexData.updateVBO_texture(data, size);
-}
-
-void Mesh::updateVBO_modelMatrix(const void *data, GLuint size)
-{
-    TRACE();
-    _vertexData.updateVBO_modelMatrix(data, size);
+    _vertexData.updateBufferMat4(layoutIndex, data, size);
 }
 
 void Mesh::updateIBO(const void *data, GLuint count)

@@ -1,4 +1,6 @@
 #include "MeshPrimitives/QuadMeshPrimitive3D.hpp"
+#include "VertexAttributes/VertexAttributeFloat2.hpp"
+#include "VertexAttributes/VertexAttributeFloat3.hpp"
 #include "Core/VertexData.hpp"
 #include "Debug/Trace.hpp"
 
@@ -10,38 +12,29 @@ Mesh QuadMeshPrimitive3D::createMesh()
     TRACE();
 
     VertexData vertexData;
-    PositionVertexAttribute3D positionA(-0.5f, -0.5f, 0.0f);  // bottom left
-    PositionVertexAttribute3D positionB(-0.5f, 0.5f, 0.0f);   // top left
-    PositionVertexAttribute3D positionC(0.5f, -0.5f, 0.0f);   // bottom right
-    PositionVertexAttribute3D positionD(0.5f, 0.5f, 0.0f);    // top right
+    vector<VertexAttributeFloat3> position = {
+        { -0.5f, -0.5f, 0.0f },
+        { -0.5f, 0.5f, 0.0f },
+        { 0.5f, -0.5f, 0.0f },
+        { 0.5f, 0.5f, 0.0f }
+    };
+    vertexData.pushAttributeFloat3_static(position);
 
-    vertexData.pushPositionAttribute3D(positionA);
-    vertexData.pushPositionAttribute3D(positionB);
-    vertexData.pushPositionAttribute3D(positionC);
-    vertexData.pushPositionAttribute3D(positionD);
-    vertexData.configurePositionAttribute();
+    vector<VertexAttributeFloat3> normal = {
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f},
+        {0.0f, 0.0f, 1.0f}
+    };
+    vertexData.pushAttributeFloat3_static(normal);
 
-    NormalVertexAttribute normalA(0.0f, 0.0f, 1.0f);
-    NormalVertexAttribute normalB(0.0f, 0.0f, 1.0f);
-    NormalVertexAttribute normalC(0.0f, 0.0f, 1.0f);
-    NormalVertexAttribute normalD(0.0f, 0.0f, 1.0f);
+    vector<VertexAttributeFloat2> texture = {
+        {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}
+    };
+    vertexData.pushAttributeFloat2_static(texture);
 
-    vertexData.pushNormalAttribute(normalA);
-    vertexData.pushNormalAttribute(normalB);
-    vertexData.pushNormalAttribute(normalC);
-    vertexData.pushNormalAttribute(normalD);
-    vertexData.configureNormalAttribute();
-
-    TextureVertexAttribute textureA(0.0f, 0.0f);
-    TextureVertexAttribute textureB(0.0f, 1.0f);
-    TextureVertexAttribute textureC(1.0f, 0.0f);
-    TextureVertexAttribute textureD(1.0f, 1.0f);
-
-    vertexData.pushTextureAttribute(textureA);
-    vertexData.pushTextureAttribute(textureB);
-    vertexData.pushTextureAttribute(textureC);
-    vertexData.pushTextureAttribute(textureD);
-    vertexData.configureTextureAttribute();
+    vertexData.configureBufferFloat2_static();
+    vertexData.configureBufferFloat3_static();
 
     vertexData.pushIndices({
         0, 1, 2,

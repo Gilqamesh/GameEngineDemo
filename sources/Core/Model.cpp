@@ -143,15 +143,18 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
     TRACE();
     Mesh myMesh;
     VertexData _vertexData;
+    vector<VertexAttributeFloat3> position;
+    vector<VertexAttributeFloat3> normal;
+    vector<VertexAttributeFloat2> texture;
     // process vertex positions, normals and texture coordinates
     for (unsigned int i = 0; i < mesh->mNumVertices; ++i)
     {
-        _vertexData.pushPositionAttribute3D({
+        position.push_back({
             mesh->mVertices[i].x,
             mesh->mVertices[i].y,
             mesh->mVertices[i].z
         });
-        _vertexData.pushNormalAttribute({
+        normal.push_back({
             mesh->mNormals[i].x,
             mesh->mNormals[i].y,
             mesh->mNormals[i].z
@@ -159,19 +162,22 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         // does the mesh contain texture coordinates?
         if (mesh->mTextureCoords[0])
         {
-            _vertexData.pushTextureAttribute({
+            texture.push_back({
                 mesh->mTextureCoords[0][i].x,
                 mesh->mTextureCoords[0][i].y
             });
         }
         else
         {
-            _vertexData.pushTextureAttribute({
+            texture.push_back({
                 0.0f,
                 0.0f
             });
         }
     }
+    _vertexData.pushAttributeFloat2_static(texture);
+    _vertexData.pushAttributeFloat3_static(position);
+    _vertexData.pushAttributeFloat3_static(normal);
     // process indices
     for (unsigned int i = 0; i < mesh->mNumFaces; ++i)
     {
@@ -208,9 +214,8 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         PRINT_HERE();
         TERMINATE("No index to texture map has been found for mesh, please handle this case!");
     }
-    _vertexData.configurePositionAttribute();
-    _vertexData.configureNormalAttribute();
-    _vertexData.configureTextureAttribute();
+    _vertexData.configureBufferFloat2_static();
+    _vertexData.configureBufferFloat3_static();
     _vertexData.configureIndices();
 
     _vertexData.configureVAO();
@@ -244,48 +249,30 @@ Texture *Model::loadTexture(aiMaterial* mat, aiTextureType type)
     return (nullptr);
 }
 
-void Model::updateVBO_position2D(const void *data, GLuint size)
+void Model::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateVBO_position2D(data, size);
+        mesh.updateBufferFloat2(layoutIndex, data, size);
     }
 }
 
-void Model::updateVBO_position3D(const void *data, GLuint size)
+void Model::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateVBO_position3D(data, size);
+        mesh.updateBufferFloat3(layoutIndex, data, size);
     }
 }
 
-void Model::updateVBO_normal(const void *data, GLuint size)
+void Model::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateVBO_normal(data, size);
-    }
-}
-
-void Model::updateVBO_texture(const void *data, GLuint size)
-{
-    TRACE();
-    for (auto& mesh : _meshes)
-    {
-        mesh.updateVBO_texture(data, size);
-    }
-}
-
-void Model::updateVBO_modelMatrix(const void *data, GLuint size)
-{
-    TRACE();
-    for (auto& mesh : _meshes)
-    {
-        mesh.updateVBO_modelMatrix(data, size);
+        mesh.updateBufferMat4(layoutIndex, data, size);
     }
 }
 

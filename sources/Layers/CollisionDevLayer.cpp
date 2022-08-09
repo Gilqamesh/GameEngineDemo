@@ -77,7 +77,7 @@ void CollisionDevLayer::onAttach()
     _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
         "ParticleModel",
         "ParticleShader",
-        1, 1.0f);
+        2, 1.0f);
     _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
         { _mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f });
 }
@@ -103,7 +103,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
         _lineStart,
         mousePos
     };
-    _objectCoordinator.updateVBO_position2D(_line, line.data(), line.size() * sizeof(line[0]));
+    _objectCoordinator.updateBufferFloat2(_line, 0, line.data(), line.size() * sizeof(line[0]));
 
     Vector<float, 2> contactPoint;
     Vector<float, 2> contactNormal;
@@ -155,7 +155,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     {
         _objectCoordinator.showEntity(_circle);
         _objectCoordinator.showEntity(_normalLine);
-        _objectCoordinator.updateVBO_position2D(_normalLine, normalLine.data(), normalLine.size() * sizeof(normalLine[0]));
+        _objectCoordinator.updateBufferFloat2(_normalLine, 0, normalLine.data(), normalLine.size() * sizeof(normalLine[0]));
     }
     else
     {

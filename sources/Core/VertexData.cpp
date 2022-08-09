@@ -18,16 +18,19 @@ VertexData::~VertexData()
 VertexData::VertexData(VertexData &&other)
     // invoke the copy move operator for each OpenGL context objects
     : _vertexArray(move(other._vertexArray)),
-    _vertexPositionBuffer(move(other._vertexPositionBuffer)),
-    _vertexNormalBuffer(move(other._vertexNormalBuffer)),
-    _vertexTextureBuffer(move(other._vertexTextureBuffer)),
-    _vertexModelMatrixBuffer(move(other._vertexModelMatrixBuffer)),
+    _vertexBuffersFloat2_static(move(other._vertexBuffersFloat2_static)),
+    _vertexBuffersFloat3_static(move(other._vertexBuffersFloat3_static)),
+    _vertexBuffersMat4_static(move(other._vertexBuffersMat4_static)),
+    _vertexBuffersFloat2_dynamic(move(other._vertexBuffersFloat2_dynamic)),
+    _vertexBuffersFloat3_dynamic(move(other._vertexBuffersFloat3_dynamic)),
+    _vertexBuffersMat4_dynamic(move(other._vertexBuffersMat4_dynamic)),
     _indexBuffer(move(other._indexBuffer)),
-    _vertexVectorPosition2D(other._vertexVectorPosition2D),
-    _vertexVectorPosition3D(other._vertexVectorPosition3D),
-    _vertexVectorNormal(other._vertexVectorNormal),
-    _vertexVectorTexture(other._vertexVectorTexture),
-    _vertexVectorModelMatrix(other._vertexVectorModelMatrix),
+    _vertexVectorFloat2_static(other._vertexVectorFloat2_static),
+    _vertexVectorFloat3_static(other._vertexVectorFloat3_static),
+    _vertexVectorMat4_static(other._vertexVectorMat4_static),
+    _vertexVectorFloat2_dynamic(other._vertexVectorFloat2_dynamic),
+    _vertexVectorFloat3_dynamic(other._vertexVectorFloat3_dynamic),
+    _vertexVectorMat4_dynamic(other._vertexVectorMat4_dynamic),
     _indices(other._indices),
     _nOfIndices(other._nOfIndices),
     _mode(other._mode)
@@ -42,16 +45,19 @@ VertexData &VertexData::operator=(VertexData &&other)
     {
         // invoke the move assignment operator for each OpenGL context objects
         _vertexArray = move(other._vertexArray);
-        _vertexPositionBuffer = move(other._vertexPositionBuffer);
-        _vertexNormalBuffer = move(other._vertexNormalBuffer);
-        _vertexTextureBuffer = move(other._vertexTextureBuffer);
-        _vertexModelMatrixBuffer = move(other._vertexModelMatrixBuffer);
+        _vertexBuffersFloat2_static = move(other._vertexBuffersFloat2_static);
+        _vertexBuffersFloat3_static = move(other._vertexBuffersFloat3_static);
+        _vertexBuffersMat4_static = move(other._vertexBuffersMat4_static);
+        _vertexBuffersFloat2_dynamic = move(other._vertexBuffersFloat2_dynamic);
+        _vertexBuffersFloat3_dynamic = move(other._vertexBuffersFloat3_dynamic);
+        _vertexBuffersMat4_dynamic = move(other._vertexBuffersMat4_dynamic);
         _indexBuffer = move(other._indexBuffer);
-        _vertexVectorPosition2D = other._vertexVectorPosition2D;
-        _vertexVectorPosition3D = other._vertexVectorPosition3D;
-        _vertexVectorNormal = other._vertexVectorNormal;
-        _vertexVectorTexture = other._vertexVectorTexture;
-        _vertexVectorModelMatrix = other._vertexVectorModelMatrix;
+        _vertexVectorFloat2_static = other._vertexVectorFloat2_static;
+        _vertexVectorFloat3_static = other._vertexVectorFloat3_static;
+        _vertexVectorMat4_static = other._vertexVectorMat4_static;
+        _vertexVectorFloat2_dynamic = other._vertexVectorFloat2_dynamic;
+        _vertexVectorFloat3_dynamic = other._vertexVectorFloat3_dynamic;
+        _vertexVectorMat4_dynamic = other._vertexVectorMat4_dynamic;
         _indices = other._indices;
         _nOfIndices = other._nOfIndices;
         _mode = other._mode;
@@ -59,34 +65,40 @@ VertexData &VertexData::operator=(VertexData &&other)
     return (*this);
 }
 
-void VertexData::pushPositionAttribute2D(const PositionVertexAttribute2D &data)
+void VertexData::pushAttributeFloat2_static(const vector<VertexAttributeFloat2>& value)
 {
     TRACE();
-    _vertexVectorPosition2D.push_back(data);
+    _vertexVectorFloat2_static.push_back(VertexVector<VertexAttributeFloat2>(value.begin(), value.end()));
 }
 
-void VertexData::pushPositionAttribute3D(const PositionVertexAttribute3D &data)
+void VertexData::pushAttributeFloat3_static(const vector<VertexAttributeFloat3>& value)
 {
     TRACE();
-    _vertexVectorPosition3D.push_back(data);
+    _vertexVectorFloat3_static.push_back(VertexVector<VertexAttributeFloat3>(value.begin(), value.end()));
 }
 
-void VertexData::pushNormalAttribute(const NormalVertexAttribute &data)
+void VertexData::pushAttributeMat4_static(const vector<VertexAttributeMat4>& value)
 {
     TRACE();
-    _vertexVectorNormal.push_back(data);
+    _vertexVectorMat4_static.push_back(VertexVector<VertexAttributeMat4>(value.begin(), value.end()));
 }
 
-void VertexData::pushTextureAttribute(const TextureVertexAttribute &data)
+void VertexData::pushAttributeFloat2_dynamic(const vector<VertexAttributeFloat2>& value, uint32 instanceDivisor)
 {
     TRACE();
-    _vertexVectorTexture.push_back(data);
+    _vertexVectorFloat2_dynamic.push_back({ VertexVector<VertexAttributeFloat2>(value.begin(), value.end()), instanceDivisor });
 }
 
-void VertexData::pushModelMatrixAttribute(const ModelMatrixVertexAttribute &data)
+void VertexData::pushAttributeFloat3_dynamic(const vector<VertexAttributeFloat3>& value, uint32 instanceDivisor)
 {
     TRACE();
-    _vertexVectorModelMatrix.push_back(data);
+    _vertexVectorFloat3_dynamic.push_back({ VertexVector<VertexAttributeFloat3>(value.begin(), value.end()), instanceDivisor });
+}
+
+void VertexData::pushAttributeMat4_dynamic(const vector<VertexAttributeMat4>& value, uint32 instanceDivisor)
+{
+    TRACE();
+    _vertexVectorMat4_dynamic.push_back({ VertexVector<VertexAttributeMat4>(value.begin(), value.end()), instanceDivisor });
 }
 
 void VertexData::pushIndices(const vector<unsigned int> &indices)
@@ -103,50 +115,58 @@ void VertexData::pushIndex(unsigned int index)
     _indices.push_back(index);
 }
 
-void VertexData::configurePositionAttribute()
+void VertexData::configureBufferFloat2_static()
 {
     TRACE();
-    if (_vertexVectorPosition2D.size())
+    for (const auto& vertexVector : _vertexVectorFloat2_static)
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.data(), _vertexVectorPosition2D.size());
-    }
-    if (_vertexVectorPosition3D.size())
-    {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.data(), _vertexVectorPosition3D.size());
+        _vertexBuffersFloat2_static.push_back(VertexBuffer(vertexVector.data(), vertexVector.size()));
     }
 }
 
-void VertexData::configurePositionAttributeDynamic()
+void VertexData::configureBufferFloat3_static()
 {
     TRACE();
-    if (_vertexVectorPosition2D.size())
+    for (const auto& vertexVector : _vertexVectorFloat3_static)
     {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition2D.size());
-        updateVBO_position2D(_vertexVectorPosition2D.data(), _vertexVectorPosition2D.size());
-    }
-    if (_vertexVectorPosition3D.size())
-    {
-        _vertexPositionBuffer = VertexBuffer(_vertexVectorPosition3D.size());
-        updateVBO_position3D(_vertexVectorPosition3D.data(), _vertexVectorPosition2D.size());
+        _vertexBuffersFloat3_static.push_back(VertexBuffer(vertexVector.data(), vertexVector.size()));
     }
 }
 
-void VertexData::configureNormalAttribute()
+void VertexData::configureBufferMat4_static()
 {
     TRACE();
-    _vertexNormalBuffer = VertexBuffer(_vertexVectorNormal.data(), _vertexVectorNormal.size());
+    for (const auto& vertexVector : _vertexVectorMat4_static)
+    {
+        _vertexBuffersMat4_static.push_back(VertexBuffer(vertexVector.data(), vertexVector.size()));
+    }
 }
 
-void VertexData::configureTextureAttribute()
+void VertexData::configureBufferFloat2_dynamic()
 {
     TRACE();
-    _vertexTextureBuffer = VertexBuffer(_vertexVectorTexture.data(), _vertexVectorTexture.size());
+    for (const auto& vertexVector : _vertexVectorFloat2_dynamic)
+    {
+        _vertexBuffersFloat2_dynamic.push_back(VertexBuffer(vertexVector.vertexVector.size()));
+    }
 }
 
-void VertexData::configureModelMatrixAttribute()
+void VertexData::configureBufferFloat3_dynamic()
 {
     TRACE();
-    _vertexModelMatrixBuffer = VertexBuffer(_vertexVectorModelMatrix.size());
+    for (const auto& vertexVector : _vertexVectorFloat3_dynamic)
+    {
+        _vertexBuffersFloat3_dynamic.push_back(VertexBuffer(vertexVector.vertexVector.size()));
+    }
+}
+
+void VertexData::configureBufferMat4_dynamic()
+{
+    TRACE();
+    for (const auto& vertexVector : _vertexVectorMat4_dynamic)
+    {
+        _vertexBuffersMat4_dynamic.push_back(VertexBuffer(vertexVector.vertexVector.size()));
+    }
 }
 
 void VertexData::configureIndices()
@@ -160,90 +180,105 @@ void VertexData::configureIndices()
 void VertexData::configureVAO()
 {
     TRACE();
-    _vertexArray.bind();
+    this->bind();
     
     uint32 layoutIndex = 0;
-    _vertexPositionBuffer.bind();
-    if (_vertexVectorPosition2D.size())
+    ASSERT(_vertexBuffersFloat2_static.size() == _vertexVectorFloat2_static.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorFloat2_static.size(); ++bufferIndex)
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition2D.layout(), layoutIndex++, 0);
-        _vertexVectorPosition2D.clear();
+        _vertexBuffersFloat2_static[bufferIndex].bind();
+        _vertexArray.pushVertexAttribute(_vertexVectorFloat2_static[bufferIndex].layout(), layoutIndex++, 0);
+        _vertexBuffersFloat2_static[bufferIndex].unbind();
+        _vertexVectorFloat2_static[bufferIndex].clear();
     }
-    if (_vertexVectorPosition3D.size())
+    ASSERT(_vertexBuffersFloat3_static.size() == _vertexVectorFloat3_static.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorFloat3_static.size(); ++bufferIndex)
     {
-        _vertexArray.pushVertexAttribute(_vertexVectorPosition3D.layout(), layoutIndex++, 0);
-        _vertexVectorPosition3D.clear();
+        _vertexBuffersFloat3_static[bufferIndex].bind();
+        _vertexArray.pushVertexAttribute(_vertexVectorFloat3_static[bufferIndex].layout(), layoutIndex++, 0);
+        _vertexBuffersFloat3_static[bufferIndex].unbind();
+        _vertexVectorFloat3_static[bufferIndex].clear();
     }
-
-    if (_vertexVectorNormal.size())
+    ASSERT(_vertexBuffersMat4_static.size() == _vertexVectorMat4_static.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorMat4_static.size(); ++bufferIndex)
     {
-        _vertexNormalBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorNormal.layout(), layoutIndex++, 0);
-        _vertexVectorNormal.clear();
-    }
-
-    if (_vertexVectorTexture.size())
-    {
-        _vertexTextureBuffer.bind();
-        _vertexArray.pushVertexAttribute(_vertexVectorTexture.layout(), layoutIndex++, 0);
-        _vertexTextureBuffer.unbind();
-        _vertexVectorTexture.clear();
-    }
-
-    if (_vertexVectorModelMatrix.size())
-    {
-        _vertexModelMatrixBuffer.bind();
-        uint32 modelMatrixVertexAttributeLocation = layoutIndex;
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 0);
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 4 * sizeof(float));
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 8 * sizeof(float));
-        _vertexArray.pushVertexAttribute(_vertexVectorModelMatrix.layout(), layoutIndex++, 12 * sizeof(float));
-        _vertexModelMatrixBuffer.unbind();
-        GLCall(glVertexAttribDivisor(modelMatrixVertexAttributeLocation, 1));
-        _vertexVectorModelMatrix.clear();
+        _vertexBuffersMat4_static[bufferIndex].bind();
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_static[bufferIndex].layout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_static[bufferIndex].layout(), layoutIndex++, 4 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_static[bufferIndex].layout(), layoutIndex++, 8 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_static[bufferIndex].layout(), layoutIndex++, 12 * sizeof(float));
+        _vertexBuffersMat4_static[bufferIndex].unbind();
+        _vertexVectorMat4_static[bufferIndex].clear();
     }
 
-    unbind();
+    ASSERT(_vertexBuffersFloat2_dynamic.size() == _vertexVectorFloat2_dynamic.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorFloat2_dynamic.size(); ++bufferIndex)
+    {
+        _vertexBuffersFloat2_dynamic[bufferIndex].bind();
+        uint32 vertexAttrLayoutIndex = layoutIndex;
+        _vertexArray.pushVertexAttribute(_vertexVectorFloat2_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 0);
+        GLCall(glVertexAttribDivisor(vertexAttrLayoutIndex, _vertexVectorFloat2_dynamic[bufferIndex].divisor));
+        _vertexBuffersFloat2_dynamic[bufferIndex].unbind();
+        _vertexVectorFloat2_dynamic[bufferIndex].vertexVector.clear();
+    }
+    ASSERT(_vertexBuffersFloat3_dynamic.size() == _vertexVectorFloat3_dynamic.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorFloat3_dynamic.size(); ++bufferIndex)
+    {
+        _vertexBuffersFloat3_dynamic[bufferIndex].bind();
+        uint32 vertexAttrLayoutIndex = layoutIndex;
+        _vertexArray.pushVertexAttribute(_vertexVectorFloat3_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 0);
+        GLCall(glVertexAttribDivisor(vertexAttrLayoutIndex, _vertexVectorFloat3_dynamic[bufferIndex].divisor));
+        _vertexBuffersFloat3_dynamic[bufferIndex].unbind();
+        _vertexVectorFloat3_dynamic[bufferIndex].vertexVector.clear();
+    }
+    ASSERT(_vertexBuffersMat4_dynamic.size() == _vertexVectorMat4_dynamic.size());
+    for (uint32 bufferIndex = 0; bufferIndex < _vertexVectorMat4_dynamic.size(); ++bufferIndex)
+    {
+        _vertexBuffersMat4_dynamic[bufferIndex].bind();
+        uint32 vertexAttrLayoutIndex = layoutIndex;
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 0);
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 4 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 8 * sizeof(float));
+        _vertexArray.pushVertexAttribute(_vertexVectorMat4_dynamic[bufferIndex].vertexVector.layout(), layoutIndex++, 12 * sizeof(float));
+        GLCall(glVertexAttribDivisor(vertexAttrLayoutIndex, _vertexVectorMat4_dynamic[bufferIndex].divisor));
+        _vertexBuffersMat4_dynamic[bufferIndex].unbind();
+        _vertexVectorMat4_dynamic[bufferIndex].vertexVector.clear();
+    }
+
+    this->unbind();
 }
 
-void VertexData::updateVBO_position2D(const void *data, GLuint size)
+void VertexData::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexPositionBuffer.bind();
-    _vertexPositionBuffer.update(data, size);
-    _vertexPositionBuffer.unbind();
+    if (!(layoutIndex < _vertexBuffersFloat2_dynamic.size()))
+        throw Exception("layoutIndex(" + to_string(layoutIndex) + ") is outside the range of the VBO Float2 vector in VertexData");
+    
+    _vertexBuffersFloat2_dynamic[layoutIndex].bind();
+    _vertexBuffersFloat2_dynamic[layoutIndex].update(data, size);
+    _vertexBuffersFloat2_dynamic[layoutIndex].unbind();
 }
 
-void VertexData::updateVBO_position3D(const void *data, GLuint size)
+void VertexData::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexPositionBuffer.bind();
-    _vertexPositionBuffer.update(data, size);
-    _vertexPositionBuffer.unbind();
+    if (!(layoutIndex < _vertexBuffersFloat3_dynamic.size()))
+        throw Exception("layoutIndex(" + to_string(layoutIndex) + ") is outside the range of the VBO Float3 vector in VertexData");
+    
+    _vertexBuffersFloat3_dynamic[layoutIndex].bind();
+    _vertexBuffersFloat3_dynamic[layoutIndex].update(data, size);
+    _vertexBuffersFloat3_dynamic[layoutIndex].unbind();
 }
 
-void VertexData::updateVBO_normal(const void *data, GLuint size)
+void VertexData::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size)
 {
     TRACE();
-    _vertexNormalBuffer.bind();
-    _vertexNormalBuffer.update(data, size);
-    _vertexNormalBuffer.unbind();
-}
-
-void VertexData::updateVBO_texture(const void *data, GLuint size)
-{
-    TRACE();
-    _vertexTextureBuffer.bind();
-    _vertexTextureBuffer.update(data, size);
-    _vertexTextureBuffer.unbind();
-}
-
-void VertexData::updateVBO_modelMatrix(const void *data, GLuint size)
-{
-    TRACE();
-    _vertexModelMatrixBuffer.bind();
-    _vertexModelMatrixBuffer.update(data, size);
-    _vertexModelMatrixBuffer.unbind();    
+    if (!(layoutIndex < _vertexBuffersMat4_dynamic.size()))
+        throw Exception("layoutIndex(" + to_string(layoutIndex) + ") is outside the range of the VBO Mat4 vector in VertexData");
+    
+    _vertexBuffersMat4_dynamic[layoutIndex].bind();
+    _vertexBuffersMat4_dynamic[layoutIndex].update(data, size);
+    _vertexBuffersMat4_dynamic[layoutIndex].unbind();
 }
 
 void VertexData::updateIBO(const void *data, GLuint count)
