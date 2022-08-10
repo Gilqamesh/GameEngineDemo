@@ -60,9 +60,10 @@ public:
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
      */
-    void updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size);
-    void updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size);
-    void updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferFloat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferMat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
     void updateIBO(const void *data, GLuint count);
 private:
     void loadModel(const string &path);

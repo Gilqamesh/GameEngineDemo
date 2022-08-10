@@ -11,7 +11,7 @@ Mesh TriangleMeshPrimitive3D::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("TriangleMeshPrimitive3D");
     vector<VertexAttributeFloat3> position = {
         {-0.5f, -0.5f, 0.5f},
         {-0.5f, 0.5f, 0.5f},

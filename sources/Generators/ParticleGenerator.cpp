@@ -14,7 +14,12 @@ ParticleGenerator::ParticleGenerator(uint32 maxNewParticlesPerFrame, float maxLi
     
     // (TARGET_FPS + 5) so that the particle pool is a little bit larger than necessary
     _particles.assign(static_cast<uint32>(ceil(maxLifeTime)) * maxNewParticlesPerFrame * (TARGET_FPS + 5), Particle());
-
+    for (const Particle& particle : _particles)
+    {
+        _particlePositions.push_back(particle.position);
+        _particleColors.push_back(particle.color);
+        _particleSizes.push_back(particle.size);
+    }
 }
 
 void ParticleGenerator::update(
@@ -25,17 +30,23 @@ void ParticleGenerator::update(
 {
     TRACE();
     nOfParticlesToSpawn = static_cast<uint32>(round((static_cast<float>(nOfParticlesToSpawn) * 60.0f * deltaTime)));
-    LINE();
-    LOG("Number of new particles: " << nOfParticlesToSpawn);
     for (uint32 i = 0; i < nOfParticlesToSpawn; ++i)
     {
         uint32 reviveIndex = getNextReviveIndex();
         particleTransform->reviveTransformFunction(spawnedParticle, _particles[reviveIndex]);
     }
 
+    _numberOfAliveParticles = 0;
     for (uint32 i = 0; i < _particles.size(); ++i)
     {
         particleTransform->updateTransformFunction(deltaTime, _particles[i]);
+        if (_particles[i].life > 0.0f && _particles[i].color[3] >= 0.0f)
+        {
+            _particlePositions[_numberOfAliveParticles] = _particles[i].position;
+            _particleColors[_numberOfAliveParticles] = _particles[i].color;
+            _particleSizes[_numberOfAliveParticles] = _particles[i].size;
+            ++_numberOfAliveParticles;
+        }
     }
 }
 
@@ -45,25 +56,9 @@ void ParticleGenerator::draw(
     Shader *particleShader)
 {
     TRACE();
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
     particleShader->bind();
-    // particleShader->setMat4("projection", projection);
-    // particleShader->setFloat4("u_color", Vector<float, 4>(1.0f, 1.0f, 1.0f, 1.0f));
-    // particleModel->drawInstanced(particleShader, _particles.size());
-    for (Particle &particle : _particles)
-    {
-        if (particle.life > 0.0f)
-        {
-            particleShader->setMat4("projection", projection);
-            particleShader->setMat4("model",
-                scale_matrix(particle.size) *
-                translation_matrix(particle.position));
-            particleShader->setFloat4("u_color", particle.color);
-            particleModel->draw(particleShader);
-        }
-    }
-    // how to restore to previous blending function state?
-    GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    particleShader->setMat4("projection", projection);
+    particleModel->drawInstanced(particleShader, _numberOfAliveParticles);
 }
 
 uint32 ParticleGenerator::getNextReviveIndex()

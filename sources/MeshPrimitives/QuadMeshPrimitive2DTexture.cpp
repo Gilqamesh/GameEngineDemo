@@ -10,7 +10,7 @@ Mesh QuadMeshPrimitive2DTexture::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("QuadMeshPrimitive2DTexture");
     vector<VertexAttributeFloat2> position = {
         {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}
     };

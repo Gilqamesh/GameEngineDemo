@@ -5,6 +5,7 @@ namespace GilqEngine
 {
 
 Mesh::Mesh()
+    : _vertexData("")
 {
     TRACE();
 }
@@ -43,26 +44,32 @@ void Mesh::drawInstanced(Shader *shader, uint32 numberOfInstances)
     TRACE();
     _vertexData.bind();
     _material.setShaderUniforms(shader);
-    GLCall(glDrawArraysInstanced(_vertexData.getMode(), 0, 6, numberOfInstances));
+    GLCall(glDrawElementsInstanced(_vertexData.getMode(), _vertexData.getCountOfIndeces(), GL_UNSIGNED_INT, nullptr, numberOfInstances));
     _vertexData.unbind();
 }
 
-void Mesh::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size)
+void Mesh::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _vertexData.updateBufferFloat2(layoutIndex, data, size);
+    _vertexData.updateBufferFloat2(layoutIndex, data, numberOfUpdates * sizeof(float) * 2);
 }
 
-void Mesh::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size)
+void Mesh::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _vertexData.updateBufferFloat3(layoutIndex, data, size);
+    _vertexData.updateBufferFloat3(layoutIndex, data, numberOfUpdates * sizeof(float) * 3);
 }
 
-void Mesh::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size)
+void Mesh::updateBufferFloat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _vertexData.updateBufferMat4(layoutIndex, data, size);
+    _vertexData.updateBufferFloat4(layoutIndex, data, numberOfUpdates * sizeof(float) * 4);
+}
+
+void Mesh::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
+{
+    TRACE();
+    _vertexData.updateBufferMat4(layoutIndex, data, numberOfUpdates * sizeof(float) * 16);
 }
 
 void Mesh::updateIBO(const void *data, GLuint count)

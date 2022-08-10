@@ -11,7 +11,7 @@ Mesh QuadMeshPrimitive3D::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("QuadMeshPrimitive3D");
     vector<VertexAttributeFloat3> position = {
         { -0.5f, -0.5f, 0.0f },
         { -0.5f, 0.5f, 0.0f },

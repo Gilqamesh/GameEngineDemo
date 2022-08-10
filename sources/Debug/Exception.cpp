@@ -1,4 +1,5 @@
 #include "Debug/Exception.hpp"
+#include "Debug/Trace.hpp"
 
 namespace GilqEngine
 {
@@ -6,7 +7,7 @@ namespace GilqEngine
 Exception::Exception(const string& msg)
     : runtime_error(msg)
 {
-
+    Trace::getInstance()->printHistory(cerr);
 }
 
 Exception::~Exception() noexcept

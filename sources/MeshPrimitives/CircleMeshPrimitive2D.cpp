@@ -10,7 +10,7 @@ Mesh CircleMeshPrimitive2D::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("CircleMeshPrimitive2D");
     vector<VertexAttributeFloat2> position = {
         {-0.5f, -0.5f}, {-0.5f, 0.5f}, {0.5f, -0.5f}, {0.5f, 0.5f}
     };

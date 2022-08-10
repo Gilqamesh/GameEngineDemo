@@ -39,7 +39,7 @@ void Trace::add(const string &traceMsg)
 void Trace::printHistory(ostream &os)
 {
     os << "Trace History:" << endl;
-    for (auto message : c)
+    for (auto &message : c)
         os << message << endl;
 }
 

@@ -13,8 +13,8 @@ Mesh SphereMeshPrimitive::createMesh()
     TRACE();
     int lats = 10, longs = 10;
     // vector<GLfloat> vertices;
-    vector<GLuint> indices;
-    VertexData vertexData;
+    vector<uint32> indices;
+    VertexData vertexData("SphereMeshPrimitive");
     int indicator = 0;
     vector<VertexAttributeFloat3> position;
     vector<VertexAttributeFloat3> normal;

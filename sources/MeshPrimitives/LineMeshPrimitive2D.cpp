@@ -10,12 +10,12 @@ Mesh LineMeshPrimitive2D::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("LineMeshPrimitive2D");
     vector<VertexAttributeFloat2> position = {
         {0.0f, 0.0f}, {1.0f / (float)sqrt(2), -1.0f / (float)sqrt(2)}
     };
 
-    vertexData.pushAttributeFloat2_dynamic(position, 0);
+    vertexData.pushAttributeFloat2_dynamic(0, position.size(), position);
     vertexData.configureBufferFloat2_dynamic();
 
     vertexData.pushIndices({0, 1});

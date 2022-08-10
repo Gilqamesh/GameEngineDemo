@@ -10,23 +10,23 @@ IndexBuffer::IndexBuffer()
     TRACE();
 }
 
-IndexBuffer::IndexBuffer(const void *data, GLuint count)
+IndexBuffer::IndexBuffer(const void *data, uint32 count)
     : _count(count)
 {
     TRACE();
     GLCall(glGenBuffers(1, &GL_ID));
     bind();
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(GLuint), data, GL_STATIC_DRAW));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(uint32), data, GL_STATIC_DRAW));
     unbind();
 }
 
-IndexBuffer::IndexBuffer(GLuint count)
+IndexBuffer::IndexBuffer(uint32 count)
     : _count(count)
 {
     TRACE();
     GLCall(glGenBuffers(1, &GL_ID));
     bind();
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(GLuint), nullptr, GL_DYNAMIC_DRAW));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(uint32), nullptr, GL_DYNAMIC_DRAW));
     unbind();
 }
 
@@ -58,11 +58,11 @@ IndexBuffer &IndexBuffer::operator=(IndexBuffer &&other)
     return (*this);
 }
 
-void IndexBuffer::update(const void *data, GLuint count)
+void IndexBuffer::update(const void *data, uint32 count)
 {
     TRACE();
     _count = count;
-    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(GLuint), data, GL_DYNAMIC_DRAW));
+    GLCall(glBufferData(GL_ELEMENT_ARRAY_BUFFER, _count * sizeof(uint32), data, GL_DYNAMIC_DRAW));
 }
 
 void IndexBuffer::bind()

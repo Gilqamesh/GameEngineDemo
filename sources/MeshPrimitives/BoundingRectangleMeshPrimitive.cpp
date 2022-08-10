@@ -10,7 +10,7 @@ Mesh BoundingRectangleMeshPrimitive::createMesh()
 {
     TRACE();
 
-    VertexData vertexData;
+    VertexData vertexData("BoundingRectangleMeshPrimitive");
     float w = 0.001f;
     vector<VertexAttributeFloat3> positions = {
         {-0.5f, 0.5f, 0.0f}, {0.5f, 0.5f, 0.0f}, {-0.5f, 0.5f - w, 0.0f},

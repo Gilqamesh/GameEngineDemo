@@ -194,22 +194,28 @@ void ModelManager::clear()
     _loadedModels.clear();
 }
 
-void ModelManager::updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 size)
+void ModelManager::updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelEntities[model]->updateBufferFloat2(layoutIndex, data, size);
+    _modelEntities[model]->updateBufferFloat2(layoutIndex, data, numberOfUpdates);
 }
 
-void ModelManager::updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 size)
+void ModelManager::updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelEntities[model]->updateBufferFloat3(layoutIndex, data, size);
+    _modelEntities[model]->updateBufferFloat3(layoutIndex, data, numberOfUpdates);
 }
 
-void ModelManager::updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 size)
+void ModelManager::updateBufferFloat4(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelEntities[model]->updateBufferMat4(layoutIndex, data, size);
+    _modelEntities[model]->updateBufferFloat4(layoutIndex, data, numberOfUpdates);
+}
+
+void ModelManager::updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
+{
+    TRACE();
+    _modelEntities[model]->updateBufferMat4(layoutIndex, data, numberOfUpdates);
 }
 
 void ModelManager::updateIBO(Entity model, const void *data, GLuint count)

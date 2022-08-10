@@ -52,7 +52,7 @@ Mesh CubeMeshPrimitive::createMesh()
 
     vector<Vector<float, 3>>         v;
     vector<Vector<float, 3>>         n;
-    VertexData                              vertexData;
+    VertexData vertexData("CubeMeshPrimitive");
     for (auto &vertex : preVertices)
     {
         v.push_back({vertex[0], vertex[1], vertex[2]});

@@ -14,7 +14,19 @@ namespace GilqEngine
 class ParticleGenerator
 {
     vector<Particle>   _particles;
+
+    /**
+     * Need for instancing
+     * NOTE(david): currently there are duplicate memory stored and this is purely just to have a contiguous data for instancing,
+     *              try to avoid duplication
+     */
+    vector<Vector<float, 2>> _particlePositions;
+    vector<Vector<float, 4>> _particleColors;
+    vector<Vector<float, 2>> _particleSizes;
+
     uint32             _lastRevivedParticleIndex;
+
+    uint32             _numberOfAliveParticles;
 
 public:
     /**
@@ -36,7 +48,10 @@ public:
         Shader *particleShader);
 
     // temporary while figuring out instancing
-    inline const vector<Particle> &getParticles(void) const { return (_particles); }
+    inline void *getParticlePositionsData(void) { return (_particlePositions.data()); }
+    inline void *getParticleColorsData(void) { return (_particleColors.data()); }
+    inline void *getParticleSizesData(void) { return (_particleSizes.data()); }
+    inline uint32 getNumberOfAliveParticles(void) { return (_numberOfAliveParticles); }
 
 private:
     uint32 getNextReviveIndex(void);

@@ -142,7 +142,7 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
     TRACE();
     Mesh myMesh;
-    VertexData _vertexData;
+    VertexData _vertexData("");
     vector<VertexAttributeFloat3> position;
     vector<VertexAttributeFloat3> normal;
     vector<VertexAttributeFloat2> texture;
@@ -249,30 +249,39 @@ Texture *Model::loadTexture(aiMaterial* mat, aiTextureType type)
     return (nullptr);
 }
 
-void Model::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 size)
+void Model::updateBufferFloat2(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateBufferFloat2(layoutIndex, data, size);
+        mesh.updateBufferFloat2(layoutIndex, data, numberOfUpdates);
     }
 }
 
-void Model::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 size)
+void Model::updateBufferFloat3(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateBufferFloat3(layoutIndex, data, size);
+        mesh.updateBufferFloat3(layoutIndex, data, numberOfUpdates);
     }
 }
 
-void Model::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 size)
+void Model::updateBufferFloat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
     for (auto& mesh : _meshes)
     {
-        mesh.updateBufferMat4(layoutIndex, data, size);
+        mesh.updateBufferFloat4(layoutIndex, data, numberOfUpdates);
+    }
+}
+
+void Model::updateBufferMat4(uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
+{
+    TRACE();
+    for (auto& mesh : _meshes)
+    {
+        mesh.updateBufferMat4(layoutIndex, data, numberOfUpdates);
     }
 }
 

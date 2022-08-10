@@ -26,7 +26,7 @@ public:
     typedef typename Matrix<T, 1, LENGTH>::const_iterator   const_iterator;
 
 public:
-    Vector() = default;
+    Vector() { for (unsigned int i = 0; i < LENGTH; ++i) _data(0, i) = static_cast<T>(0); }
     Vector(T* v): _data(v) { }
     explicit Vector(const Matrix<T, 1, LENGTH> &m):  _data(m) { }
     template<typename... Args, typename enable_if<sizeof...(Args) == LENGTH, bool>::type = true>

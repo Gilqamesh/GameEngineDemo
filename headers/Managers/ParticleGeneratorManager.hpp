@@ -52,10 +52,12 @@ public:
 
     Particle& getParticle(GeneratorId generatorId);
 
-    const vector<Particle> &getParticles(GeneratorId generatorId) const;
-
     // temporary while making instancing work for particle generators
     const string &getGeneratorModelName(GeneratorId generatorId);
+    void *getParticlePositionsData(GeneratorId generatorId);
+    void *getParticleColorsData(GeneratorId generatorId);
+    void *getParticleSizesData(GeneratorId generatorId);
+    uint32 getNumberOfAliveParticles(GeneratorId generatorId);
 
     void update(GeneratorId generatorId, float deltaTime);
 

@@ -33,7 +33,7 @@ public:
     typedef typename array<T, ROWS * COLUMNS>::const_iterator const_iterator;
     
 public:
-    Matrix() = default;
+    Matrix() : _data{} {}
     Matrix(T* a)
     {
         for (unsigned int i = 0; i < ROWS * COLUMNS; ++i)

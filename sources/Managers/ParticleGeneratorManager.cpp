@@ -78,16 +78,34 @@ Particle& ParticleGeneratorManager::getParticle(GeneratorId generatorId)
     return (_generatorParameters[generatorId].particle);
 }
 
-const vector<Particle> &ParticleGeneratorManager::getParticles(GeneratorId generatorId) const
-{
-    TRACE();
-    return (_generatorParameters.at(generatorId).particleGenerator->getParticles());
-}
-
 const string &ParticleGeneratorManager::getGeneratorModelName(GeneratorId generatorId)
 {
     TRACE();
     return (_generatorParameters[generatorId].model->getName());
+}
+
+void *ParticleGeneratorManager::getParticlePositionsData(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].particleGenerator->getParticlePositionsData());
+}
+
+void *ParticleGeneratorManager::getParticleColorsData(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].particleGenerator->getParticleColorsData());
+}
+
+void *ParticleGeneratorManager::getParticleSizesData(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].particleGenerator->getParticleSizesData());
+}
+
+uint32 ParticleGeneratorManager::getNumberOfAliveParticles(GeneratorId generatorId)
+{
+    TRACE();
+    return (_generatorParameters[generatorId].particleGenerator->getNumberOfAliveParticles());
 }
 
 void ParticleGeneratorManager::update(GeneratorId generatorId, float deltaTime)

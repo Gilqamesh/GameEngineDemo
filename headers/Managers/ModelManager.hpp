@@ -164,9 +164,10 @@ public:
      * Caller's responsibility:
      *      - Only call these functions if the specific Buffer Object is dynamically set
      */
-    void updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 size);
-    void updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 size);
-    void updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 size);
+    void updateBufferFloat2(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferFloat3(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferFloat4(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
+    void updateBufferMat4(Entity model, uint32 layoutIndex, const void *data, uint32 numberOfUpdates);
     void updateIBO(Entity model, const void *data, GLuint count);
 };
 

@@ -10,6 +10,7 @@
 #include "ECS/Components/RotationalComponent2D.hpp"
 #include "ECS/Components/ColorComponent.hpp"
 #include "ECS/Systems/CollisionSystem2D.hpp"
+#include "ParticleTransforms/ExplosionParticleTransform.hpp"
 #include "Inputs/GLFWInput.hpp"
 
 namespace GilqEngine
@@ -71,15 +72,15 @@ void CollisionDevLayer::onAttach()
     _objectCoordinator.attachComponent<SizeComponent2D>(_mouseRect, _mouseRectangle.size);
     _objectCoordinator.hideEntity(_mouseRect);
 
-    Entity idk = _objectCoordinator.createModel2D("RedRectangleModel", "TextureShader");
-    _objectCoordinator.attachComponent<SizeComponent2D>(idk, { 300.0f, 300.0f });
-
+    _objectCoordinator.addParticleTransform<ExplosionParticleTransform>("ExplosionTransform");
     _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
         "ParticleModel",
         "ParticleShader",
-        2, 1.0f);
+        100, 2.0f,
+        "ExplosionTransform");
     _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
         { _mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f });
+    _objectCoordinator.updateGeneratorSpawnRate(_mouseParticleGenerator, 10);
 }
 
 void CollisionDevLayer::onDetach()
@@ -103,7 +104,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
         _lineStart,
         mousePos
     };
-    _objectCoordinator.updateBufferFloat2(_line, 0, line.data(), line.size() * sizeof(line[0]));
+    _objectCoordinator.updateBufferFloat2(_line, 0, line.data(), line.size());
 
     Vector<float, 2> contactPoint;
     Vector<float, 2> contactNormal;
@@ -155,7 +156,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     {
         _objectCoordinator.showEntity(_circle);
         _objectCoordinator.showEntity(_normalLine);
-        _objectCoordinator.updateBufferFloat2(_normalLine, 0, normalLine.data(), normalLine.size() * sizeof(normalLine[0]));
+        _objectCoordinator.updateBufferFloat2(_normalLine, 0, normalLine.data(), normalLine.size());
     }
     else
     {
@@ -231,7 +232,7 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&circleMeshPrimitive, "WhiteCircleModel", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel1", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel2", "NullMaterial");
-    _objectCoordinator.loadModel(&particleQuadMeshPrimitive2DTexture, "ParticleModel", "GrassMaterial");
+    _objectCoordinator.loadModel(&particleQuadMeshPrimitive2DTexture, "ParticleModel", "WhiteMaterial");
 }
 
 void CollisionDevLayer::registerSystems(void)

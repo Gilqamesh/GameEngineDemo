@@ -341,20 +341,28 @@ void ObjectCoordinator::startGenerator(GeneratorId generatorId)
 //                                 Own Methods                                //
 // ************************************************************************** //
 
-void ObjectCoordinator::updateBufferFloat2(Entity object, uint32 layoutIndex, const void *data, uint32 size)
+void ObjectCoordinator::updateBufferFloat2(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelManager.updateBufferFloat2(object, layoutIndex, data, size);
+    _modelManager.updateBufferFloat2(object, layoutIndex, data, numberOfUpdates);
 }
-void ObjectCoordinator::updateBufferFloat3(Entity object, uint32 layoutIndex, const void *data, uint32 size)
+
+void ObjectCoordinator::updateBufferFloat3(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelManager.updateBufferFloat3(object, layoutIndex, data, size);
+    _modelManager.updateBufferFloat3(object, layoutIndex, data, numberOfUpdates);
 }
-void ObjectCoordinator::updateBufferMat4(Entity object, uint32 layoutIndex, const void *data, uint32 size)
+
+void ObjectCoordinator::updateBufferFloat4(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
 {
     TRACE();
-    _modelManager.updateBufferMat4(object, layoutIndex, data, size);
+    _modelManager.updateBufferFloat4(object, layoutIndex, data, numberOfUpdates);
+}
+
+void ObjectCoordinator::updateBufferMat4(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
+{
+    TRACE();
+    _modelManager.updateBufferMat4(object, layoutIndex, data, numberOfUpdates);
 }
 
 void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
@@ -369,18 +377,14 @@ void ObjectCoordinator::update(float deltaTime)
     for (GeneratorId generatorId : _runningGenerators)
     {
         _particleGeneratorManager.update(generatorId, deltaTime);
-        // const vector<Particle>& particles = _particleGeneratorManager.getParticles(generatorId);
-        // vector<Matrix<float, 4, 4>> modelMatrices;
-        // for (const Particle& particle : particles)
-        // {
-        //     modelMatrices.push_back(scale_matrix(particle.size) * translation_matrix(particle.position));
-        // }
-        // Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
-        // ASSERT(modelMatrices.size());
-        // LOG(modelMatrices.size());
-        // LOG(sizeof(modelMatrices[0]));
-        // LOG(modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
-        // particleModel->updateBufferMat4(modelMatrices.data(), 2, modelMatrices.size() * sizeof(modelMatrices[0]) * sizeof(float));
+        Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
+        uint32 numberOfParticles = _particleGeneratorManager.getNumberOfAliveParticles(generatorId);
+        // Position
+        particleModel->updateBufferFloat2(0, _particleGeneratorManager.getParticlePositionsData(generatorId), numberOfParticles);
+        // Size
+        particleModel->updateBufferFloat2(1, _particleGeneratorManager.getParticleSizesData(generatorId), numberOfParticles);
+        // Color
+        particleModel->updateBufferFloat4(0, _particleGeneratorManager.getParticleColorsData(generatorId), numberOfParticles);
     }
     _modelManager.updateSystems(deltaTime);
 }
@@ -388,10 +392,13 @@ void ObjectCoordinator::update(float deltaTime)
 void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
 {
     TRACE();
+    // GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
     for (GeneratorId generatorId : _runningGenerators)
     {
         _particleGeneratorManager.draw(generatorId, projection);
     }
+    // how to restore to previous blending function state?
+    // GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
     for (auto &entity : _aliveEntities)
     {
         Shader *shader = _modelManager.getShader(entity);

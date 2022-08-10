@@ -31,7 +31,7 @@ void DefaultParticleTransform::updateTransformFunction(float deltaTime, Particle
     particle.life -= deltaTime;
     if (particle.life > 0.0f)
     {
-        particle.position -= particle.velocity * deltaTime;
+        particle.position += particle.velocity * deltaTime;
         particle.color[3] -= deltaTime * 2.5f;
     }
 }

@@ -4,7 +4,8 @@ namespace GilqEngine
 {
 
 Particle::Particle()
-    : life(0.0f)
+    : color(1.0f, 1.0f, 1.0f, 1.0f),
+      life(0.0f)
 {
     
 }
