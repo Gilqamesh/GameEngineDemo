@@ -18,7 +18,8 @@ namespace GilqEngine
 
 CollisionDevLayer::CollisionDevLayer(MacWindow *window)
     : ILayer("QuadTree Layer", LayerType::overlay),
-      _window(window)
+      _window(window),
+      _objectCoordinator(window)
 {
 
 }
@@ -70,13 +71,13 @@ void CollisionDevLayer::onAttach()
     _objectCoordinator.attachComponent<VelocityComponent2D>(_mouseRect, {});
     _objectCoordinator.attachComponent<PositionComponent2D>(_mouseRect, _mouseRectangle.position);
     _objectCoordinator.attachComponent<SizeComponent2D>(_mouseRect, _mouseRectangle.size);
-    _objectCoordinator.hideEntity(_mouseRect);
+    // _objectCoordinator.hideEntity(_mouseRect);
 
     _objectCoordinator.addParticleTransform<ExplosionParticleTransform>("ExplosionTransform");
     _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
         "ParticleModel",
         "ParticleShader",
-        100, 2.0f,
+        50, 2.0f,
         "ExplosionTransform");
     _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
         { _mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f });
@@ -121,21 +122,41 @@ void CollisionDevLayer::onUpdate(float deltaTime)
     
     bool showCircle = false;
     vector<Vector<float, 2>> normalLine;
+    // add rectangles that falls in the extended the mouse rectangle (based on its velocity)
+    RectangleColliderComponent extendedMouseRectangle = extendRectangle(_mouseRectangle, prevVelocity.v, deltaTime);
+    vector<RectangleColliderComponent> testedRectangles;
     for (uint32 i = 0; i < _rectangles.size(); ++i)
     {
-        if (_mouseRectangle.dynamicRecIntersect(prevVelocity.v, _rectangles[i], contactPoint, contactNormal, tHitNear, deltaTime))
+        if (extendedMouseRectangle.doesRecIntersect(_rectangles[i]))
+        {
+            testedRectangles.push_back(_rectangles[i]);
+        }
+    }
+
+    // sort the tested rectangles based on their distance from the mouse rectangle (their collision will be resolved in that order)
+    sort(testedRectangles.begin(), testedRectangles.end(), [&](const RectangleColliderComponent& l, const RectangleColliderComponent& r){
+        float leftLengthSq =  magnitudeSq(l.position - _mouseRectangle.position);
+        float rightLengthSq =  magnitudeSq(r.position - _mouseRectangle.position);
+    
+        return (leftLengthSq < rightLengthSq);
+    });
+
+    // resolve the collisions against the tested rectangles
+    for (uint32 i = 0; i < testedRectangles.size(); ++i)
+    {
+        if (_mouseRectangle.dynamicRecIntersect(prevVelocity.v, testedRectangles[i], contactPoint, contactNormal, tHitNear, deltaTime))
         {
             // stop & slide
             prevVelocity.v += element_wise_multiply(contactNormal, element_wise_abs(prevVelocity.v)) * (1.0f - tHitNear);
         }
 
         // mouseRay collision with rect
-        if (_rectangles[i].doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
+        if (testedRectangles[i].doesRayIntersect(_lineStart, mousePos - _lineStart, contactPoint, contactNormal, tHitNear) && tHitNear < 1.0f)
         {
             _objectCoordinator.updateComponent<ColorComponent>(_rects[i], Vector<float, 4>(1.0f, 1.0f, 0.0f, 1.0f));
             if (showCircle == false)
             {
-                showCircle |= true;
+                showCircle = true;
                 _objectCoordinator.showEntity(_circle);
                 _objectCoordinator.updateComponent<PositionComponent2D>(_circle, contactPoint);
                 _objectCoordinator.updateFloat2("CircleShader", "origin", contactPoint);
@@ -170,8 +191,7 @@ void CollisionDevLayer::onUpdate(float deltaTime)
 
 void CollisionDevLayer::onRender()
 {
-    Matrix<float, 4, 4> projection = projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f);
-    _objectCoordinator.drawObjects2D(projection);
+    _objectCoordinator.drawObjects2D();
 }
 
 void CollisionDevLayer::loadShaders(void)
@@ -233,6 +253,7 @@ void CollisionDevLayer::loadModels(void)
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel1", "NullMaterial");
     _objectCoordinator.loadModel(&lineMeshPrimitive, "LineModel2", "NullMaterial");
     _objectCoordinator.loadModel(&particleQuadMeshPrimitive2DTexture, "ParticleModel", "WhiteMaterial");
+
 }
 
 void CollisionDevLayer::registerSystems(void)

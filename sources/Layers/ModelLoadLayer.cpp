@@ -29,7 +29,8 @@ ModelLoadLayer::ModelLoadLayer(MacWindow *macWindow, ICamera *camera)
         (float)_macWindow->getWidth() / (float)_macWindow->getHeight(),
         0.1f,
         1000.0f
-    ))
+    )),
+    _objectCoordinator(_macWindow)
 {
     TRACE();
 }

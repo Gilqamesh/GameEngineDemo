@@ -18,6 +18,7 @@
 # include "ECS/Components/PositionComponent3D.hpp"
 # include "ECS/Components/ColorComponent.hpp"
 # include "ECS/Components/SizeComponent2D.hpp"
+# include "Windows/MacWindow.hpp"
 
 namespace GilqEngine
 {
@@ -30,6 +31,7 @@ ShaderManager            _shaderManager;
 TextureManager           _textureManager;
 ModelManager             _modelManager;
 ParticleGeneratorManager _particleGeneratorManager;
+MacWindow                *_window;
 
 unordered_set<Entity, hash<int>>   _aliveEntities;
 // NOTE(david): Currently I don't technically need this as the caller knows the Entities to set alive
@@ -43,7 +45,7 @@ DirectionalLightSourceSystem *_directionalLightSourceSystem;
 PointLightSourceSystem       *_pointLightSourceSystem;
 SpotLightSourceSystem        *_spotLightSourceSystem;
 public:
-    ObjectCoordinator();
+    ObjectCoordinator(MacWindow *macWindow);
     ~ObjectCoordinator();
 
     // ************************************************************************** //
@@ -252,7 +254,13 @@ public:
      */
     void update(float deltaTime);
 
-    /*
+    /**
+     * 2D Renderer
+     */
+    void drawObjects2D(void);
+
+    /**
+     * 3D Renderer
      * 1. Draw opaque objects
      * 2. Sort all transparent objects based on their distance from camera
      * 3. Draw all transparent objects in sorted order
@@ -261,11 +269,6 @@ public:
         const Vector<float, 3> &cameraPosition, // there should be a camera position component that updates for all opaque objects
         const Matrix<float, 4, 4> &view,
         const Matrix<float, 4, 4> &projection);
-
-    /*
-     * Render 2D objects
-     */
-    void drawObjects2D(const Matrix<float, 4, 4>& projection);
 
     /*
      * Destroys all entities

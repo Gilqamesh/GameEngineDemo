@@ -80,13 +80,22 @@ Vector<T, LENGTH> average(const vector<Vector<T, LENGTH>> &vectors)
 }
 
 template <typename T, unsigned int LENGTH>
-T magnitude(const Vector<T, LENGTH> &v)
+T magnitudeSq(const Vector<T, LENGTH>& v)
 {
-    T   r(0);
+    T r(0);
 
     for (unsigned int i = 0; i < LENGTH; ++i)
+    {
         r += v[i] * v[i];
-    return (sqrt(r));
+    }
+
+    return (r);
+}
+
+template <typename T, unsigned int LENGTH>
+T magnitude(const Vector<T, LENGTH> &v)
+{
+    return (sqrt(magnitudeSq(v)));
 }
 
 // returns scalar of projecting vector v1 onto v2

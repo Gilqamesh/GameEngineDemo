@@ -18,6 +18,18 @@ RectangleColliderComponent::RectangleColliderComponent(Vector<float, 2> position
     
 }
 
+RectangleColliderComponent extendRectangle(const RectangleColliderComponent& rect, Vector<float, 2> velocity, float dt)
+{
+    RectangleColliderComponent result(rect);
+
+    result.position += velocity * dt;
+    result.size += element_wise_abs(result.position - rect.position);
+    result.position[0] = min(result.position[0], rect.position[0]);
+    result.position[1] = min(result.position[1], rect.position[1]);
+
+    return (result);
+}
+
 bool RectangleColliderComponent::doesRayIntersect(
     Vector<float, 2> rayOrigin,
     Vector<float, 2> rayDirection,

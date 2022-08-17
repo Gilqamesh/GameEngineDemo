@@ -2,18 +2,18 @@
 # define QUADTREELAYER_HPP
 
 # include "Interfaces/ILayer.hpp"
-# include "Interfaces/IWindow.hpp"
 # include "Managers/ObjectCoordinator.hpp"
+# include "Windows/MacWindow.hpp"
 
 namespace GilqEngine
 {
 
 class QuadTreeLayer : public ILayer
 {
-    IWindow           *_window;
+    MacWindow         *_window;
     ObjectCoordinator _objectCoordinator;
 public:
-    QuadTreeLayer(IWindow *macWindow);
+    QuadTreeLayer(MacWindow *macWindow);
     virtual void onAttach() override;
     virtual void onDetach() override;
     virtual void onEvent(IEvent &e) override;

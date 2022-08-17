@@ -6,6 +6,12 @@
 namespace GilqEngine
 {
 
+struct BlendFuncParams
+{
+    GLenum sfactor;
+    GLenum dfactor;
+};
+
 class MacWindow : public IWindow
 {
 GLFWwindow *_window;
@@ -21,6 +27,7 @@ struct MacWindowProps
     float               previousMouseY;
     float               xMouseChange;
     float               yMouseChange;
+    BlendFuncParams     blendingParameters;
 } _windowProps;
 public:
     MacWindow(const MacWindowProps &windowProps = MacWindowProps());
@@ -41,9 +48,18 @@ public:
 
     virtual inline bool isVSync() override { return (_windowProps.VSync); }
 
-    inline void enableBlending() const { GLCall(glEnable(GL_BLEND)); setDefaultBlending(); }
-    inline void setDefaultBlending() const { setBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA); }
-    inline void setBlendFunc(GLenum sfactor, GLenum dfactor) const { GLCall(glBlendFunc(sfactor, dfactor)); }
+    inline void enableBlending() { GLCall(glEnable(GL_BLEND)); setDefaultBlending(); }
+    inline void setDefaultBlending() { setBlendFunc(GL_SRC_COLOR, GL_ONE_MINUS_SRC_ALPHA); }
+    inline void setBlendFunc(GLenum sfactor, GLenum dfactor) {
+        _windowProps.blendingParameters.sfactor = sfactor;
+        _windowProps.blendingParameters.dfactor = dfactor;
+        GLCall(glBlendFunc(sfactor, dfactor));
+    }
+    inline void setBlendFunc(BlendFuncParams blendFuncParams) {
+        _windowProps.blendingParameters = blendFuncParams;
+        GLCall(glBlendFunc(blendFuncParams.sfactor, blendFuncParams.dfactor));
+    }
+    inline BlendFuncParams getBlendParams(void) const { return (_windowProps.blendingParameters); }
 
     inline void disableBlending() const { GLCall(glDisable(GL_BLEND)); }
 

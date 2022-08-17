@@ -25,5 +25,5 @@ make a particle generator attachable to an entity
 fix vsync (deltaTime varies a lot)
 set the size of the dynamic vertex buffer when creating the particle generator by having an additional parameter for the primitive generator or just use a different method all together for the primitive creation
 
-Problems:
+Notes:
 Need different loaded model instances if we want to update the model's meshes dynamically, in this case they can't be shared

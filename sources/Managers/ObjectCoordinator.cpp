@@ -4,7 +4,8 @@
 namespace GilqEngine
 {
 
-ObjectCoordinator::ObjectCoordinator()
+ObjectCoordinator::ObjectCoordinator(MacWindow *macWindow)
+    : _window(macWindow)
 {
     TRACE();
     _modelManager.setMaterialManager(&_materialManager);
@@ -389,16 +390,18 @@ void ObjectCoordinator::update(float deltaTime)
     _modelManager.updateSystems(deltaTime);
 }
 
-void ObjectCoordinator::drawObjects2D(const Matrix<float, 4, 4>& projection)
+void ObjectCoordinator::drawObjects2D(void)
 {
     TRACE();
-    // GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE));
+    Matrix<float, 4, 4> projection = projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f);
+    // BlendFuncParams prevBlendParams = _window->getBlendParams();
+    // For glow effect (GL_ONE - additive) when particles are stacked on onto each other
+    // _window->setBlendFunc(GL_SRC_ALPHA, GL_ONE);
     for (GeneratorId generatorId : _runningGenerators)
     {
         _particleGeneratorManager.draw(generatorId, projection);
     }
-    // how to restore to previous blending function state?
-    // GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+    // _window->setBlendFunc(prevBlendParams);
     for (auto &entity : _aliveEntities)
     {
         Shader *shader = _modelManager.getShader(entity);

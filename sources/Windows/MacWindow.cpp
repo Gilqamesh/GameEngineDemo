@@ -24,6 +24,8 @@ MacWindow::MacWindowProps::MacWindowProps()
     VSync = false;
     xMouseChange = 0;
     yMouseChange = 0;
+    blendingParameters.sfactor = 0;
+    blendingParameters.dfactor = 0;
 }
 
 MacWindow::MacWindow(const MacWindowProps &windowProps)

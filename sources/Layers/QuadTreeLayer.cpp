@@ -9,9 +9,10 @@
 namespace GilqEngine
 {
 
-QuadTreeLayer::QuadTreeLayer(IWindow *window)
+QuadTreeLayer::QuadTreeLayer(MacWindow *window)
     : ILayer("QuadTree Layer", LayerType::overlay),
-      _window(window)
+      _window(window),
+      _objectCoordinator(window)
 {
 
 }
@@ -105,8 +106,7 @@ void QuadTreeLayer::onUpdate(float deltaTime)
 
 void QuadTreeLayer::onRender()
 {
-    _objectCoordinator.drawObjects2D(
-        projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f));
+    _objectCoordinator.drawObjects2D();
 }
 
 void QuadTreeLayer::loadShaders(void)

@@ -13,7 +13,8 @@ namespace GilqEngine
 
 BytecodeLayer::BytecodeLayer(MacWindow *window)
     : ILayer("Bytecode Layer", LayerType::overlay),
-    _window(window)
+      _window(window),
+      _objectCoordinator(window)
 {
 
 }

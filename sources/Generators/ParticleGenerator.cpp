@@ -14,6 +14,8 @@ ParticleGenerator::ParticleGenerator(uint32 maxNewParticlesPerFrame, float maxLi
     
     // (TARGET_FPS + 5) so that the particle pool is a little bit larger than necessary
     _particles.assign(static_cast<uint32>(ceil(maxLifeTime)) * maxNewParticlesPerFrame * (TARGET_FPS + 5), Particle());
+    LOG("Particle pool size: " << _particles.size());
+    ASSERT(_particles.size() < 10000);
     for (const Particle& particle : _particles)
     {
         _particlePositions.push_back(particle.position);
@@ -37,17 +39,20 @@ void ParticleGenerator::update(
     }
 
     _numberOfAliveParticles = 0;
+    uint32 lastDrawnParticleIndex = 0;
     for (uint32 i = 0; i < _particles.size(); ++i)
     {
         particleTransform->updateTransformFunction(deltaTime, _particles[i]);
         if (_particles[i].life > 0.0f && _particles[i].color[3] >= 0.0f)
         {
+            lastDrawnParticleIndex = i;
             _particlePositions[_numberOfAliveParticles] = _particles[i].position;
             _particleColors[_numberOfAliveParticles] = _particles[i].color;
             _particleSizes[_numberOfAliveParticles] = _particles[i].size;
             ++_numberOfAliveParticles;
         }
     }
+    LOG("Last drawn particle index: " << lastDrawnParticleIndex);
 }
 
 void ParticleGenerator::draw(

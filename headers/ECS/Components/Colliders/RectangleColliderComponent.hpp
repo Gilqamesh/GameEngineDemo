@@ -44,6 +44,12 @@ struct RectangleColliderComponent
 
 ostream &operator<<(ostream &os, const RectangleColliderComponent &a);
 
+/**
+ * Extend the parameters of this rectangle based on its velocity - velocity isnt stored as part of the collider
+ * NOTE(david): maybe it should be stored?
+ */
+RectangleColliderComponent extendRectangle(const RectangleColliderComponent& rect, Vector<float, 2> velocity, float dt);
+
 }
 
 #endif
