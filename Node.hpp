@@ -11,35 +11,37 @@ enum NodeOrientation
     vertical
 };
 
+class NodeAllocator;
+
 /**
  * 608 bits = 76 bytes
  */
 struct Node
 {
     array<u32, NODE_LIMIT> _rectangleIndices;
-
-    /**
-     * 0 - NW
-     * 1 - NE
-     * 2 - SW
-     * 3 - SE
-     */
     array<i32, NUMBER_OF_CHILDREN> _children;
 
     u32         _curNumberOfRectangles;
     Rectangle   _nodeBound;
     i32         _nodeIndex;
+    i32         _parentNodeIndex;
+    b32         _isLeaf;
     
     NodeOrientation _orientation;
 
-    Node();
-    Node(const Node& that);
-    Node& operator=(const Node& that);
+    NodeAllocator     *_nodeAllocator;
+    vector<Rectangle> *_rectangles;
 
     /**
      * Assumes that the rectangle can be inserted in the current bound
      */
     void insert(u32 rectangleIndex);
+
+    /**
+     * Checks if all the rectangles are still in the node
+     * Optionally inserts another rectangle
+     */
+    void reconstruct(i32 potentialRectangleIndex = -1);
 
     u32 checkIntersections(void) const;
 

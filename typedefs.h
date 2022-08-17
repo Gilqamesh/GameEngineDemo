@@ -12,13 +12,19 @@ using namespace std;
 # define LOG(x) (cout << x << endl)
 # define LINE() (LOG(__LINE__ << " " << __FILE__))
 
-# define ASSERT(x) {\
+// # define NDEBUG
+
+# ifndef NDEBUG
+#  define ASSERT(x) {\
     if (!(x)){\
         LOG("!!!!!!!!!!!!!!!!!!!! " << #x << " !!!!!!!!!!!!!!!!!!!!");\
         LINE();\
         exit(1);\
     }\
 }
+# else
+#  define ASSERT(x)
+# endif
 
 typedef int8_t  i8;
 typedef int16_t i16;
