@@ -7,16 +7,15 @@
 
 struct NodeAllocator
 {
-    array<Node, NODE_POOL_SIZE>  _nodes;
-    array<u32, NODE_POOL_SIZE>   _availableNodes;
-    i32                          _curAvailableIndex;
-    vector<Rectangle>            *_rectangles;
+    array<Node, NODE_POOL_SIZE>                             _nodes;
+    array<u32, NODE_POOL_SIZE>                              _availableNodes;
+    i32                                                     _curAvailableIndex;
 
     typedef array<Node, NODE_POOL_SIZE>::iterator iterator;
 
-    NodeAllocator(vector<Rectangle> *rectangles);
+    NodeAllocator();
 
-    Node *allocateNode(const Rectangle& nodeBound, NodeOrientation orientation, i32 parentNodeIndex);
+    Node *allocateNode(const Rectangle& nodeBound, NodeOrientation orientation);
     void deleteNode(Node *node);
 
     Node *getNode(u32 nodeIndex);

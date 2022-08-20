@@ -1,39 +1,54 @@
 #include "Node.hpp"
 #include "NodeAllocator.hpp"
 
-void Node::insert(u32 rectangleIndex)
-{
-    if (_isLeaf == true)
-    {
-        if (_curNumberOfRectangles < NODE_LIMIT)
-        {
-            _rectangleIndices[_curNumberOfRectangles++] = rectangleIndex;
-            return ;
-        }
-        subdivide();
-    }
+extern vector<Rectangle> rectangles;
 
-    for (u32 iteration = 0;
-         iteration < NUMBER_OF_CHILDREN;
-         ++iteration)
+void Node::insert(u32 rectangleIndex, NodeAllocator &nodeAllocator)
+{
+    array<pair<Node*, u32>, 100> nodeQueue;
+    u32 nodeQueueIndex = 0;
+    nodeQueue[nodeQueueIndex].first = this;
+    nodeQueue[nodeQueueIndex].second = rectangleIndex;
+    ++nodeQueueIndex;
+    while (nodeQueueIndex > 0)
     {
-        if (isChildValid(iteration))
+        pair<Node*, u32> nodePair = nodeQueue[--nodeQueueIndex];
+        Node *node = nodePair.first;
+        u32 insertedRecIndex = nodePair.second;
+        if (node->_isLeaf == true)
         {
-            Node *node = _nodeAllocator->getNode(_children[iteration]);
-            if (node->_nodeBound.doesRecIntersect((*_rectangles)[rectangleIndex]))
+            if (node->_curNumberOfRectangles < NODE_LIMIT)
             {
-                node->insert(rectangleIndex);
+                node->_rectangleIndices[node->_curNumberOfRectangles++] = insertedRecIndex;
+                continue ;
+            }
+            subdivide(nodeQueue, nodeQueueIndex, node, nodeAllocator);
+        }
+
+        for (u32 iteration = 0;
+            iteration < NUMBER_OF_CHILDREN;
+            ++iteration)
+        {
+            if (node->isChildValid(iteration))
+            {
+                Node *child = nodeAllocator.getNode(node->_children[iteration]);
+                if (child->_nodeBound.doesRecIntersect(rectangles[insertedRecIndex]))
+                {
+                    nodeQueue[nodeQueueIndex].first = child;
+                    nodeQueue[nodeQueueIndex].second = insertedRecIndex;
+                    ++nodeQueueIndex;
+                }
             }
         }
     }
 }
 
-u32 Node::checkIntersections(void) const
+u32 Node::checkIntersections(NodeAllocator &nodeAllocator) const
 {
     u32 nOfIntersections = 0;
 
-    for (auto it = _nodeAllocator->begin();
-         it != _nodeAllocator->end();
+    for (auto it = nodeAllocator.begin();
+         it != nodeAllocator.end();
          ++it)
     {
         if (it->_nodeIndex >= 0)
@@ -48,7 +63,7 @@ u32 Node::checkIntersections(void) const
                 for (u32 j = i + 1; j < curNumberOfRectangles; ++j)
                 {
                     auto& rectangleIndices = it->_rectangleIndices;
-                    if ((*_rectangles)[rectangleIndices[i]].doesRecIntersect((*_rectangles)[rectangleIndices[j]]))
+                    if (rectangles[rectangleIndices[i]].doesRecIntersect(rectangles[rectangleIndices[j]]))
                     {
                         ++nOfIntersections;
                     }
@@ -60,75 +75,93 @@ u32 Node::checkIntersections(void) const
     return (nOfIntersections);
 }
 
-void Node::subdivide(void)
+void Node::subdivide(array<pair<Node*, u32>, 100>& nodeQueue, u32 &nodeQueueIndex, Node *node, NodeAllocator &nodeAllocator)
 {
-    _isLeaf = false;
+    node->_isLeaf = false;
 
     r32 xoffset = 0.0f;
     r32 yoffset = 0.0f;
 
-    for (u32 iteration = 0;
-         iteration < _curNumberOfRectangles;
-         ++iteration)
-    {
-        u32 rectangleIndex = _rectangleIndices[iteration];
-        const Rectangle &rectangle = (*_rectangles)[rectangleIndex];
+    xoffset = node->_nodeBound.width / 2.0f;
+    yoffset = node->_nodeBound.height / 2.0f;
 
-        xoffset = (xoffset * (r32)iteration + rectangle.topLeftX + rectangle.width / 2.0f) / (r32)(iteration + 1);
-        yoffset = (xoffset * (r32)iteration + rectangle.topLeftY + rectangle.height / 2.0f) / (r32)(iteration + 1);
-    }
-    xoffset -= _nodeBound.topLeftX;
-    yoffset -= _nodeBound.topLeftY;
-    if (_nodeBound.isPointInRect(xoffset, yoffset) == false)
-    {
-        xoffset = _nodeBound.width / 2.0f;
-        yoffset = _nodeBound.height / 2.0f;
-    }
+    // for (u32 iteration = 0;
+    //      iteration < node->_curNumberOfRectangles;
+    //      ++iteration)
+    // {
+    //     u32 rectangleIndex = node->_rectangleIndices[iteration];
+    //     const Rectangle &rectangle = rectangles[rectangleIndex];
+
+    //     xoffset = (xoffset * (r32)iteration + rectangle.topLeftX + rectangle.width / 2.0f) / (r32)(iteration + 1);
+    //     yoffset = (xoffset * (r32)iteration + rectangle.topLeftY + rectangle.height / 2.0f) / (r32)(iteration + 1);
+    // }
+    // xoffset -= node->_nodeBound.topLeftX;
+    // yoffset -= node->_nodeBound.topLeftY;
+    // if (node->_nodeBound.isPointInRect(xoffset, yoffset) == false)
+    // {
+    //     xoffset = node->_nodeBound.width / 2.0f;
+    //     yoffset = node->_nodeBound.height / 2.0f;
+    // }
+
+    Rectangle nodeBound = node->_nodeBound;
 
     array<Rectangle, NUMBER_OF_CHILDREN> childBounds = {
-        Rectangle{ _nodeBound.topLeftX,
-                   _nodeBound.topLeftY,
-                   _orientation == horizontal ? xoffset : _nodeBound.width,
-                   _orientation == horizontal ? _nodeBound.height : yoffset },
-        Rectangle{ _nodeBound.topLeftX + (_orientation == horizontal ? xoffset : 0.0f),
-                   _nodeBound.topLeftY + (_orientation == horizontal ? 0.0f : yoffset),
-                   _orientation == horizontal ? xoffset : _nodeBound.width,
-                   _orientation == horizontal ? _nodeBound.height : yoffset}
+        Rectangle{ nodeBound.topLeftX,
+                   nodeBound.topLeftY,
+                   node->_orientation == horizontal ? xoffset : nodeBound.width,
+                   node->_orientation == horizontal ? nodeBound.height : yoffset },
+        Rectangle{ nodeBound.topLeftX + (node->_orientation == horizontal ? xoffset : 0.0f),
+                   nodeBound.topLeftY + (node->_orientation == horizontal ? 0.0f : yoffset),
+                   node->_orientation == horizontal ? xoffset : nodeBound.width,
+                   node->_orientation == horizontal ? nodeBound.height : yoffset}
     };
+    // array<Rectangle, NUMBER_OF_CHILDREN> childBounds = {
+    //     Rectangle{ node->_nodeBound.topLeftX,
+    //                node->_nodeBound.topLeftY,
+    //                node->_orientation == horizontal ? xoffset : node->_nodeBound.width,
+    //                node->_orientation == horizontal ? node->_nodeBound.height : yoffset },
+    //     Rectangle{ node->_nodeBound.topLeftX + (node->_orientation == horizontal ? xoffset : 0.0f),
+    //                node->_nodeBound.topLeftY + (node->_orientation == horizontal ? 0.0f : yoffset),
+    //                node->_orientation == horizontal ? xoffset : node->_nodeBound.width,
+    //                node->_orientation == horizontal ? node->_nodeBound.height : yoffset}
+    // };
 
-    b32 deleteThisNode = false;
     for (u32 iteration = 0;
-         iteration < _curNumberOfRectangles;
+         iteration < node->_curNumberOfRectangles;
          ++iteration)
     {
-        u32 rectangleIndex = _rectangleIndices[iteration];
-        const Rectangle &rectangle = (*_rectangles)[rectangleIndex];
+        u32 rectangleIndex = node->_rectangleIndices[iteration];
+        const Rectangle &rectangle = rectangles[rectangleIndex];
         for (u32 childIndex = 0;
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
         {
             if (childBounds[childIndex].doesRecIntersect(rectangle))
             {
-                Node *node;
-                if (isChildValid(childIndex) == false)
+                Node *childNode;
+                if (node->isChildValid(childIndex) == false)
                 {
-                    node = _nodeAllocator->allocateNode(childBounds[childIndex], _orientation == horizontal ? vertical : horizontal, _nodeIndex);
-                    _children[childIndex] = node->_nodeIndex;
+                    childNode = nodeAllocator.allocateNode(childBounds[childIndex], node->_orientation == horizontal ? vertical : horizontal);
+                    ASSERT(childNode);
+                    node->_children[childIndex] = childNode->_nodeIndex;
                 }
                 else
                 {
-                    node = _nodeAllocator->getNode(_children[childIndex]);
+                    childNode = nodeAllocator.getNode(node->_children[childIndex]);
+                    ASSERT(childNode);
                 }
-                node->insert(rectangleIndex);
+                nodeQueue[nodeQueueIndex].first = childNode;
+                nodeQueue[nodeQueueIndex].second = rectangleIndex;
+                ++nodeQueueIndex;
             }
         }
     }
 }
 
-void Node::printBounds(i32 nodesPrinted) const
+void Node::printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const
 {
-    for (auto it = _nodeAllocator->begin();
-         it != _nodeAllocator->end() && nodesPrinted > 0;
+    for (auto it = nodeAllocator.begin();
+         it != nodeAllocator.end() && nodesPrinted > 0;
          ++it, --nodesPrinted)
     {
         if (it->_nodeIndex >= 0)
