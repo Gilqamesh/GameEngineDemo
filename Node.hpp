@@ -22,15 +22,12 @@ struct Node
     array<i32, NUMBER_OF_CHILDREN> _children;
 
     u32         _curNumberOfRectangles;
-    Rectangle   _nodeBound;
+    Rec   _nodeBound;
     i32         _nodeIndex;
     i32         _parentNodeIndex;
     b32         _isLeaf;
     
     NodeOrientation _orientation;
-
-    NodeAllocator     *_nodeAllocator;
-    vector<Rectangle> *_rectangles;
 
     /**
      * Assumes that the rectangle can be inserted in the current bound

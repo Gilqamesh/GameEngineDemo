@@ -12,7 +12,7 @@ using namespace std;
 # define LOG(x) (cout << x << endl)
 # define LINE() (LOG(__LINE__ << " " << __FILE__))
 
-// # define NDEBUG
+# define NDEBUG
 
 # ifndef NDEBUG
 #  define ASSERT(x) {\

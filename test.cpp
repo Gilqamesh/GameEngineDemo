@@ -1,173 +1,300 @@
-#include <vector>
 #include <iostream>
+#include <random>
+#include <ctime>
+#include <algorithm>
+#include <vector>
 #include <cstddef>
 
 using namespace std;
 
-typedef int8_t i8;
+# define LOG(x) (cout << x << endl)
+# define LINE() (LOG(__LINE__ << " " << __FILE__))
+
+// # define NDEBUG
+
+# ifndef NDEBUG
+#  define ASSERT(x) {\
+    if (!(x)){\
+        LOG("!!!!!!!!!!!!!!!!!!!! " << #x << " !!!!!!!!!!!!!!!!!!!!");\
+        LINE();\
+        exit(1);\
+    }\
+}
+# else
+#  define ASSERT(x)
+# endif
+
+typedef int8_t  i8;
 typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
-typedef i32 b32;
+typedef i32     b32;
 
-typedef uint8_t u8;
+typedef uint8_t  u8;
 typedef uint16_t u16;
 typedef uint32_t u32;
 typedef uint64_t u64;
 
-typedef float r32;
+typedef float  r32;
 typedef double r64;
 
-struct Rectangle
-{
-    r32 topLeftX;
-    r32 topLeftY;
-    r32 width;
-    r32 height;
+#if 0
+# define WINDOWS
+#endif
 
-    inline bool doesRecIntersect(const Rectangle& that) const
+#if defined(WINDOWS)
+#include <Windows.h>
+#endif
+
+#define LOG(x) (cout << x << endl)
+
+#define GRID_REC_LIMIT 64
+#define DIVISION_PER_AXIS 128
+#define NUMBER_OF_INSERTIONS 100000
+
+struct Rec
+{
+    u32 XY;
+    u16 WH;
+
+    inline b32 doesRecIntersect(Rec that) const
     {
-        return (topLeftX < that.topLeftX + that.width && that.topLeftX < topLeftX = width &&
-                topLeftY < that.topLeftY + that.height && that.topLeftY < topLeftY = height);
+        u16 x = (u16)(XY >> 16);
+        u16 y = (u16)XY;
+        u8 w = (u8)(WH >> 8);
+        u8 h = (u8)WH;
+        return (x < (u16)(that.XY >> 16) + (u8)(that.WH >> 8) && (u16)(that.XY >> 16) < x + w &&
+                y < (u16)(that.XY) + (u8)that.WH && (u16)(that.XY) < y + h);
     }
 };
 
-class QuadTree
+Rec spaceBound = { 0.0f, 0.0f, 2048.0f, 1024.0f };
+
+ostream &operator<<(ostream &os, Rec rec)
 {
-    QuadTreeNode _root;
-};
+    os << rec.x << " " << rec.y << " " << rec.w << " " << rec.h;
 
-class QuadTreeNode
-{
-    vector<Entity> _rectangleIndices;
-    const u8 _nodeCapacity;
-
-    RectangleColliderComponent _boundary;
-    
-    float _dt;
-
-    QuadTree *_northWest;
-    QuadTree *_northEast;
-    QuadTree *_southWest;
-    QuadTree *_southEast;
-
-    Coordinator *_coordinator;
-public:
-    QuadTree(
-        const RectangleColliderComponent& boundary,
-        uint8 nodeCapacity,
-        Coordinator *coordinator,
-        float dt);
-    ~QuadTree();
-
-    bool insert(Entity rectangleIndex);
-    uint32 checkIntersections(void);
-
-private:
-    void subdivide(void);
-};
-
-QuadTree::QuadTree(
-    const RectangleColliderComponent& boundary,
-    uint8 _nodeCapacity,
-    Coordinator *coordinator,
-    float dt)
-    : _nodeCapacity(_nodeCapacity),
-      _boundary(boundary),
-      _dt(dt),
-      _northWest(nullptr),
-      _northEast(nullptr),
-      _southWest(nullptr),
-      _southEast(nullptr),
-      _coordinator(coordinator)
-{
-
+    return (os);
 }
 
-QuadTree::~QuadTree()
+inline r32 getRand(r32 low, r32 high)
 {
-    if (_northWest)
-    {
-        delete _northWest;
-        delete _northEast;
-        delete _southWest;
-        delete _southEast;
-    }
+    static random_device dev;
+    static mt19937 rng(dev());
+    uniform_real_distribution<r32> dist(low, high);
+    return (dist(rng));
 }
 
-bool QuadTree::insert(Entity rectangleIndex)
+struct Grid
 {
-    // extended rectangle based on next and current position
-    RectangleColliderComponent extendedRectangle = _coordinator->getComponent<RectangleColliderComponent>(rectangleIndex);
-    VelocityComponent2D velocity = _coordinator->getComponent<VelocityComponent2D>(rectangleIndex);
-    PositionComponent2D nextPosition = extendedRectangle.position + velocity.v * _dt;
-    extendedRectangle.size += element_wise_abs(nextPosition.p - extendedRectangle.position);
-    extendedRectangle.position[0] = min(extendedRectangle.position[0], nextPosition.p[0]);
-    extendedRectangle.position[1] = min(extendedRectangle.position[1], nextPosition.p[1]);
+    Grid() : numberOfRecs(0) {}
+    Rec rectangles[GRID_REC_LIMIT];
+    u32 numberOfRecs;
+};
 
-    if (_boundary.doesRecIntersect(extendedRectangle) == false)
+struct GridSpace
+{
+    GridSpace(Rec bound)
+        : grids(DIVISION_PER_AXIS * DIVISION_PER_AXIS, Grid()),
+          bound(bound),
+          curSwapIndex(0)
     {
-        return (false);
     }
 
-    if (_northWest == nullptr)
+    vector<Grid> grids;
+    Rec bound;
+    u32 curSwapIndex;
+
+    /**
+     * @brief inserts rec into the grids, assumes that the rec can be inserted
+     */
+    void insert(Rec rec)
     {
-        if (_rectangleIndices.size() < _nodeCapacity)
+        u8 gridWidth = (u8)(((u16)bound.XY << 16 + (u16)(bound.WH << 8)) / DIVISION_PER_AXIS);
+        u8 gridHeight = (u8)(((u16)bound.XY + (u16)(u8)bound.WH) / DIVISION_PER_AXIS);
+        u32 startGridX = (rec.XY < 0 ? 0 : (u32)(u16)(rec.XY >> 16) / (u32)gridWidth);
+        u32 startGridY = (rec.y < 0 ? 0 : (u32)(u16)rec.XY / (u32)gridHeight);
+        u32 endGridX = (rec.x + rec.w > bound.x + bound.w ? DIVISION_PER_AXIS - 1 : (rec.x + rec.w) / gridWidth);
+        u32 endGridY = (rec.y + rec.h > bound.y + bound.h ? DIVISION_PER_AXIS - 1 : (rec.y + rec.h) / gridHeight);
+
+        for (u32 row = startGridX;
+             row <= endGridX;
+             ++row)
         {
-            _rectangleIndices.push_back(rectangleIndex);
-            return (true);
-        }
-        subdivide();
-    }
-
-    _northWest->insert(rectangleIndex);
-    _northEast->insert(rectangleIndex);
-    _southWest->insert(rectangleIndex);
-    _southEast->insert(rectangleIndex);
-
-    return (false);
-}
-
-void QuadTree::subdivide()
-{
-    Vector<float, 2> halfSize(_boundary.size / 2.0f);
-    _northWest = new QuadTree({_boundary.position, halfSize}, _nodeCapacity, _coordinator, _dt);
-    _northEast = new QuadTree({Vector<float, 2>(_boundary.position[0] + halfSize[0], _boundary.position[1]), halfSize}, _nodeCapacity, _coordinator, _dt);
-    _southWest = new QuadTree({Vector<float, 2>(_boundary.position[0], _boundary.position[1] + halfSize[1]), halfSize}, _nodeCapacity, _coordinator, _dt);
-    _southEast = new QuadTree({_boundary.position + halfSize, halfSize}, _nodeCapacity, _coordinator, _dt);
-
-    for (Entity rectangleIndex : _rectangleIndices)
-    {
-        _northWest->insert(rectangleIndex);
-        _northEast->insert(rectangleIndex);
-        _southWest->insert(rectangleIndex);
-        _southEast->insert(rectangleIndex);
-    }
-    _rectangleIndices.clear();
-}
-
-uint32 QuadTree::checkIntersections(void)
-{
-    uint32 nOfIntersections = 0;
-    for (uint8 i = 0; i < _rectangleIndices.size(); ++i)
-    {
-        for (uint8 j = i + 1; j < _rectangleIndices.size(); ++j)
-        {
-            ++nOfIntersections;
+            for (u32 column = startGridY;
+                 column <= endGridY;
+                 ++column)
+            {
+                u32 gridIndex = row * DIVISION_PER_AXIS + column;
+                if (!(gridIndex < DIVISION_PER_AXIS * DIVISION_PER_AXIS))
+                {
+                    LOG(row << " " << column);
+                    LOG(rec);
+                    ASSERT(false);
+                }
+                Grid &grid = grids[gridIndex];
+                if (!(grid.numberOfRecs < GRID_REC_LIMIT))
+                {
+                    LOG(grid.numberOfRecs);
+                    ASSERT(false);
+                }
+                grid.rectangles[grid.numberOfRecs++] = rec;
+            }
         }
     }
-    if (_northWest != nullptr)
+
+    void update()
     {
-        nOfIntersections += _northWest->checkIntersections();
-        nOfIntersections += _northEast->checkIntersections();
-        nOfIntersections += _southWest->checkIntersections();
-        nOfIntersections += _southEast->checkIntersections();
+        r32 gridWidth = (bound.x + bound.w) / DIVISION_PER_AXIS;
+        r32 gridHeight = (bound.y + bound.h) / DIVISION_PER_AXIS;
+        for (u32 row = 0;
+             row < DIVISION_PER_AXIS;
+             ++row)
+        {
+            for (u32 column = 0;
+                 column < DIVISION_PER_AXIS;
+                 ++column)
+            {
+                u32 gridIndex = row * DIVISION_PER_AXIS + column;
+                if (!(gridIndex < DIVISION_PER_AXIS * DIVISION_PER_AXIS))
+                {
+                    LOG(row << " " << column);
+                    ASSERT(false);
+                }
+                Grid grid = grids[gridIndex];
+
+                Rec gridBound = { column * gridWidth, row * gridHeight, gridWidth, gridHeight };
+                for (i32 i = 0;
+                    i < grid.numberOfRecs;
+                    ++i)
+                {
+                    // delete the rectangle from the grid
+                    if (grid.rectangles[i].doesRecIntersect(gridBound) == false)
+                    {
+                        // set cur rectangle with last one
+                        grid.rectangles[i] = grid.rectangles[grid.numberOfRecs - 1];
+                        // decrement number of recs
+                        --grid.numberOfRecs;
+                        // decrement i
+                        --i;
+                    }
+                }
+            }
+        }
     }
 
-    return (nOfIntersections);
-}
+    u32 collisions()
+    {
+        u32 result = 0;
+        for (u32 row = 0;
+             row < DIVISION_PER_AXIS;
+             ++row)
+        {
+            for (u32 column = 0;
+                 column < DIVISION_PER_AXIS;
+                 ++column)
+            {
+                u32 gridIndex = row * DIVISION_PER_AXIS + column;
+                Grid &grid = grids[gridIndex];
+                u32 numberOfRecs = grid.numberOfRecs;
+                for (u32 i = 0;
+                     i < numberOfRecs;
+                     ++i)
+                {
+                    for (u32 j = 0;
+                         j < numberOfRecs;
+                         ++j)
+                    {
+                        if (i != j && grid.rectangles[i].doesRecIntersect(grid.rectangles[j]))
+                        {
+                            ++result;
+                        }
+                    }
+                }
+            }
+        }
 
-int main()
+        return (result);
+    }
+};
+
+#if 0
+i32 WinMain(
+    HINSTANCE instance,
+    HINSTANCE previousInstance,
+    LPSTR     commandLine,
+    i32       showCommand)
+#else
+i32 main()
+#endif
 {
-    QuadTree
+    #if defined (WINDOWS)
+    LARGE_INTEGER PerfCountFrequencyResult;
+    QueryPerformanceFrequency(&PerfCountFrequencyResult);
+    u64 GlobalPerfCountFrequency = PerfCountFrequencyResult.QuadPart;
+    #else
+    u64 GlobalPerfCountFrequency = CLOCKS_PER_SEC;
+    #endif
+
+    vector<Rec> rectangles;
+    for (u32 i = 0;
+         i < NUMBER_OF_INSERTIONS;
+         ++i)
+    {
+        rectangles.push_back( { getRand(spaceBound.x, spaceBound.x + spaceBound.w),
+                                getRand(spaceBound.y, spaceBound.y + spaceBound.h),
+                                getRand(10.0f, 10.1f), getRand(10.0f, 10.1f) } );
+    }
+    clock_t sortStart = clock();
+    // sort(rectangles.begin(), rectangles.end(), [](const Rec& l, const Rec& r){
+    //     return (l.y < r.y);
+    // });
+    clock_t sortEnd = clock();
+
+    u32 numberOfGrids = DIVISION_PER_AXIS * DIVISION_PER_AXIS;
+
+    GridSpace gridSpace(spaceBound);
+
+    #if defined (WINDOWS)
+    LARGE_INTEGER instructionsStart;
+    QueryPerformanceCounter(&instructionsStart);
+    #else
+    clock_t insertionStart = clock();
+    #endif
+
+    for (u32 rectangleIndex = 0;
+         rectangleIndex < rectangles.size();
+         ++rectangleIndex)
+    {
+        gridSpace.insert(rectangles[rectangleIndex]);
+    }
+    clock_t insertionEnd = clock();
+    clock_t collisionStart = clock();
+    u32 numberOfCollisions = gridSpace.collisions();
+    clock_t collisionEnd = clock();
+    clock_t updateStart = clock();
+    gridSpace.update();
+    clock_t updateEnd = clock();
+
+    #if defined (WINDOWS)
+    LOG("Time taken: " << totalClockCycles.QuadPart / (r32)GlobalPerfCountFrequency << "s");
+    LOG("Total number of clock cycles: " << totalClockCycles.QuadPart);
+    #else
+    LOG("Total number of clock cycles: " << updateEnd - insertionStart);
+    #endif
+
+    LOG("Time taken for insertion: " << (insertionEnd - insertionStart) / (r32)GlobalPerfCountFrequency);
+    LOG("Time taken for collision: " << (collisionEnd - collisionStart) / (r32)GlobalPerfCountFrequency);
+    LOG("Time taken for update: " << (updateEnd - updateStart) / (r32)GlobalPerfCountFrequency);
+    LOG("Time taken to sort: " << (sortEnd - sortStart) / (r32)GlobalPerfCountFrequency);
+    LOG("Number of collisions: " << numberOfCollisions);
+
+    LOG("Number of grids: " << numberOfGrids);
+    LOG("Number of rectangle per grid: " << GRID_REC_LIMIT);
+    LOG("Theoretical maximum number of rectangles: " << numberOfGrids * GRID_REC_LIMIT);
+    LOG("Number of insertions: " << NUMBER_OF_INSERTIONS);
+    LOG("Size of each grid in bytes: " <<  sizeof(Grid));
+    LOG("Size of all rectangles stored in all grids in KB: " << sizeof(Grid) * numberOfGrids / 1024);
+
+    return (0);
 }

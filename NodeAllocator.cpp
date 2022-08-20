@@ -1,22 +1,19 @@
 #include "NodeAllocator.hpp"
 
-Rectangle screenBound = { 0.0f, 0.0f, 1600.0f, 900.0f };
+Rec screenBound = {0.0f, 0.0f, 1600.0f, 900.0f};
 
-NodeAllocator::NodeAllocator(vector<Rectangle> *rectangles)
-    : _rectangles(rectangles)
+NodeAllocator::NodeAllocator()
 {
     for (u32 iteration = 0;
          iteration < NODE_POOL_SIZE;
          ++iteration)
     {
         _availableNodes[iteration] = iteration;
-        _nodes[iteration]._rectangles = rectangles;
-        _nodes[iteration]._nodeAllocator = this;
     }
     _curAvailableIndex = 0;
 }
 
-Node *NodeAllocator::allocateNode(const Rectangle& nodeBound, NodeOrientation orientation, i32 parentNodeIndex)
+Node *NodeAllocator::allocateNode(const Rec &nodeBound, NodeOrientation orientation, i32 parentNodeIndex)
 {
     if (_curAvailableIndex == NODE_POOL_SIZE)
     {
