@@ -1,5 +1,6 @@
 {
     "files.associations": {
+        "*.ejs": "html",
         "__bit_reference": "cpp",
         "__config": "cpp",
         "__debug": "cpp",
@@ -80,6 +81,7 @@
         "set": "cpp",
         "strstream": "cpp",
         "thread": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "xiosbase": "cpp"
     }
 }
