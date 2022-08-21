@@ -12,6 +12,8 @@ using namespace std;
 # define LOG(x) (cout << x << endl)
 # define LINE() (LOG(__LINE__ << " " << __FILE__))
 
+# define NUMBER_OF_INSERTIONS 32000
+
 // # define NDEBUG
 
 # ifndef NDEBUG

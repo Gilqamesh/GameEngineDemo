@@ -2,6 +2,6 @@
 
 ostream &operator<<(ostream& os, const Rec& rect)
 {
-    os << rect.topLeftX << " " << rect.topLeftY << " " << rect.width << " " << rect.height;
+    os << rect.topLeftX << "x " << rect.topLeftY << "y " << rect.width << "w " << rect.height << "h";
     return (os);
 }

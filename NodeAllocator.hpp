@@ -3,7 +3,7 @@
 
 # include "Node.hpp"
 
-# define NODE_POOL_SIZE 1500
+# define NODE_POOL_SIZE 10000
 
 struct NodeInfo
 {
@@ -17,6 +17,8 @@ struct NodeAllocator
     array<u32, NODE_POOL_SIZE>                              _availableNodes;
     array<u8, NODE_POOL_SIZE>                               _validNodes;
     i32                                                     _curAvailableIndex;
+    u32                                                     _maxAllocatedNodes;
+    u32                                                     _numberOfLeafs;
 
     typedef array<Node, NODE_POOL_SIZE>::iterator iterator;
 
@@ -28,6 +30,7 @@ struct NodeAllocator
     Node *getNode(u32 nodeIndex);
 
     u32 allocatedNodes(void);
+    u32 maxAllocatedNodes(void);
 
     void clear();
 };
