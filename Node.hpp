@@ -6,7 +6,9 @@
 # include <ctime>
 # define NUMBER_OF_CHILDREN 2
 // must be a power of 2
-# define NODE_LIMIT 256
+# define NODE_LIMIT 512
+
+extern vector<Rec> rectangles;
 
 enum NodeOrientation
 {
@@ -16,6 +18,18 @@ enum NodeOrientation
 
 class NodeAllocator;
 
+struct RecInfo
+{
+    u32 index;
+    Rec rec;
+};
+
+struct RecsInfo
+{
+    array<RecInfo, NODE_LIMIT> recInfos;
+    u32 size;
+};
+
 #define EMPTY_HASH_SLOT UINT32_MAX
 struct LeafHash
 {
@@ -24,7 +38,7 @@ struct LeafHash
         clear();
     }
 
-    u32 recIndices[NODE_LIMIT];
+    u32 _recIndices[NODE_LIMIT];
 
     inline void clear(void)
     {
@@ -32,49 +46,26 @@ struct LeafHash
              i < NODE_LIMIT;
              ++i)
         {
-            recIndices[i] = EMPTY_HASH_SLOT;
+            _recIndices[i] = EMPTY_HASH_SLOT;
         }
     }
 
-    inline void insert(u32 recIndex)
+    inline b32 insert(u32 recIndex)
     {
-        u32 hashValue = recIndex * 101 & (NODE_LIMIT - 1);
+        ASSERT(recIndex < NUMBER_OF_INSERTIONS);
+        // TODO(david): better hashing function
+        u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
         for (u32 i = hashValue;
              i < NODE_LIMIT;
              ++i)
         {
-            if (recIndices[i] == EMPTY_HASH_SLOT)
+            if (_recIndices[i] == recIndex)
             {
-                recIndices[i] = recIndex;
-                return ;
+                return (false);
             }
-        }
-
-        // if there is no empty hash slot left from the hashValue
-        for (u32 i = 0;
-             i < hashValue;
-             ++i)
-        {
-            if (recIndices[i] == EMPTY_HASH_SLOT)
+            if (_recIndices[i] == EMPTY_HASH_SLOT)
             {
-                recIndices[i] = recIndex;
-                return ;
-            }
-        }
-        LOG(recIndex);
-        ASSERT(false);
-    }
-
-    inline b32 erase(u32 recIndex)
-    {
-        u32 hashValue = recIndex * 101 & (NODE_LIMIT - 1);
-        for (u32 i = hashValue;
-             i < NODE_LIMIT;
-             ++i)
-        {
-            if (recIndices[i] == recIndex)
-            {
-                recIndices[i] = EMPTY_HASH_SLOT;
+                _recIndices[i] = recIndex;
                 return (true);
             }
         }
@@ -84,14 +75,66 @@ struct LeafHash
              i < hashValue;
              ++i)
         {
-            if (recIndices[i] == recIndex)
+            if (_recIndices[i] == recIndex)
             {
-                recIndices[i] = EMPTY_HASH_SLOT;
+                return (false);
+            }
+            if (_recIndices[i] == EMPTY_HASH_SLOT)
+            {
+                _recIndices[i] = recIndex;
+                return (true);
+            }
+        }
+        LOG(recIndex);
+        ASSERT(false);
+
+        return (false);
+    }
+
+    inline b32 erase(u32 recIndex)
+    {
+        ASSERT(recIndex < NUMBER_OF_INSERTIONS);
+        u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
+        for (u32 i = hashValue;
+             i < NODE_LIMIT;
+             ++i)
+        {
+            if (_recIndices[i] == recIndex)
+            {
+                _recIndices[i] = EMPTY_HASH_SLOT;
+                return (true);
+            }
+        }
+
+        // if there is no empty hash slot left from the hashValue
+        for (u32 i = 0;
+             i < hashValue;
+             ++i)
+        {
+            if (_recIndices[i] == recIndex)
+            {
+                _recIndices[i] = EMPTY_HASH_SLOT;
                 return (true);
             }
         }
         
         return (false);
+    }
+
+    inline RecsInfo getRecInfos(void)
+    {
+        RecsInfo result = {};
+        for (u32 i = 0;
+             i < NODE_LIMIT;
+             ++i)
+        {
+            if (_recIndices[i] != EMPTY_HASH_SLOT)
+            {
+                result.recInfos[result.size++] = { _recIndices[i], rectangles[_recIndices[i]] };
+            }
+        }
+
+        return (result);
     }
 };
 
@@ -113,10 +156,12 @@ struct LeafHashAllocator
         {
             result = _available.back();
             _available.pop_back();
-            return (result);
         }
-        result = _leafHashes.size();
-        _leafHashes.push_back(LeafHash());
+        else
+        {
+            result = _leafHashes.size();
+            _leafHashes.push_back(LeafHash());
+        }
 
         return (result);
     }
@@ -126,8 +171,22 @@ struct LeafHashAllocator
      */
     inline void insert(u32 recIndex, u16 leafHashIndex)
     {
-        ASSERT(leafHashIndex < _leafHashes.size());
-        _leafHashes[leafHashIndex].insert(recIndex);
+        if (!(leafHashIndex < _leafHashes.size()))
+        {
+            LOG(leafHashIndex << " " << _leafHashes.size() << " " << recIndex);
+            ASSERT(false);
+        }
+        b32 result = _leafHashes[leafHashIndex].insert(recIndex);
+        static u32 nOfSameInsertions = 0;
+        if (result == false)
+        {
+            LOG(++nOfSameInsertions);
+        }
+        // if (result == false)
+        // {
+        //     LOG(recIndex << " " << leafHashIndex);
+        //     ASSERT(false);
+        // }
     }
 
     /**
@@ -161,28 +220,38 @@ struct LeafHashAllocator
     {
         return (_deletionCount);
     }
+
+    /**
+     * Pulls and copies rectangles into memory for the hash
+     */
+    inline RecsInfo getRecInfos(u16 leafHashIndex)
+    {
+        ASSERT(leafHashIndex < _leafHashes.size());
+        return (_leafHashes[leafHashIndex].getRecInfos());
+    }
 };
 
 extern LeafHashAllocator leafHashAllocator;
 
 struct Node
 {
-    u16 _leafHashIndex;
+    i16 _leafHashIndex; // -1 if does not have a LeafHash
     array<i32, NUMBER_OF_CHILDREN> _children;
 
     i32 _curNumberOfRectangles; // -1 if this node is not a leaf
+    // TODO(david): dont have to store these as it can be computed by the orientation
     Rec _nodeBound;
 
     /**
      * Assumes that the rectangle first the node's bound
      */
-    void insert(u32 rectangleIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation,
+    void insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation,
         u32 curDepth);
 
     /**
      * Assumes that the rectangle first the node's bound
      */
-    void erase(u32 rectangleIndex, NodeAllocator &nodeAllocator, Rec rec);
+    void erase(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec);
 
     u32 update(NodeAllocator &nodeAllocator);
 
@@ -201,15 +270,107 @@ struct Node
         _children[childIndex] = -1;
     }
 
-    inline b32 isInternal(void) const
+    inline b32 isBranch(void) const
     {
         return (_curNumberOfRectangles < 0);
     }
 
-    inline void setInternal(void)
+    inline b32 isLeaf(void) const
+    {
+        return (isBranch() == false);
+    }
+
+    inline b32 isEmpty(void) const
+    {
+        return (_curNumberOfRectangles == 0);
+    }
+
+    inline void setBranch(void)
     {
         _curNumberOfRectangles = -1;
-        _leafHashIndex = UINT16_MAX;
+        ASSERT(hasLeafHash() == true);
+        leafHashAllocator.clearLeafHash(_leafHashIndex);
+        _leafHashIndex = -1;
+    }
+
+    inline void setLeaf(void)
+    {
+        _curNumberOfRectangles = 0;
+        if (hasLeafHash() == false)
+        {
+            _leafHashIndex = leafHashAllocator.allocateLeafHash();
+        }
+    }
+
+    inline b32 hasLeafHash(void) const
+    {
+        return (!(_leafHashIndex < 0));
+    }
+
+    inline array<Rec, NUMBER_OF_CHILDREN> getChildBounds(NodeOrientation orientation) const
+    {
+        r32 xoffset;
+        r32 yoffset;
+        xoffset = (orientation == horizontal ? _nodeBound.topLeftX + _nodeBound.width / 2.0f : _nodeBound.topLeftX);
+        yoffset = (orientation == horizontal ? _nodeBound.topLeftY : _nodeBound.topLeftY + _nodeBound.height / 2.0f);
+
+        /**
+         * Uncomment for k-d tree, find average x or y offset depending on the orientation of the node
+         */
+        // xoffset = (orientation == horizontal ? 0.0f : _nodeBound.topLeftX);
+        // yoffset = (orientation == horizontal ? _nodeBound.topLeftY: 0.0f);
+        // r32 sumX = 0.0f;
+        // r32 sumY = 0.0f;
+        // for (Rec *rec : recs)
+        // {
+        //     sumX += rec->topLeftX + rec->width / 2.0f;
+        //     sumY += rec->topLeftY + rec->height / 2.0f;
+        // }
+
+        // if (orientation == horizontal)
+        // {
+        //     xoffset = sumX / (r32)recsSize;
+        //     if (xoffset < _nodeBound.topLeftX || xoffset > _nodeBound.topLeftX + _nodeBound.width)
+        //     {
+        //         xoffset = _nodeBound.topLeftX + _nodeBound.width / 2.0f;
+        //     }
+        // }
+        // else
+        // {
+        //     yoffset = sumY / (r32)recsSize;
+        //     if (yoffset < _nodeBound.topLeftY || yoffset > _nodeBound.topLeftY + _nodeBound.height)
+        //     {
+        //         yoffset = _nodeBound.topLeftY + _nodeBound.height / 2.0f;
+        //     }
+        // }
+
+        xoffset -= _nodeBound.topLeftX;
+        yoffset -= _nodeBound.topLeftY;
+
+        if (!(xoffset < _nodeBound.width && !(xoffset < 0)))
+        {
+            LOG("xoffset: " << xoffset);
+            LOG(_nodeBound.width);
+            ASSERT(false);
+        }
+        if (!(yoffset < _nodeBound.height && !(yoffset < 0)))
+        {
+            LOG("yoffset: " << yoffset);
+            LOG(_nodeBound.height);
+            ASSERT(false);
+        }
+        array<Rec, NUMBER_OF_CHILDREN> result = {
+            Rec{ _nodeBound.topLeftX,
+                _nodeBound.topLeftY,
+                orientation == horizontal ? xoffset : _nodeBound.width,
+                orientation == horizontal ? _nodeBound.height : yoffset },
+            Rec{ _nodeBound.topLeftX + xoffset,
+                _nodeBound.topLeftY + yoffset,
+                orientation == horizontal ? _nodeBound.width - xoffset : _nodeBound.width,
+                orientation == horizontal ? _nodeBound.height : _nodeBound.height - yoffset}
+        };
+
+        return (result);
     }
 };
 

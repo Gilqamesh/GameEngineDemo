@@ -2,6 +2,7 @@
 # define REC_H
 
 # include "typedefs.h"
+# include <random>
 
 typedef struct Rec
 {
@@ -21,6 +22,14 @@ typedef struct Rec
         return (x >= topLeftX && y >= topLeftY && x <= topLeftX + width && y <= topLeftY + height);
     }
 } Rec;
+
+inline float getRand(float low, float high)
+{
+    static random_device dev;
+    static mt19937 rng(dev());
+    uniform_real_distribution<float> dist(low, high);
+    return (dist(rng));
+}
 
 ostream &operator<<(ostream& os, const Rec& rect);
 

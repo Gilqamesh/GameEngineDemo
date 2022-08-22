@@ -2,63 +2,80 @@
 #include "NodeAllocator.hpp"
 #include <bitset>
 
-extern vector<Rec> rectangles;
 LeafHashAllocator   leafHashAllocator;
 extern Rec screenBound;
 u32 maxInsertionDepth = 0;
 Rec maxInsertionBound;
+clock_t timer = 0;
+clock_t timer2 = 0;
+clock_t timer3 = 0;
 
-void Node::insert(u32 rectangleIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation, u32 curDepth)
+void Node::insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation, u32 curDepth)
 {
     if (curDepth > maxInsertionDepth)
     {
         maxInsertionDepth = curDepth;
         maxInsertionBound = _nodeBound;
     }
-    if (_nodeBound.width < 1.0f)
+    if (_nodeBound.width < 1.0f || _nodeBound.height < 1.0f)
     {
         LOG(_nodeBound);
         ASSERT(false);
     }
-    if (_nodeBound.height < 1.0f)
+    if (isLeaf() == true)
     {
-        LOG(_nodeBound);
-        ASSERT(false);
-    }
-    if (isInternal() == false)
-    {
-        if (_curNumberOfRectangles < NODE_LIMIT)
+        if (_curNumberOfRectangles < NODE_LIMIT) // if not full yet
         {
-            if (_leafHashIndex == UINT16_MAX)
+            if (hasLeafHash() == false) // get a LeafHash to store the recs
             {
                 _leafHashIndex = leafHashAllocator.allocateLeafHash();
             }
-            leafHashAllocator.insert(rectangleIndex, _leafHashIndex);
+            leafHashAllocator.insert(recIndex, _leafHashIndex);
             ++_curNumberOfRectangles;
             return ;
         }
-        subdivide(nodeAllocator, orientation, curDepth);
-        setInternal();
+        subdivide(nodeAllocator, orientation, curDepth); // if full -> subdivide
+        setBranch();
         --nodeAllocator._numberOfLeafs;
     }
 
-    for (u32 iteration = 0;
-        iteration < NUMBER_OF_CHILDREN;
-        ++iteration)
+    array<Rec, NUMBER_OF_CHILDREN> childBounds = getChildBounds(orientation);
+
+    // insert the rec to the children
+    for (u32 childIndex = 0;
+        childIndex < NUMBER_OF_CHILDREN;
+        ++childIndex)
     {
-        if (isChildValid(iteration) == true)
+        if (childBounds[childIndex].doesRecIntersect(rec))
         {
-            Node *child = nodeAllocator.getNode(_children[iteration]);
-            if (child->_nodeBound.doesRecIntersect(rec))
+            Node *childNode;
+            if (isChildValid(childIndex) == false)
             {
-                child->insert(rectangleIndex, nodeAllocator, rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
+                NodeInfo nodeInfo = nodeAllocator.allocateNode(childBounds[childIndex]);
+                childNode = nodeInfo.address;
+                _children[childIndex] = nodeInfo.index;
+                ++nodeAllocator._numberOfLeafs;
             }
+            else
+            {
+                childNode = nodeAllocator.getNode(_children[childIndex]);
+            }
+            childNode->insert(recIndex, nodeAllocator, rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
         }
     }
 }
 
-void Node::erase(u32 rectangleIndex, NodeAllocator &nodeAllocator, Rec rec)
+void Node::erase(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec)
 {
+    if (isLeaf() == true)
+    {
+        if (leafHashAllocator.erase(recIndex, _leafHashIndex) == true)
+        {
+            --_curNumberOfRectangles;
+        }
+        ASSERT(!(_curNumberOfRectangles < 0));
+        return ;
+    }
     for (u32 childIndex = 0;
          childIndex < NUMBER_OF_CHILDREN;
          ++childIndex)
@@ -67,29 +84,9 @@ void Node::erase(u32 rectangleIndex, NodeAllocator &nodeAllocator, Rec rec)
         {
             Node *child = nodeAllocator.getNode(_children[childIndex]);
             ASSERT(child);
-            if (child->_nodeBound.doesRecIntersect(rec) == true)
+            if (child->_nodeBound.doesRecIntersect(rec) == true) // only call erase on children that intersect the rec
             {
-                // check if child is a leaf, if so -> delete it from its list
-                // if not, propogate the erase down the child 
-                if (child->isInternal() == true)
-                {
-                    child->erase(rectangleIndex, nodeAllocator, rec);
-                }
-                else
-                {
-                    if (leafHashAllocator.erase(rectangleIndex, child->_leafHashIndex))
-                    {
-                        --child->_curNumberOfRectangles;
-                    }
-                    // NOTE(david): This is not deferred cleanup
-                    // if (child->_curNumberOfRectangles == 0)
-                    // {
-                    //     leafHashAllocator.clearLeafHash(child->_leafHashIndex);
-                    //     NodeInfo nodeInfo = { child, _children[childIndex] };
-                    //     nodeAllocator.deleteNode(nodeInfo);
-                    //     setChildInvalid(childIndex);
-                    // }
-                }
+                child->erase(recIndex, nodeAllocator, rec);
             }
         }
     }
@@ -107,87 +104,113 @@ u32 Node::update(NodeAllocator &nodeAllocator)
         if (nodeAllocator._validNodes[nodeIndex])
         {
             Node &node = nodeAllocator._nodes[nodeIndex];
-            if (node.isInternal())
-                continue ;
-            array<Rec*, NODE_LIMIT> recs;
-            array<u32, NODE_LIMIT> recIndices;
-            u32 recsSize = 0;
-            for (u32 i = 0;
-                 i < NODE_LIMIT;
-                 ++i)
+            if (node.isLeaf() == true)
             {
-                ASSERT(node._leafHashIndex < leafHashAllocator._leafHashes.size());
-                u32 recIndex = leafHashAllocator._leafHashes[node._leafHashIndex].recIndices[i];
-                if (recIndex == EMPTY_HASH_SLOT) continue ;
-                recIndices[recsSize] = recIndex;
-                recs[recsSize++] = &rectangles[recIndex];
-            }
+                // pull/copy from rectangles
+                RecsInfo recsInfo = leafHashAllocator.getRecInfos(node._leafHashIndex);
 
-            // for recs that collided
-            // remove recs from tree
-            // move them in the world
-            // reinsert them in the tree
-            for (u32 i = 0;
-                    i < recsSize;
-                    ++i)
-            {
-                if (collidedRectangles[recIndices[i]] == 1)
-                    continue ;
-                for (u32 j = i + 1;
-                        j < recsSize;
-                        ++j)
+                for (u32 leftIter = 0;
+                    leftIter < recsInfo.size;
+                    ++leftIter)
                 {
-                    if (collidedRectangles[recIndices[j]] == 1)
-                        continue ;
-                    if (recs[i]->doesRecIntersect(*recs[j]))
+                    u32 leftRecIndex = recsInfo.recInfos[leftIter].index;
+                    if (collidedRectangles.test(leftRecIndex) == false)
                     {
-                        collidedRectangles[recIndices[i]] = 1;
-                        collidedRectangles[recIndices[j]] = 1;
-                        r32 dpx = 75.0f;
-                        r32 dpy = 35.0f;
-                        r32 dpx2 = -50.0f;
-                        r32 dpy2 = -30.0f;
-                        if (recs[i]->topLeftX + dpx >= screenBound.topLeftX + screenBound.width ||
-                            recs[i]->topLeftX + dpx + recs[i]->width < screenBound.topLeftX)
+                        for (u32 rightIter = leftIter + 1;
+                            rightIter < recsInfo.size;
+                            ++rightIter)
                         {
-                            dpx *= -1;
-                        }
-                        if (recs[i]->topLeftY + dpy >= screenBound.topLeftY + screenBound.height ||
-                            recs[i]->topLeftY + dpy + recs[i]->height < screenBound.topLeftY)
-                        {
-                            dpy *= -1;
-                        }
-                        if (recs[j]->topLeftX + dpx2 <= screenBound.topLeftX ||
-                            recs[j]->topLeftX + dpx2 + recs[j]->width < screenBound.topLeftX)
-                        {
-                            dpx2 *= -1;
-                        }
-                        if (recs[j]->topLeftY + dpy2 <= screenBound.topLeftY ||
-                            recs[j]->topLeftY + dpy2 + recs[j]->height < screenBound.topLeftY)
-                        {
-                            dpy2 *= -1;
-                        }
-                        // remove rec
-                        erase(recIndices[i], nodeAllocator, *recs[i]);
-                        erase(recIndices[j], nodeAllocator, *recs[j]);
+                            u32 rightRecIndex = recsInfo.recInfos[rightIter].index;
+                            if (collidedRectangles.test(rightRecIndex) == false)
+                            {
+                                Rec &leftRec = recsInfo.recInfos[leftIter].rec;
+                                Rec &rightRec = recsInfo.recInfos[rightIter].rec;
+                                if (leftRec.doesRecIntersect(rightRec))
+                                {
+                                    // remove the 2 recs for further collision detection with other recs
+                                    collidedRectangles.set(leftRecIndex);
+                                    collidedRectangles.set(rightRecIndex);
 
-                        // move them
-                        recs[i]->topLeftX += dpx;
-                        recs[i]->topLeftY += dpy;
-                        recs[j]->topLeftX += dpx2;
-                        recs[j]->topLeftY += dpy2;
+                                    // remove the 2 recs from the tree
+                                    clock_t start = clock();
+                                    erase(leftRecIndex, nodeAllocator, leftRec);
+                                    erase(rightRecIndex, nodeAllocator, rightRec);
+                                    timer += clock() - start;
 
-                        // reinsert them to the quadtree
-                        insert(recIndices[i], nodeAllocator, *recs[i], horizontal, 0);
-                        insert(recIndices[j], nodeAllocator, *recs[j], horizontal, 0);
-                        ++nOfIntersections;
+                                    // move the 2 recs
+                                    // r32 dpx = 0.0f;
+                                    // r32 dpy = 0.0f;
+                                    // r32 dpx2 = 0.0f;
+                                    // r32 dpy2 = 0.0f;
+                                    r32 dpx = 40.0f;
+                                    r32 dpy = 35.0f;
+                                    r32 dpx2 = -20.0f;
+                                    r32 dpy2 = -35.0f;
+                                    // r32 dpx = getRand(-50.0f, 50.0f);
+                                    // r32 dpy = getRand(-50.0f, 50.0f);
+                                    // r32 dpx2 = getRand(-50.0f, 50.0f);
+                                    // r32 dpy2 = getRand(-50.0f, 50.0f);
+                                    if (leftRec.topLeftX + dpx > screenBound.topLeftX + screenBound.width ||
+                                        leftRec.topLeftX + dpx + leftRec.width < screenBound.topLeftX)
+                                    {
+                                        dpx *= -1.0f;
+                                    }
+                                    if (leftRec.topLeftY + dpy > screenBound.topLeftY + screenBound.height ||
+                                        leftRec.topLeftY + dpy + leftRec.height < screenBound.topLeftY)
+                                    {
+                                        dpy *= -1.0f;
+                                    }
+                                    if (rightRec.topLeftX + dpx2 > screenBound.topLeftX + screenBound.width ||
+                                        rightRec.topLeftX + dpx2 + rightRec.width < screenBound.topLeftX)
+                                    {
+                                        dpx2 *= -1.0f;
+                                    }
+                                    if (rightRec.topLeftY + dpy2 > screenBound.topLeftY + screenBound.height ||
+                                        rightRec.topLeftY + dpy2 + rightRec.height < screenBound.topLeftY)
+                                    {
+                                        dpy2 *= -1.0f;
+                                    }
+
+                                    leftRec.topLeftX += dpx;
+                                    leftRec.topLeftY += dpy;
+                                    rightRec.topLeftX += dpx2;
+                                    rightRec.topLeftY += dpy2;
+
+                                    // reinsert the 2 recs to tree
+                                    start = clock();
+                                    if (leftRecIndex == rightRecIndex)
+                                    {
+                                        LOG("");
+                                        LOG(leftRec);
+                                        for (u32 i = 0;
+                                             i < recsInfo.size;
+                                             ++i)
+                                        {
+                                            cout << recsInfo.recInfos[i].index << " ";
+                                        }
+                                        LOG("");
+                                        ASSERT(false);
+                                    }
+                                    insert(leftRecIndex, nodeAllocator, leftRec, horizontal, 0);
+                                    insert(rightRecIndex, nodeAllocator, rightRec, horizontal, 0);
+                                    timer2 += clock() - start;
+                                    ++nOfIntersections;
+                                }
+                            }
+                        }
                     }
+                }
+
+                // map back into rectangles
+                for (u32 iteration = 0;
+                    iteration < recsInfo.size;
+                    ++iteration)
+                {
+                    rectangles[recsInfo.recInfos[iteration].index] = recsInfo.recInfos[iteration].rec;
                 }
             }
         }
     }
-
-    deferredCleanup(nodeAllocator);
 
     return (nOfIntersections);
 }
@@ -201,129 +224,60 @@ void Node::deferredCleanup(NodeAllocator &nodeAllocator)
         Node *node = cleanupQueue.front();
         cleanupQueue.pop();
 
-        u32 numberOfEmptyChildren = 0;
+        u32 nOfEmptyChilds = 0;
         for (u32 childIndex = 0;
             childIndex < NUMBER_OF_CHILDREN;
             ++childIndex)
         {
-            if (node->isChildValid(childIndex) == false)
-                continue ;
-            Node *child = nodeAllocator.getNode(node->_children[childIndex]);
-            if (child->isInternal())
+            if (node->isChildValid(childIndex) == true)
             {
-                cleanupQueue.push(child);
-            }
-            else if (child->_curNumberOfRectangles == 0)
-            {
-                ++numberOfEmptyChildren;
+                Node *child = nodeAllocator.getNode(node->_children[childIndex]);
+                if (child->isBranch() == true) // if branch -> add it for processing
+                {
+                    cleanupQueue.push(child);
+                }
+                else if (child->isEmpty() == true)
+                {
+                    ++nOfEmptyChilds;
+                }
             }
         }
 
         // If all the children were empty leaves, remove them and 
         // make this node the new empty leaf.
-        if (numberOfEmptyChildren == NUMBER_OF_CHILDREN)
+        if (nOfEmptyChilds == NUMBER_OF_CHILDREN)
         {
             for (u32 childIndex = 0;
                 childIndex < NUMBER_OF_CHILDREN;
                 ++childIndex)
             {
-                Node *child = nodeAllocator.getNode(node->_children[childIndex]);
+                ASSERT(node->isChildValid(childIndex));
+                u32 childNodeIndex = node->_children[childIndex];
+                // TODO(david): no need to get the pointer again
+                Node *child = nodeAllocator.getNode(childNodeIndex);
                 leafHashAllocator.clearLeafHash(child->_leafHashIndex);
-                NodeInfo nodeInfo = { child, node->_children[childIndex] };
-                nodeAllocator.deleteNode(nodeInfo);
+                NodeInfo childInfo = { child, childNodeIndex };
+                nodeAllocator.deleteNode(childInfo);
                 node->setChildInvalid(childIndex);
             }
-            ASSERT(node->_curNumberOfRectangles == 0);
+            node->setLeaf();
         }
     }
 }
 
 void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth)
 {
-    r32 xoffset;
-    r32 yoffset;
-    xoffset = (orientation == horizontal ? _nodeBound.topLeftX + _nodeBound.width / 2.0f : _nodeBound.topLeftX);
-    yoffset = (orientation == horizontal ? _nodeBound.topLeftY : _nodeBound.topLeftY + _nodeBound.height / 2.0f);
-
-    // TODO(david): hold array of references to ractangles
-    // so that we dont have to pull the rectangles again
-    array<Rec*, NODE_LIMIT> recs;
-    array<u32, NODE_LIMIT> recIndices;
-    u32 recsSize = 0;
-    for (u32 i = 0;
-            i < NODE_LIMIT;
-            ++i)
-    {
-        ASSERT(_leafHashIndex < leafHashAllocator._leafHashes.size());
-        u32 recIndex = leafHashAllocator._leafHashes[_leafHashIndex].recIndices[i];
-        if (recIndex == EMPTY_HASH_SLOT) continue ;
-        recIndices[recsSize] = recIndex;
-        recs[recsSize++] = &rectangles[recIndex];
-    }
-
-    // k-d tree, find average x or y offset depending on the orientation of the node
-    // xoffset = (orientation == horizontal ? 0.0f : _nodeBound.topLeftX);
-    // yoffset = (orientation == horizontal ? _nodeBound.topLeftY: 0.0f);
-    // r32 sumX = 0.0f;
-    // r32 sumY = 0.0f;
-    // for (Rec *rec : recs)
-    // {
-    //     sumX += rec->topLeftX + rec->width / 2.0f;
-    //     sumY += rec->topLeftY + rec->height / 2.0f;
-    // }
-
-    // if (orientation == horizontal)
-    // {
-    //     xoffset = sumX / (r32)recsSize;
-    //     if (xoffset < _nodeBound.topLeftX || xoffset > _nodeBound.topLeftX + _nodeBound.width)
-    //     {
-    //         xoffset = _nodeBound.topLeftX + _nodeBound.width / 2.0f;
-    //     }
-    // }
-    // else
-    // {
-    //     yoffset = sumY / (r32)recsSize;
-    //     if (yoffset < _nodeBound.topLeftY || yoffset > _nodeBound.topLeftY + _nodeBound.height)
-    //     {
-    //         yoffset = _nodeBound.topLeftY + _nodeBound.height / 2.0f;
-    //     }
-    // }
-    xoffset -= _nodeBound.topLeftX;
-    yoffset -= _nodeBound.topLeftY;
-
-    if (!(xoffset < _nodeBound.width && !(xoffset < 0)))
-    {
-        LOG("xoffset: " << xoffset);
-        LOG(_nodeBound.width);
-        ASSERT(false);
-    }
-    if (!(yoffset < _nodeBound.height && !(yoffset < 0)))
-    {
-        LOG("yoffset: " << yoffset);
-        LOG(_nodeBound.height);
-        ASSERT(false);
-    }
-    array<Rec, NUMBER_OF_CHILDREN> childBounds = {
-        Rec{ _nodeBound.topLeftX,
-            _nodeBound.topLeftY,
-            orientation == horizontal ? xoffset : _nodeBound.width,
-            orientation == horizontal ? _nodeBound.height : yoffset },
-        Rec{ _nodeBound.topLeftX + xoffset,
-            _nodeBound.topLeftY + yoffset,
-            orientation == horizontal ? _nodeBound.width - xoffset : _nodeBound.width,
-            orientation == horizontal ? _nodeBound.height : _nodeBound.height - yoffset}
-    };
-
+    array<Rec, NUMBER_OF_CHILDREN> childBounds = getChildBounds(orientation);
+    RecsInfo recsInfo = leafHashAllocator.getRecInfos(_leafHashIndex);
     for (u32 iteration = 0;
-         iteration < recsSize;
+         iteration < recsInfo.size;
          ++iteration)
     {
-        // ASSERT(recIndex < rectangles.size());
         for (u32 childIndex = 0;
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
         {
-            if (childBounds[childIndex].doesRecIntersect(*recs[iteration]))
+            if (childBounds[childIndex].doesRecIntersect(recsInfo.recInfos[iteration].rec))
             {
                 Node *childNode;
                 if (isChildValid(childIndex) == false)
@@ -337,12 +291,10 @@ void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, 
                 {
                     childNode = nodeAllocator.getNode(_children[childIndex]);
                 }
-                childNode->insert(recIndices[iteration], nodeAllocator, *recs[iteration], orientation == horizontal ? vertical : horizontal, curDepth + 1);
+                childNode->insert(recsInfo.recInfos[iteration].index, nodeAllocator, recsInfo.recInfos[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
             }
         }
     }
-
-    leafHashAllocator.clearLeafHash(_leafHashIndex);
 }
 
 void Node::printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const

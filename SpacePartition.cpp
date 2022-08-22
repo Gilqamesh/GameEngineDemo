@@ -1,10 +1,9 @@
 #include "NodeAllocator.hpp"
-#include <random>
 #include <ctime>
 #include <thread>
 
 # define FRAMES_PER_SEC 60
-# define SECONDS_SIMULATED 10
+# define SECONDS_SIMULATED 1
 
 extern Rec screenBound;
 vector<Rec> rectangles;
@@ -12,14 +11,9 @@ NodeAllocator nodeAllocator;
 extern LeafHashAllocator leafHashAllocator;
 extern u32 maxInsertionDepth;
 extern Rec maxInsertionBound;
-
-inline float getRand(float low, float high)
-{
-    static random_device dev;
-    static mt19937 rng(dev());
-    uniform_real_distribution<float> dist(low, high);
-    return (dist(rng));
-}
+extern clock_t timer;
+extern clock_t timer2;
+extern clock_t timer3;
 
 int main()
 {
@@ -29,8 +23,8 @@ int main()
          iteration < NUMBER_OF_INSERTIONS;
          ++iteration)
     {
-        float minSize = 10.0f;
-        float maxSize = 25.0f;
+        r32 minSize = 10.0f;
+        r32 maxSize = 25.0f;
         Rec rectangle = { getRand(screenBound.topLeftX, screenBound.topLeftX + screenBound.width),
                           getRand(screenBound.topLeftY, screenBound.topLeftY + screenBound.height),
                           getRand(minSize, maxSize),
@@ -75,19 +69,19 @@ int main()
          currentSecond < SECONDS_SIMULATED;
          ++currentSecond)
     {
-        cout << currentSecond << "s: ";
+        cout << currentSecond + 1 << "s: ";
         for (u32 numberOfTreeConstructions = 0;
             numberOfTreeConstructions < FRAMES_PER_SEC;
             ++numberOfTreeConstructions)
         {
             start = clock();
             u32 numberOfIntersections = root->update(nodeAllocator);
+            totalIntersectionClock += clock() - start;
             cout << numberOfIntersections << " ";
             if (maxNumberOfInsersections < numberOfIntersections)
             {
                 maxNumberOfInsersections = numberOfIntersections;
             }
-            totalIntersectionClock += clock() - start;
         }
         LOG("");
     }
@@ -100,13 +94,18 @@ int main()
     LOG("Maximum insertion depth: " << maxInsertionDepth << ", max insertion bound: " << maxInsertionBound);
 
     LOG("Max intersections: " << maxNumberOfInsersections);
-    LOG("Time taken for insertion: " << insertionClock / (float)CLOCKS_PER_SEC << "s");
-    LOG("Time taken for update check: " << totalIntersectionClock / (float)CLOCKS_PER_SEC / SECONDS_SIMULATED << "s");
-    LOG("Time taken to sort rectangles: " << sortEnd / (float)CLOCKS_PER_SEC << "s");
-    LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock + sortEnd) / (float)CLOCKS_PER_SEC << "s");
+    LOG("Time taken for insertion: " << insertionClock / (r32)CLOCKS_PER_SEC << "s");
+    LOG("Time taken for update check: " << totalIntersectionClock / (r32)CLOCKS_PER_SEC / SECONDS_SIMULATED << "s");
+    LOG("Time taken to sort rectangles: " << sortEnd / (r32)CLOCKS_PER_SEC << "s");
+    LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock + sortEnd) / (r32)CLOCKS_PER_SEC << "s");
 
-    LOG("Total size of LeafHashes in KB: " << leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
+    LOG("Number of LeafHashes allocated: " << leafHashAllocator._leafHashes.size());
     LOG("Number of LeafHashes deleted: " << leafHashAllocator.getDeletionCount() << ", in KB: " << leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
+    LOG("Total size of LeafHashes in KB: " << leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
+
+    LOG("Timer: " << timer / (r32)CLOCKS_PER_SEC << "s");
+    LOG("Timer2: " << timer2 / (r32)CLOCKS_PER_SEC << "s");
+    LOG("Timer3: " << timer3 / (r32)CLOCKS_PER_SEC << "s");
 
     // system("leaks a.out");
 

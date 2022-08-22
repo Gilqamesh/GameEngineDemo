@@ -3,57 +3,54 @@
 Rec screenBound = {0.0f, 0.0f, 1600.0f, 900.0f};
 
 NodeAllocator::NodeAllocator()
-    : _validNodes{}
+    : _validNodes{}, _freeNodeSize(0)
 {
-    for (u32 iteration = 0;
-         iteration < NODE_POOL_SIZE;
-         ++iteration)
-    {
-        _availableNodes[iteration] = iteration;
-    }
-    _curAvailableIndex = 0;
+    _nextNodeIndex = 0;
     _numberOfLeafs = 0;
     _maxAllocatedNodes = 0;
 }
 
-NodeInfo NodeAllocator::allocateNode(const Rec& nodeBound)
+NodeInfo NodeAllocator::allocateNode(Rec nodeBound)
 {
     NodeInfo result;
 
-    ASSERT(_curAvailableIndex < NODE_POOL_SIZE);
-
-    u32 nodeIndex = _curAvailableIndex++;
-    if (_curAvailableIndex > _maxAllocatedNodes)
+    // if a free node is available, initializte it and return it
+    if (_freeNodeSize)
     {
-        _maxAllocatedNodes = _curAvailableIndex;
+        --_freeNodeSize;
+        // TODO(david): initialize node
+        result.address = &_nodes[_freeNodeIndices[_freeNodeSize]];
+        result.index = _freeNodeIndices[_freeNodeSize];
     }
-    _validNodes[nodeIndex] = 1;
-    ASSERT(nodeIndex < _availableNodes.size());
-    ASSERT(_availableNodes[nodeIndex] < _nodes.size());
-    Node *node = &_nodes[_availableNodes[nodeIndex]];
-    node->_curNumberOfRectangles = 0;
-    node->_nodeBound = nodeBound;
-    node->_leafHashIndex = UINT16_MAX;
-    for (u32 iteration = 0;
-         iteration < NUMBER_OF_CHILDREN;
-         ++iteration)
+    else
     {
-        node->setChildInvalid(iteration);
+        if (!(_nextNodeIndex < NODE_POOL_SIZE))
+        {
+            LOG("_nextNodeIndex: " << _nextNodeIndex);
+            LOG("NODE_POOL_SIZE: " << NODE_POOL_SIZE);
+            ASSERT(false);
+        }
+
+        u32 nodeIndex = _nextNodeIndex++;
+        if (_nextNodeIndex > _maxAllocatedNodes)
+        {
+            _maxAllocatedNodes = _nextNodeIndex;
+        }
+        result.address = &_nodes[nodeIndex];
+        result.index = nodeIndex;
     }
+    initializeNode(result.address, nodeBound);
 
-    // LOG("Allocated: " << nodeIndex);
+    _validNodes[result.index] = 1;
 
-    result.address = node;
-    result.index = nodeIndex;
     return (result);
 }
 
 void NodeAllocator::deleteNode(NodeInfo nodeInfo)
 {
-    --_curAvailableIndex;
-    ASSERT(!(_curAvailableIndex < 0));
+    ASSERT(_freeNodeSize < _freeNodeIndices.size());
+    _freeNodeIndices[_freeNodeSize++] = nodeInfo.index;
     _validNodes[nodeInfo.index] = 0;
-    _availableNodes[_curAvailableIndex] = nodeInfo.index;
 }
 
 Node *NodeAllocator::getNode(u32 nodeIndex)
@@ -69,7 +66,7 @@ Node *NodeAllocator::getNode(u32 nodeIndex)
 
 u32 NodeAllocator::allocatedNodes(void)
 {
-    return ((u32)_curAvailableIndex);
+    return ((u32)_nextNodeIndex);
 }
 
 u32 NodeAllocator::maxAllocatedNodes(void)
@@ -79,13 +76,20 @@ u32 NodeAllocator::maxAllocatedNodes(void)
 
 void NodeAllocator::clear()
 {
-    for (u32 iteration = 0;
-         iteration < NODE_POOL_SIZE;
-         ++iteration)
-    {
-        _availableNodes[iteration] = iteration;
-        _validNodes[iteration] = 0;
-    }
-    _curAvailableIndex = 0;
+    _nextNodeIndex = 0;
     _numberOfLeafs = 0;
+    _freeNodeSize = 0;
+}
+
+void NodeAllocator::initializeNode(Node *node, Rec nodeBound)
+{
+    node->_leafHashIndex = -1;
+    node->_curNumberOfRectangles = 0;
+    for (u32 childIndex = 0;
+         childIndex < NUMBER_OF_CHILDREN;
+         ++childIndex)
+    {
+        node->setChildInvalid(childIndex);
+    }
+    node->_nodeBound = nodeBound;
 }
