@@ -24,12 +24,6 @@ struct RecInfo
     Rec rec;
 };
 
-struct RecsInfo
-{
-    array<RecInfo, NODE_LIMIT> recInfos;
-    u32 size;
-};
-
 #define EMPTY_HASH_SLOT UINT32_MAX
 struct LeafHash
 {
@@ -121,16 +115,16 @@ struct LeafHash
         return (false);
     }
 
-    inline RecsInfo getRecInfos(void)
+    inline vector<RecInfo> getRecInfos(void)
     {
-        RecsInfo result = {};
+        vector<RecInfo> result;
         for (u32 i = 0;
              i < NODE_LIMIT;
              ++i)
         {
             if (_recIndices[i] != EMPTY_HASH_SLOT)
             {
-                result.recInfos[result.size++] = { _recIndices[i], rectangles[_recIndices[i]] };
+                result.push_back({ _recIndices[i], rectangles[_recIndices[i]] });
             }
         }
 
@@ -177,11 +171,11 @@ struct LeafHashAllocator
             ASSERT(false);
         }
         b32 result = _leafHashes[leafHashIndex].insert(recIndex);
-        static u32 nOfSameInsertions = 0;
-        if (result == false)
-        {
-            LOG(++nOfSameInsertions);
-        }
+        // static u32 nOfSameInsertions = 0;
+        // if (result == false)
+        // {
+        //     LOG(++nOfSameInsertions);
+        // }
         // if (result == false)
         // {
         //     LOG(recIndex << " " << leafHashIndex);
@@ -224,7 +218,7 @@ struct LeafHashAllocator
     /**
      * Pulls and copies rectangles into memory for the hash
      */
-    inline RecsInfo getRecInfos(u16 leafHashIndex)
+    inline vector<RecInfo> getRecInfos(u16 leafHashIndex)
     {
         ASSERT(leafHashIndex < _leafHashes.size());
         return (_leafHashes[leafHashIndex].getRecInfos());

@@ -97,6 +97,9 @@ u32 Node::update(NodeAllocator &nodeAllocator)
     u32 nOfIntersections = 0;
 
     bitset<NUMBER_OF_INSERTIONS> collidedRectangles;
+    // instead of this iteration:
+    // use a queue for bfs traversal
+    // or recursively call update
     for (u32 nodeIndex = 0;
          nodeIndex < nodeAllocator._nodes.size();
          ++nodeIndex)
@@ -107,24 +110,24 @@ u32 Node::update(NodeAllocator &nodeAllocator)
             if (node.isLeaf() == true)
             {
                 // pull/copy from rectangles
-                RecsInfo recsInfo = leafHashAllocator.getRecInfos(node._leafHashIndex);
+                vector<RecInfo> recInfo = leafHashAllocator.getRecInfos(node._leafHashIndex);
 
                 for (u32 leftIter = 0;
-                    leftIter < recsInfo.size;
+                    leftIter < recInfo.size();
                     ++leftIter)
                 {
-                    u32 leftRecIndex = recsInfo.recInfos[leftIter].index;
+                    u32 leftRecIndex = recInfo[leftIter].index;
                     if (collidedRectangles.test(leftRecIndex) == false)
                     {
                         for (u32 rightIter = leftIter + 1;
-                            rightIter < recsInfo.size;
+                            rightIter < recInfo.size();
                             ++rightIter)
                         {
-                            u32 rightRecIndex = recsInfo.recInfos[rightIter].index;
+                            u32 rightRecIndex = recInfo[rightIter].index;
                             if (collidedRectangles.test(rightRecIndex) == false)
                             {
-                                Rec &leftRec = recsInfo.recInfos[leftIter].rec;
-                                Rec &rightRec = recsInfo.recInfos[rightIter].rec;
+                                Rec &leftRec = recInfo[leftIter].rec;
+                                Rec &rightRec = recInfo[rightIter].rec;
                                 if (leftRec.doesRecIntersect(rightRec))
                                 {
                                     // remove the 2 recs for further collision detection with other recs
@@ -183,10 +186,10 @@ u32 Node::update(NodeAllocator &nodeAllocator)
                                         LOG("");
                                         LOG(leftRec);
                                         for (u32 i = 0;
-                                             i < recsInfo.size;
+                                             i < recInfo.size();
                                              ++i)
                                         {
-                                            cout << recsInfo.recInfos[i].index << " ";
+                                            cout << recInfo[i].index << " ";
                                         }
                                         LOG("");
                                         ASSERT(false);
@@ -203,10 +206,10 @@ u32 Node::update(NodeAllocator &nodeAllocator)
 
                 // map back into rectangles
                 for (u32 iteration = 0;
-                    iteration < recsInfo.size;
+                    iteration < recInfo.size();
                     ++iteration)
                 {
-                    rectangles[recsInfo.recInfos[iteration].index] = recsInfo.recInfos[iteration].rec;
+                    rectangles[recInfo[iteration].index] = recInfo[iteration].rec;
                 }
             }
         }
@@ -268,16 +271,16 @@ void Node::deferredCleanup(NodeAllocator &nodeAllocator)
 void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth)
 {
     array<Rec, NUMBER_OF_CHILDREN> childBounds = getChildBounds(orientation);
-    RecsInfo recsInfo = leafHashAllocator.getRecInfos(_leafHashIndex);
+    vector<RecInfo> recInfo = leafHashAllocator.getRecInfos(_leafHashIndex);
     for (u32 iteration = 0;
-         iteration < recsInfo.size;
+         iteration < recInfo.size();
          ++iteration)
     {
         for (u32 childIndex = 0;
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
         {
-            if (childBounds[childIndex].doesRecIntersect(recsInfo.recInfos[iteration].rec))
+            if (childBounds[childIndex].doesRecIntersect(recInfo[iteration].rec))
             {
                 Node *childNode;
                 if (isChildValid(childIndex) == false)
@@ -291,7 +294,7 @@ void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, 
                 {
                     childNode = nodeAllocator.getNode(_children[childIndex]);
                 }
-                childNode->insert(recsInfo.recInfos[iteration].index, nodeAllocator, recsInfo.recInfos[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
+                childNode->insert(recInfo[iteration].index, nodeAllocator, recInfo[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
             }
         }
     }
