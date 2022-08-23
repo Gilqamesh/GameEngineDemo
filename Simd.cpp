@@ -68,12 +68,20 @@ int main()
     LOG("Sup");
 
 // unpack vector into 4 ints
+// intrinsics are not cross platform!
 #if defined (__WIN32)
     int a[4];
     a[0] = int(_n.m256i_i64[3]);
     a[1] = int(_n.m256i_i64[2]);
     a[2] = int(_n.m256i_i64[1]);
     a[3] = int(_n.m256i_i64[0]);
+#endif
+#if defined(__linux__)
+    int a[4];
+    a[0] = int(_n[3]);
+    a[1] = int(_n[2]);
+    a[2] = int(_n[1]);
+    a[3] = int(_n[0]);
 #endif
 
 }
