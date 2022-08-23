@@ -1,9 +1,10 @@
 #include "NodeAllocator.hpp"
 #include <ctime>
 #include <thread>
+#include <fstream>
 
 # define FRAMES_PER_SEC 60
-# define SECONDS_SIMULATED 1
+# define SECONDS_SIMULATED 10
 
 extern Rec screenBound;
 vector<Rec> rectangles;
@@ -14,22 +15,30 @@ extern Rec maxInsertionBound;
 extern clock_t timer;
 extern clock_t timer2;
 extern clock_t timer3;
+ofstream insertionFile("insertion.html");
+ofstream afterEraseFile("afterErase.html");
+ofstream afterReinsert("afterReinsert.html");
 
 int main()
 {
     srand(42);
-    
+
     for (u32 iteration = 0;
          iteration < NUMBER_OF_INSERTIONS;
          ++iteration)
     {
         r32 minSize = 10.0f;
         r32 maxSize = 25.0f;
-        Rec rectangle = { getRand(screenBound.topLeftX, screenBound.topLeftX + screenBound.width),
-                          getRand(screenBound.topLeftY, screenBound.topLeftY + screenBound.height),
+        Rec rectangle = { getRand(screenBound.topLeftX + 1.0f, screenBound.topLeftX + screenBound.width - 1.0f),
+                          getRand(screenBound.topLeftY + 1.0f, screenBound.topLeftY + screenBound.height - 1.0f),
                           getRand(minSize, maxSize),
                           getRand(minSize, maxSize) };
         rectangles.push_back(rectangle);
+        static u32 i = 0;
+        if (++i < 50)
+        {
+            LOG(rectangle);
+        }
     }
     // rectangles.push_back({0.0f, 0.0f, 10.0f, 10.0f});
     // rectangles.push_back({1.0f, 1.0f, 10.0f, 10.0f});
@@ -48,8 +57,6 @@ int main()
     clock_t insertionClock = 0;
     u32 maxNumberOfInsersections = 0;
 
-    nodeAllocator.clear();
-    leafHashAllocator.clear();
     NodeInfo nodeInfo = nodeAllocator.allocateNode(screenBound);
     Node *root = nodeInfo.address;
     ASSERT(root);
@@ -62,6 +69,7 @@ int main()
         root->insert(rectangleIndex, nodeAllocator, rectangles[rectangleIndex], horizontal, 0);
     }
     insertionClock += clock() - start;
+    // root->logInfo(insertionFile, nodeAllocator, 0, 0);
 
     LOG("Intersections...");
     clock_t totalIntersectionClock = 0;
@@ -70,12 +78,13 @@ int main()
          ++currentSecond)
     {
         cout << currentSecond + 1 << "s: ";
-        for (u32 numberOfTreeConstructions = 0;
-            numberOfTreeConstructions < FRAMES_PER_SEC;
-            ++numberOfTreeConstructions)
+        // afterEraseFile.open("afterErase.html");
+        for (u32 frameIndex = 0;
+            frameIndex < FRAMES_PER_SEC;
+            ++frameIndex)
         {
             start = clock();
-            u32 numberOfIntersections = root->update(nodeAllocator);
+            u32 numberOfIntersections = root->update(nodeAllocator, frameIndex);
             totalIntersectionClock += clock() - start;
             cout << numberOfIntersections << " ";
             if (maxNumberOfInsersections < numberOfIntersections)
@@ -83,8 +92,10 @@ int main()
                 maxNumberOfInsersections = numberOfIntersections;
             }
         }
+        // afterEraseFile.close();
         LOG("");
     }
+    root->printBounds(40, nodeAllocator);
 
     LOG("Node pool size: " << NODE_POOL_SIZE << ", in kilobytes: " << NODE_POOL_SIZE * sizeof(Node) / 1024.0f << "KB");
     LOG("Allocated nodes: " << nodeAllocator.allocatedNodes() << ", in kilobytes: " << nodeAllocator.allocatedNodes() * sizeof(Node) / 1024.0f << "KB");

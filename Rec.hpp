@@ -13,8 +13,8 @@ typedef struct Rec
 
     inline b32 doesRecIntersect(const Rec& that) const
     {
-        return (topLeftX < that.topLeftX + that.width && that.topLeftX < topLeftX + width &&
-                topLeftY < that.topLeftY + that.height && that.topLeftY < topLeftY + height);
+        return (topLeftX <= that.topLeftX + that.width && that.topLeftX <= topLeftX + width &&
+                topLeftY <= that.topLeftY + that.height && that.topLeftY <= topLeftY + height);
     }
 
     inline b32 isPointInRect(r32 x, r32 y) const

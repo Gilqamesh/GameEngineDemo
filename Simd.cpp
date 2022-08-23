@@ -76,12 +76,16 @@ int main()
     a[2] = int(_n.m256i_i64[1]);
     a[3] = int(_n.m256i_i64[0]);
 #endif
-#if defined(__linux__)
+#if defined(__linux__) || defined(__APPLE__)
     int a[4];
     a[0] = int(_n[3]);
     a[1] = int(_n[2]);
     a[2] = int(_n[1]);
     a[3] = int(_n[0]);
+    LOG(a[0]);
+    LOG(a[1]);
+    LOG(a[2]);
+    LOG(a[3]);
 #endif
 
 }

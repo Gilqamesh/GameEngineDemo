@@ -18,7 +18,6 @@ NodeInfo NodeAllocator::allocateNode(Rec nodeBound)
     if (_freeNodeSize)
     {
         --_freeNodeSize;
-        // TODO(david): initialize node
         result.address = &_nodes[_freeNodeIndices[_freeNodeSize]];
         result.index = _freeNodeIndices[_freeNodeSize];
     }
@@ -48,7 +47,7 @@ NodeInfo NodeAllocator::allocateNode(Rec nodeBound)
 
 void NodeAllocator::deleteNode(NodeInfo nodeInfo)
 {
-    ASSERT(_freeNodeSize < _freeNodeIndices.size());
+    ASSERT(_freeNodeSize < _freeNodeIndices.size() && _nextNodeIndex > 0);
     _freeNodeIndices[_freeNodeSize++] = nodeInfo.index;
     _validNodes[nodeInfo.index] = 0;
 }

@@ -13,6 +13,7 @@ using namespace std;
 # define LINE() (LOG(__LINE__ << " " << __FILE__))
 
 # define NUMBER_OF_INSERTIONS 32000
+// # define NUMBER_OF_INSERTIONS 1000
 
 // # define NDEBUG
 

@@ -3,18 +3,19 @@
 
 # include "Node.hpp"
 
-# define NODE_POOL_SIZE 20000
+// # define NODE_POOL_SIZE 20000
+# define NODE_POOL_SIZE 1000
 
 struct NodeInfo
 {
     Node *address;
-    u32  index;
+    i32  index;
 };
 
 struct NodeAllocator
 {
     array<Node, NODE_POOL_SIZE>      _nodes;
-    array<u8, NODE_POOL_SIZE>        _validNodes;
+    array<u32, NODE_POOL_SIZE>       _validNodes;
     u32                              _nextNodeIndex;
     u32                              _maxAllocatedNodes;
     u32                              _numberOfLeafs;
@@ -30,10 +31,21 @@ struct NodeAllocator
 
     Node *getNode(u32 nodeIndex);
 
+    inline b32 isValid(u32 nodeIndex) const
+    {
+        ASSERT(nodeIndex < _validNodes.size());
+        return (_validNodes[nodeIndex] == 1);
+    }
+
+    inline u32 size(void) const
+    {
+        return (_nextNodeIndex);
+    }
+
     u32 allocatedNodes(void);
     u32 maxAllocatedNodes(void);
 
-    void clear();
+    void clear(void);
 
     void initializeNode(Node *node, Rec nodeBound);
 };

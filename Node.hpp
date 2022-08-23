@@ -8,6 +8,9 @@
 // must be a power of 2
 # define NODE_LIMIT 512
 
+// debug
+#include <unordered_set>
+
 extern vector<Rec> rectangles;
 
 enum NodeOrientation
@@ -32,10 +35,33 @@ struct LeafHash
         clear();
     }
 
+    LeafHash(const LeafHash& that)
+    {
+        *this = that;
+    }
+
+    LeafHash &operator=(const LeafHash& that)
+    {
+        if (this != &that)
+        {
+            for (u32 iteration = 0;
+             iteration < NODE_LIMIT;
+             ++iteration)
+            {
+                _recIndices[iteration] = that._recIndices[iteration];
+            }
+        }
+
+        return (*this);
+    }
+
     u32 _recIndices[NODE_LIMIT];
+    unordered_set<u32> debugSet;
 
     inline void clear(void)
     {
+        debugSet.clear();
+
         for (u32 i = 0;
              i < NODE_LIMIT;
              ++i)
@@ -46,9 +72,15 @@ struct LeafHash
 
     inline b32 insert(u32 recIndex)
     {
+        // ASSERT(debugSet.count(recIndex) == 0);
+        debugSet.insert(recIndex);
+        return (true);
+
         ASSERT(recIndex < NUMBER_OF_INSERTIONS);
         // TODO(david): better hashing function
         u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
+        ASSERT(hashValue < NODE_LIMIT);
+
         for (u32 i = hashValue;
              i < NODE_LIMIT;
              ++i)
@@ -59,6 +91,18 @@ struct LeafHash
             }
             if (_recIndices[i] == EMPTY_HASH_SLOT)
             {
+                // debug
+                for (u32 j = 0;
+                    j < NODE_LIMIT;
+                    ++j)
+                {
+                    if (_recIndices[j] == recIndex)
+                    {
+                        LOG("");
+                        LOG(i << " " << j);
+                        ASSERT(false);
+                    }
+                }
                 _recIndices[i] = recIndex;
                 return (true);
             }
@@ -75,6 +119,18 @@ struct LeafHash
             }
             if (_recIndices[i] == EMPTY_HASH_SLOT)
             {
+                // debug
+                for (u32 j = 0;
+                    j < NODE_LIMIT;
+                    ++j)
+                {
+                    if (_recIndices[j] == recIndex)
+                    {
+                        LOG("");
+                        LOG(i << " " << j);
+                        ASSERT(false);
+                    }
+                }
                 _recIndices[i] = recIndex;
                 return (true);
             }
@@ -87,8 +143,14 @@ struct LeafHash
 
     inline b32 erase(u32 recIndex)
     {
+        if (debugSet.count(recIndex) == 0)
+            return (false);
+        debugSet.erase(recIndex);
+        return (true);
+
         ASSERT(recIndex < NUMBER_OF_INSERTIONS);
         u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
+        ASSERT(hashValue < NODE_LIMIT);
         for (u32 i = hashValue;
              i < NODE_LIMIT;
              ++i)
@@ -100,7 +162,6 @@ struct LeafHash
             }
         }
 
-        // if there is no empty hash slot left from the hashValue
         for (u32 i = 0;
              i < hashValue;
              ++i)
@@ -111,6 +172,9 @@ struct LeafHash
                 return (true);
             }
         }
+
+        LOG(recIndex);
+        ASSERT(false);
         
         return (false);
     }
@@ -118,6 +182,13 @@ struct LeafHash
     inline vector<RecInfo> getRecInfos(void)
     {
         vector<RecInfo> result;
+
+        for (u32 index : debugSet)
+        {
+            result.push_back({ index, rectangles[index] });
+        }
+        return (result);
+
         for (u32 i = 0;
              i < NODE_LIMIT;
              ++i)
@@ -134,9 +205,10 @@ struct LeafHash
 
 struct LeafHashAllocator
 {
-    LeafHashAllocator() : _deletionCount(0) {}
+    LeafHashAllocator() : _validLeafHashes{}, _deletionCount(0) {}
 
     vector<LeafHash> _leafHashes;
+    array<u16, 1000> _validLeafHashes; // debug
     vector<u16>      _available;
     u32              _deletionCount;
 
@@ -157,6 +229,10 @@ struct LeafHashAllocator
             _leafHashes.push_back(LeafHash());
         }
 
+        ASSERT(result < 10000); // arbitrary limit
+        ASSERT(result < _validLeafHashes.size());
+        _validLeafHashes[result] = 1;
+
         return (result);
     }
 
@@ -170,6 +246,7 @@ struct LeafHashAllocator
             LOG(leafHashIndex << " " << _leafHashes.size() << " " << recIndex);
             ASSERT(false);
         }
+        ASSERT(_validLeafHashes[leafHashIndex]);
         b32 result = _leafHashes[leafHashIndex].insert(recIndex);
         // static u32 nOfSameInsertions = 0;
         // if (result == false)
@@ -198,6 +275,9 @@ struct LeafHashAllocator
     inline void clearLeafHash(u16 leafHashIndex)
     {
         ASSERT(leafHashIndex < _leafHashes.size());
+        ASSERT(leafHashIndex < _validLeafHashes.size());
+        _validLeafHashes[leafHashIndex] = 0;
+
         _leafHashes[leafHashIndex].clear();
         _available.push_back(leafHashIndex);
         ++_deletionCount;
@@ -247,13 +327,15 @@ struct Node
      */
     void erase(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec);
 
-    u32 update(NodeAllocator &nodeAllocator);
+    u32 update(NodeAllocator &nodeAllocator, u32 iterationNumber);
 
     void deferredCleanup(NodeAllocator &nodeAllocator);
 
     void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth);
 
     void printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const;
+
+    void logInfo(ostream &os, NodeAllocator &nodeAllocator, i32 firstNodeIndex, u32 callIndex);
 
     inline b32 isChildValid(u32 childIndex) const
     {
@@ -301,7 +383,8 @@ struct Node
         return (!(_leafHashIndex < 0));
     }
 
-    inline array<Rec, NUMBER_OF_CHILDREN> getChildBounds(NodeOrientation orientation) const
+    // TODO(david): return structure of two recs
+    inline vector<Rec> getChildBounds(NodeOrientation orientation) const
     {
         r32 xoffset;
         r32 yoffset;
@@ -353,15 +436,15 @@ struct Node
             LOG(_nodeBound.height);
             ASSERT(false);
         }
-        array<Rec, NUMBER_OF_CHILDREN> result = {
+        vector<Rec> result = {
             Rec{ _nodeBound.topLeftX,
                 _nodeBound.topLeftY,
                 orientation == horizontal ? xoffset : _nodeBound.width,
                 orientation == horizontal ? _nodeBound.height : yoffset },
             Rec{ _nodeBound.topLeftX + xoffset,
                 _nodeBound.topLeftY + yoffset,
-                orientation == horizontal ? _nodeBound.width - xoffset : _nodeBound.width,
-                orientation == horizontal ? _nodeBound.height : _nodeBound.height - yoffset}
+                orientation == horizontal ? xoffset : _nodeBound.width,
+                orientation == horizontal ? _nodeBound.height : yoffset }
         };
 
         return (result);
