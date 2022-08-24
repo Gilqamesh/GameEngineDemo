@@ -44,6 +44,7 @@ struct LeafHash
     {
         if (this != &that)
         {
+            debugSet = that.debugSet;
             for (u32 iteration = 0;
              iteration < NODE_LIMIT;
              ++iteration)
@@ -73,8 +74,9 @@ struct LeafHash
     inline b32 insert(u32 recIndex)
     {
         // ASSERT(debugSet.count(recIndex) == 0);
+        b32 result = (debugSet.count(recIndex) == 0);
         debugSet.insert(recIndex);
-        return (true);
+        return (result);
 
         ASSERT(recIndex < NUMBER_OF_INSERTIONS);
         // TODO(david): better hashing function
@@ -300,7 +302,11 @@ struct LeafHashAllocator
      */
     inline vector<RecInfo> getRecInfos(u16 leafHashIndex)
     {
-        ASSERT(leafHashIndex < _leafHashes.size());
+        if (!(leafHashIndex < _leafHashes.size()))
+        {
+            LOG(leafHashIndex << " " << _leafHashes.size());
+            ASSERT(false);
+        }
         return (_leafHashes[leafHashIndex].getRecInfos());
     }
 };
@@ -320,7 +326,7 @@ struct Node
      * Assumes that the rectangle first the node's bound
      */
     void insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation,
-        u32 curDepth);
+        u32 curDepth, queue<Node *> *updateQueue = nullptr, unordered_set<Node *> *processedNodes = nullptr);
 
     /**
      * Assumes that the rectangle first the node's bound
@@ -331,7 +337,8 @@ struct Node
 
     void deferredCleanup(NodeAllocator &nodeAllocator);
 
-    void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth);
+    void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth,
+        queue<Node *> *updateQueue = nullptr, unordered_set<Node *> *processedNodes = nullptr);
 
     void printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const;
 
@@ -339,7 +346,7 @@ struct Node
 
     inline b32 isChildValid(u32 childIndex) const
     {
-        return (_children[childIndex] >= 0);
+        return (!(_children[childIndex] < 0));
     }
     inline void setChildInvalid(u32 childIndex)
     {

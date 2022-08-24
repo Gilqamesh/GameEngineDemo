@@ -4,7 +4,7 @@
 # include "Node.hpp"
 
 // # define NODE_POOL_SIZE 20000
-# define NODE_POOL_SIZE 1000
+# define NODE_POOL_SIZE 5000
 
 struct NodeInfo
 {
@@ -44,6 +44,8 @@ struct NodeAllocator
 
     u32 allocatedNodes(void);
     u32 maxAllocatedNodes(void);
+
+    queue<Node *> getLeafQueue(void);
 
     void clear(void);
 

@@ -2,6 +2,7 @@
 #include <ctime>
 #include <thread>
 #include <fstream>
+#include <algorithm>
 
 # define FRAMES_PER_SEC 60
 # define SECONDS_SIMULATED 10
@@ -78,7 +79,7 @@ int main()
          ++currentSecond)
     {
         cout << currentSecond + 1 << "s: ";
-        // afterEraseFile.open("afterErase.html");
+        afterEraseFile.open("afterErase.html");
         for (u32 frameIndex = 0;
             frameIndex < FRAMES_PER_SEC;
             ++frameIndex)
@@ -90,9 +91,10 @@ int main()
             if (maxNumberOfInsersections < numberOfIntersections)
             {
                 maxNumberOfInsersections = numberOfIntersections;
-            }
+            }   
         }
-        // afterEraseFile.close();
+        root->logInfo(afterEraseFile, nodeAllocator, 0, 0);
+        afterEraseFile.close();
         LOG("");
     }
     root->printBounds(40, nodeAllocator);

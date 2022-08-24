@@ -24,6 +24,8 @@ need proper 2d rotation before being able to remove the need for dynamic VBO. Pr
 make a particle generator attachable to an entity
 fix vsync (deltaTime varies a lot)
 set the size of the dynamic vertex buffer when creating the particle generator by having an additional parameter for the primitive generator or just use a different method all together for the primitive creation
+preprocessing simulations and load them in and simulate the frames for it, for example for: global illumination, cutscenes, maybe animations?
+compile critically performant code with optimization flags and load them in as a .dll
 
 Notes:
 Need different loaded model instances if we want to update the model's meshes dynamically, in this case they can't be shared

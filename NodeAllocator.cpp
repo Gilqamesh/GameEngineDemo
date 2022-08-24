@@ -47,6 +47,7 @@ NodeInfo NodeAllocator::allocateNode(Rec nodeBound)
 
 void NodeAllocator::deleteNode(NodeInfo nodeInfo)
 {
+    LOG("\nDeleting node ... " << nodeInfo.index);
     ASSERT(_freeNodeSize < _freeNodeIndices.size() && _nextNodeIndex > 0);
     _freeNodeIndices[_freeNodeSize++] = nodeInfo.index;
     _validNodes[nodeInfo.index] = 0;
@@ -71,6 +72,23 @@ u32 NodeAllocator::allocatedNodes(void)
 u32 NodeAllocator::maxAllocatedNodes(void)
 {
     return (_maxAllocatedNodes);
+}
+
+queue<Node *> NodeAllocator::getLeafQueue(void)
+{
+    queue<Node *> result;
+    for (u32 nodeIndex = 0;
+         nodeIndex < _nextNodeIndex;
+         ++nodeIndex)
+    {
+        if (isValid(nodeIndex) == true &&
+            _nodes[nodeIndex].isLeaf() == true)
+        {
+            result.push(&_nodes[nodeIndex]);
+        }
+    }
+
+    return (result);
 }
 
 void NodeAllocator::clear()

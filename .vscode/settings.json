@@ -82,6 +82,7 @@
         "strstream": "cpp",
         "thread": "cpp",
         "filesystem": "cpp",
-        "xiosbase": "cpp"
+        "xiosbase": "cpp",
+        "xhash": "cpp"
     }
 }
