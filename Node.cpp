@@ -163,14 +163,13 @@ u32 Node::update(NodeAllocator &nodeAllocator, u32 iterationNumber)
     // TODO(david): Different iteration is needed, since this iteration is mutative, we need a more dynamic traversal
 
     queue<Node *> updateQueue = nodeAllocator.getLeafQueue();
-    unordered_set<Node *> processedNodes;
+    unordered_set<Node *> processedNodes; // marks leaf nodes that has been processed by the update
     while (updateQueue.empty() == false)
     {
         Node *node = updateQueue.front();
         updateQueue.pop();
-        if (node->isLeaf() == false)
-            continue ; // node is now a branch from previous iterations
-        ASSERT(processedNodes.count(node) == 0); // the node should be a branch in this case, which should be filtered out by above condition
+        if (node->isLeaf() == false || processedNodes.count(node))
+            continue ; // node is now a branch from previous iterations or has been processed
 
         // pull/copy from rectangles
         // IMPORTANT(david): problem here is that the updated hash table contains recs from previous loops that are updated
@@ -334,8 +333,8 @@ void Node::deferredCleanup(NodeAllocator &nodeAllocator)
         if (nOfEmptyChilds == NUMBER_OF_CHILDREN)
         {
             for (u32 childIndex = 0;
-                childIndex < NUMBER_OF_CHILDREN;
-                ++childIndex)
+                 childIndex < NUMBER_OF_CHILDREN;
+                 ++childIndex)
             {
                 ASSERT(node->isChildValid(childIndex));
                 i32 childNodeIndex = node->_children[childIndex];
@@ -357,6 +356,7 @@ void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, 
 {
     vector<Rec> childBounds = getChildBounds(orientation);
     vector<RecInfo> recInfo = leafHashAllocator.getRecInfos(_leafHashIndex);
+    array<b32, NUMBER_OF_CHILDREN> processedChild = {};
     for (u32 iteration = 0;
          iteration < recInfo.size();
          ++iteration)
@@ -379,12 +379,13 @@ void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, 
                 {
                     childNode = nodeAllocator.getNode(_children[childIndex]);
                 }
-                if (processedNodes != nullptr && processedNodes->count(this) == 0)
+                if (updateQueue != nullptr && processedChild[childIndex] == false && processedNodes->count(this) == 0)
                 {
-                    processedNodes->insert(childNode);
+                    processedChild[childIndex] = true;
                     updateQueue->push(childNode);
                 }
-                childNode->insert(recInfo[iteration].index, nodeAllocator, recInfo[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
+                childNode->insert(recInfo[iteration].index, nodeAllocator, recInfo[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1,
+                    updateQueue, processedNodes);
             }
         }
     }

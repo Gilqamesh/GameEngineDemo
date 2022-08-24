@@ -44,7 +44,6 @@ struct LeafHash
     {
         if (this != &that)
         {
-            debugSet = that.debugSet;
             for (u32 iteration = 0;
              iteration < NODE_LIMIT;
              ++iteration)
@@ -57,12 +56,9 @@ struct LeafHash
     }
 
     u32 _recIndices[NODE_LIMIT];
-    unordered_set<u32> debugSet;
 
     inline void clear(void)
     {
-        debugSet.clear();
-
         for (u32 i = 0;
              i < NODE_LIMIT;
              ++i)
@@ -73,14 +69,9 @@ struct LeafHash
 
     inline b32 insert(u32 recIndex)
     {
-        // ASSERT(debugSet.count(recIndex) == 0);
-        b32 result = (debugSet.count(recIndex) == 0);
-        debugSet.insert(recIndex);
-        return (result);
-
         ASSERT(recIndex < NUMBER_OF_INSERTIONS);
         // TODO(david): better hashing function
-        u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
+        u32 hashValue = (recIndex) & (NODE_LIMIT - 1);
         ASSERT(hashValue < NODE_LIMIT);
 
         for (u32 i = hashValue;
@@ -145,13 +136,8 @@ struct LeafHash
 
     inline b32 erase(u32 recIndex)
     {
-        if (debugSet.count(recIndex) == 0)
-            return (false);
-        debugSet.erase(recIndex);
-        return (true);
-
         ASSERT(recIndex < NUMBER_OF_INSERTIONS);
-        u32 hashValue = (recIndex * 101) & (NODE_LIMIT - 1);
+        u32 hashValue = (recIndex) & (NODE_LIMIT - 1);
         ASSERT(hashValue < NODE_LIMIT);
         for (u32 i = hashValue;
              i < NODE_LIMIT;
@@ -184,12 +170,6 @@ struct LeafHash
     inline vector<RecInfo> getRecInfos(void)
     {
         vector<RecInfo> result;
-
-        for (u32 index : debugSet)
-        {
-            result.push_back({ index, rectangles[index] });
-        }
-        return (result);
 
         for (u32 i = 0;
              i < NODE_LIMIT;
