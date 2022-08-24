@@ -30,10 +30,15 @@ int main()
     {
         r32 minSize = 10.0f;
         r32 maxSize = 25.0f;
+        r32 minVel  = -50.0f;
+        r32 maxVel  = 50.0f;
         Rec rectangle = { getRand(screenBound.topLeftX + 1.0f, screenBound.topLeftX + screenBound.width - 1.0f),
                           getRand(screenBound.topLeftY + 1.0f, screenBound.topLeftY + screenBound.height - 1.0f),
                           getRand(minSize, maxSize),
-                          getRand(minSize, maxSize) };
+                          getRand(minSize, maxSize),
+                          getRand(minVel, maxVel),
+                          getRand(minVel, maxVel)
+                          };
         rectangles.push_back(rectangle);
         static u32 i = 0;
         if (++i < 50)
@@ -54,6 +59,7 @@ int main()
     });
     clock_t sortEnd = clock() - sortStart;
     LOG("Number of rectangles: " << NUMBER_OF_INSERTIONS);
+    LOG("Size of one rectangle: " << sizeof(Rec) << ", size of all rectangles: " << NUMBER_OF_INSERTIONS * sizeof(Rec) / 1024.0f << "KB");
 
     clock_t insertionClock = 0;
     u32 maxNumberOfInsersections = 0;
@@ -79,7 +85,7 @@ int main()
          ++currentSecond)
     {
         cout << currentSecond + 1 << "s: ";
-        afterEraseFile.open("afterErase.html");
+        // afterEraseFile.open("afterErase.html");
         for (u32 frameIndex = 0;
             frameIndex < FRAMES_PER_SEC;
             ++frameIndex)
@@ -93,14 +99,15 @@ int main()
                 maxNumberOfInsersections = numberOfIntersections;
             }   
         }
-        root->logInfo(afterEraseFile, nodeAllocator, 0, 0);
-        afterEraseFile.close();
+        // root->logInfo(afterEraseFile, nodeAllocator, 0, 0);
+        // afterEraseFile.close();
         LOG("");
     }
-    root->printBounds(40, nodeAllocator);
+    // root->printBounds(40, nodeAllocator);
 
     LOG("Node pool size: " << NODE_POOL_SIZE << ", in kilobytes: " << NODE_POOL_SIZE * sizeof(Node) / 1024.0f << "KB");
     LOG("Allocated nodes: " << nodeAllocator.allocatedNodes() << ", in kilobytes: " << nodeAllocator.allocatedNodes() * sizeof(Node) / 1024.0f << "KB");
+    LOG("Deleted nodes: " << nodeAllocator.deletedNodes() << ", in kilobytes: " << nodeAllocator.deletedNodes() * sizeof(Node) / 1024.0f << "KB");
     LOG("Total allocated nodes: " << nodeAllocator.maxAllocatedNodes() << ", in kilobytes: " << nodeAllocator.maxAllocatedNodes() * sizeof(Node) / 1024.0f << "KB");
     LOG("Size of a node in bytes: " << sizeof(Node) << "B");
     LOG("Node capacity: " << NODE_LIMIT << " rectangles");

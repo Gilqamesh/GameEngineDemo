@@ -6,7 +6,7 @@
 # include <ctime>
 # define NUMBER_OF_CHILDREN 2
 // must be a power of 2
-# define NODE_LIMIT 512
+# define NODE_LIMIT 256
 
 // debug
 #include <unordered_set>
@@ -187,10 +187,9 @@ struct LeafHash
 
 struct LeafHashAllocator
 {
-    LeafHashAllocator() : _validLeafHashes{}, _deletionCount(0) {}
+    LeafHashAllocator() : _deletionCount(0) {}
 
     vector<LeafHash> _leafHashes;
-    array<u16, 1000> _validLeafHashes; // debug
     vector<u16>      _available;
     u32              _deletionCount;
 
@@ -212,8 +211,6 @@ struct LeafHashAllocator
         }
 
         ASSERT(result < 10000); // arbitrary limit
-        ASSERT(result < _validLeafHashes.size());
-        _validLeafHashes[result] = 1;
 
         return (result);
     }
@@ -228,18 +225,7 @@ struct LeafHashAllocator
             LOG(leafHashIndex << " " << _leafHashes.size() << " " << recIndex);
             ASSERT(false);
         }
-        ASSERT(_validLeafHashes[leafHashIndex]);
         b32 result = _leafHashes[leafHashIndex].insert(recIndex);
-        // static u32 nOfSameInsertions = 0;
-        // if (result == false)
-        // {
-        //     LOG(++nOfSameInsertions);
-        // }
-        // if (result == false)
-        // {
-        //     LOG(recIndex << " " << leafHashIndex);
-        //     ASSERT(false);
-        // }
     }
 
     /**
@@ -252,17 +238,24 @@ struct LeafHashAllocator
     }
 
     /**
-     * Clears the LeafHash for later use
+     * Removes the LeafHash for later use
      */
-    inline void clearLeafHash(u16 leafHashIndex)
+    inline void eraseLeafHash(u16 leafHashIndex)
     {
         ASSERT(leafHashIndex < _leafHashes.size());
-        ASSERT(leafHashIndex < _validLeafHashes.size());
-        _validLeafHashes[leafHashIndex] = 0;
 
         _leafHashes[leafHashIndex].clear();
         _available.push_back(leafHashIndex);
         ++_deletionCount;
+    }
+
+    /**
+     * Clears the leaf hash so that it wont store any recs
+     */
+    inline void clearLeafHash(u16 leafHashIndex)
+    {
+        ASSERT(leafHashIndex < _leafHashes.size());
+        _leafHashes[leafHashIndex].clear();
     }
     
     inline void clear(void)
@@ -306,19 +299,13 @@ struct Node
      * Assumes that the rectangle first the node's bound
      */
     void insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation,
-        u32 curDepth, queue<Node *> *updateQueue = nullptr, unordered_set<Node *> *processedNodes = nullptr);
-
-    /**
-     * Assumes that the rectangle first the node's bound
-     */
-    void erase(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec);
+        u32 curDepth);
 
     u32 update(NodeAllocator &nodeAllocator, u32 iterationNumber);
 
     void deferredCleanup(NodeAllocator &nodeAllocator);
 
-    void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth,
-        queue<Node *> *updateQueue = nullptr, unordered_set<Node *> *processedNodes = nullptr);
+    void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth);
 
     void printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const;
 
@@ -370,8 +357,7 @@ struct Node
         return (!(_leafHashIndex < 0));
     }
 
-    // TODO(david): return structure of two recs
-    inline vector<Rec> getChildBounds(NodeOrientation orientation) const
+    inline array<Rec, 2> getChildBounds(NodeOrientation orientation) const
     {
         r32 xoffset;
         r32 yoffset;
@@ -423,15 +409,15 @@ struct Node
             LOG(_nodeBound.height);
             ASSERT(false);
         }
-        vector<Rec> result = {
+        array<Rec, 2> result = {
             Rec{ _nodeBound.topLeftX,
-                _nodeBound.topLeftY,
-                orientation == horizontal ? xoffset : _nodeBound.width,
-                orientation == horizontal ? _nodeBound.height : yoffset },
+              _nodeBound.topLeftY,
+              orientation == horizontal ? xoffset : _nodeBound.width,
+              orientation == horizontal ? _nodeBound.height : yoffset },
             Rec{ _nodeBound.topLeftX + xoffset,
-                _nodeBound.topLeftY + yoffset,
-                orientation == horizontal ? xoffset : _nodeBound.width,
-                orientation == horizontal ? _nodeBound.height : yoffset }
+              _nodeBound.topLeftY + yoffset,
+              orientation == horizontal ? xoffset : _nodeBound.width,
+              orientation == horizontal ? _nodeBound.height : yoffset }
         };
 
         return (result);

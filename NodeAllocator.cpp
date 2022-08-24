@@ -5,6 +5,7 @@ Rec screenBound = {0.0f, 0.0f, 1600.0f, 900.0f};
 NodeAllocator::NodeAllocator()
     : _validNodes{}, _freeNodeSize(0)
 {
+    _deletedNodes = 0;
     _nextNodeIndex = 0;
     _numberOfLeafs = 0;
     _maxAllocatedNodes = 0;
@@ -47,8 +48,8 @@ NodeInfo NodeAllocator::allocateNode(Rec nodeBound)
 
 void NodeAllocator::deleteNode(NodeInfo nodeInfo)
 {
-    LOG("\nDeleting node ... " << nodeInfo.index);
     ASSERT(_freeNodeSize < _freeNodeIndices.size() && _nextNodeIndex > 0);
+    ++_deletedNodes;
     _freeNodeIndices[_freeNodeSize++] = nodeInfo.index;
     _validNodes[nodeInfo.index] = 0;
 }
@@ -74,21 +75,9 @@ u32 NodeAllocator::maxAllocatedNodes(void)
     return (_maxAllocatedNodes);
 }
 
-queue<Node *> NodeAllocator::getLeafQueue(void)
+u32 NodeAllocator::deletedNodes(void)
 {
-    queue<Node *> result;
-    for (u32 nodeIndex = 0;
-         nodeIndex < _nextNodeIndex;
-         ++nodeIndex)
-    {
-        if (isValid(nodeIndex) == true &&
-            _nodes[nodeIndex].isLeaf() == true)
-        {
-            result.push(&_nodes[nodeIndex]);
-        }
-    }
-
-    return (result);
+    return (_deletedNodes);
 }
 
 void NodeAllocator::clear()

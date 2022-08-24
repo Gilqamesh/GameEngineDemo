@@ -10,6 +10,8 @@ typedef struct Rec
     r32 topLeftY;
     r32 width;
     r32 height;
+    r32 dx;
+    r32 dy;
 
     inline b32 doesRecIntersect(const Rec& that) const
     {
@@ -21,7 +23,32 @@ typedef struct Rec
     {
         return (x >= topLeftX && y >= topLeftY && x <= topLeftX + width && y <= topLeftY + height);
     }
+
+    inline b32 isXOutsideNextFrame(const Rec& bound) const
+    {
+        return ((topLeftX + dx >= bound.topLeftX + bound.width ||
+                topLeftX + dx + width <= bound.topLeftX));
+    }
+
+    inline b32 isYOutsideNextFrame(const Rec& bound) const
+    {
+        return ((topLeftY + dy >= bound.topLeftY + bound.height ||
+                topLeftY + dy + height <= bound.topLeftY));
+    }
+
+    inline void update(void)
+    {
+        topLeftX += dx;
+        topLeftY += dy;
+    }
+
 } Rec;
+
+struct Velocity
+{
+    r32 dx;
+    r32 dy;
+};
 
 inline float getRand(float low, float high)
 {
