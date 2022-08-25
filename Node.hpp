@@ -6,10 +6,7 @@
 # include <ctime>
 # define NUMBER_OF_CHILDREN 2
 // must be a power of 2
-# define NODE_LIMIT 256
-
-// debug
-#include <unordered_set>
+# define NODE_LIMIT 128
 
 extern vector<Rec> rectangles;
 
@@ -27,7 +24,9 @@ struct RecInfo
     Rec rec;
 };
 
-#define EMPTY_HASH_SLOT UINT32_MAX
+// power of 2 > NUMBER_OF_INSERTIONS
+// #define EMPTY_HASH_SLOT UINT32_MAX
+#define EMPTY_HASH_SLOT UINT16_MAX
 struct LeafHash
 {
     LeafHash()
@@ -55,7 +54,7 @@ struct LeafHash
         return (*this);
     }
 
-    u32 _recIndices[NODE_LIMIT];
+    u16 _recIndices[NODE_LIMIT];
 
     inline void clear(void)
     {
@@ -84,18 +83,6 @@ struct LeafHash
             }
             if (_recIndices[i] == EMPTY_HASH_SLOT)
             {
-                // debug
-                for (u32 j = 0;
-                    j < NODE_LIMIT;
-                    ++j)
-                {
-                    if (_recIndices[j] == recIndex)
-                    {
-                        LOG("");
-                        LOG(i << " " << j);
-                        ASSERT(false);
-                    }
-                }
                 _recIndices[i] = recIndex;
                 return (true);
             }
@@ -112,18 +99,6 @@ struct LeafHash
             }
             if (_recIndices[i] == EMPTY_HASH_SLOT)
             {
-                // debug
-                for (u32 j = 0;
-                    j < NODE_LIMIT;
-                    ++j)
-                {
-                    if (_recIndices[j] == recIndex)
-                    {
-                        LOG("");
-                        LOG(i << " " << j);
-                        ASSERT(false);
-                    }
-                }
                 _recIndices[i] = recIndex;
                 return (true);
             }
@@ -339,7 +314,7 @@ struct Node
     {
         _curNumberOfRectangles = -1;
         ASSERT(hasLeafHash() == true);
-        leafHashAllocator.clearLeafHash(_leafHashIndex);
+        leafHashAllocator.eraseLeafHash(_leafHashIndex);
         _leafHashIndex = -1;
     }
 

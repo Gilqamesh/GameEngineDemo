@@ -215,7 +215,7 @@ u32 Node::update(NodeAllocator &nodeAllocator, u32 iterationNumber)
 
     start = clock();
     // TODO(david): profile this loop, and update multiple rectangles at a time by using simd intrinsics
-    const u32 nOfConcurrentInserts = 128;
+    const u32 nOfConcurrentInserts = 4096;
     for (u32 recIndex = 0;
          recIndex < rectangles.size();
          recIndex += nOfConcurrentInserts)

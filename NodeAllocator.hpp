@@ -4,7 +4,7 @@
 # include "Node.hpp"
 
 // # define NODE_POOL_SIZE 20000
-# define NODE_POOL_SIZE 1000
+# define NODE_POOL_SIZE 10000
 
 struct NodeInfo
 {
