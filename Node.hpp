@@ -4,8 +4,8 @@
 # include "Rec.hpp"
 # include <queue>
 # include <ctime>
+// both of these must be a power of 2!
 # define NUMBER_OF_CHILDREN 2
-// must be a power of 2
 # define NODE_LIMIT 128
 
 struct Tree;
@@ -244,7 +244,72 @@ struct LeafHashAllocator
 
 struct NodeList
 {
-    i32 nextNode;
+    u16 recIndex; // rec index
+    i32 next; // -1 if no next node
+};
+
+struct NodeListAllocator
+{
+    NodeListAllocator();
+
+    vector<NodeList> _nodeLists;
+    i32 _freeList; // -1 if no available NodeList
+    u32 _curIndex;
+    u32 _deletionCount;
+
+    /**
+     * Returns new child
+     */
+    i32 insert(i32 prevNode, u16 recIndex)
+    {
+        i32 result;
+        if (!(_freeList < 0))
+        {
+            result = _freeList;
+            _freeList = _nodeLists[_freeList].next;
+        }
+        else
+        {
+            result = _curIndex++;
+            if (!(result < _nodeLists.size()))
+            {
+                _nodeLists.push_back(NodeList());
+            }
+        }
+        _nodeLists[result].next = prevNode;
+        _nodeLists[result].recIndex = recIndex;
+
+        return (result);
+    }
+
+    void clear()
+    {
+        // _deletionCount = 0;
+        _curIndex = 0;
+        _freeList = -1;
+    }
+
+    void eraseList(i32 beginNode)
+    {
+        // find end node
+        i32 beginIndex = beginNode;
+        while (beginNode != -1)
+        {
+            ++_deletionCount;
+            if (_nodeLists[beginNode].next == -1)
+                break ;
+            beginNode =_nodeLists[beginNode].next;
+        }
+        _nodeLists[beginNode].next = _freeList;
+        _freeList = beginIndex;
+    }
+
+    inline u32 getDeletionCount(void) const
+    {
+        return (_deletionCount);
+    }
+
+    vector<RecInfo> getRecInfos(i32 beginIndex, Tree *tree);
 };
 
 struct Node;
@@ -257,7 +322,8 @@ struct NodeLeaf
     Node *node;
 };
 
-struct Node
+// __attribute__ ((__packed__))
+struct __attribute__ ((__packed__)) Node
 {
     // i16 _leafHashIndex; // -1 if does not have a LeafHash
     // array<i16, NUMBER_OF_CHILDREN> _children; // -1 is child does not exist
@@ -309,7 +375,7 @@ struct Node
         return (!(_firstChild < 0));
     }
 
-    inline array<AABB, 2> getChildBounds(NodeOrientation orientation, AABB curBound) const
+    inline array<AABB, NUMBER_OF_CHILDREN> getChildBounds(NodeOrientation orientation, AABB curBound) const
     {
         u16 xoffset;
         u16 yoffset;
@@ -325,7 +391,7 @@ struct Node
         ASSERT(xoffset < curBound.w);
         ASSERT(yoffset < curBound.h);
 
-        array<AABB, 2> result = {
+        array<AABB, NUMBER_OF_CHILDREN> result = {
             AABB{ curBound.x,
                   curBound.y,
                   orientation == horizontal ? xoffset : curBound.w,

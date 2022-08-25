@@ -14,36 +14,45 @@ NodeInfo NodeAllocator::allocateChildren(void)
 {
     NodeInfo result;
 
-    if (_freeNodeSize)
+    if (_freeNodeSize > 0)
     {
-        ASSERT((_freeNodeSize & 1) == 0);
-        result.address[0] = &_nodes[_freeNodeIndices[--_freeNodeSize]];
-        result.index[0] = _freeNodeIndices[_freeNodeSize];
-        result.address[1] = &_nodes[_freeNodeIndices[--_freeNodeSize]];
-        result.index[1] = _freeNodeIndices[_freeNodeSize];
+        ASSERT((_freeNodeSize & (NUMBER_OF_CHILDREN - 1)) == 0);
+        for (u32 childIndex = 0;
+             childIndex < NUMBER_OF_CHILDREN;
+             ++childIndex)
+        {
+            result.address[childIndex] = &_nodes[_freeNodeIndices[--_freeNodeSize]];
+            result.index[childIndex] = _freeNodeIndices[_freeNodeSize];
+        }
     }
     else
     {
-        if (!(_nextNodeIndex < NODE_POOL_SIZE))
+        if (!(_nextNodeIndex + NUMBER_OF_CHILDREN < NODE_POOL_SIZE))
         {
             LOG("_nextNodeIndex: " << _nextNodeIndex);
             LOG("NODE_POOL_SIZE: " << NODE_POOL_SIZE);
             ASSERT(false);
         }
 
-        u32 nodeIndex = _nextNodeIndex++;
-        result.address[0] = &_nodes[nodeIndex];
-        result.index[0] = nodeIndex;
-        nodeIndex = _nextNodeIndex++;
-        result.address[1] = &_nodes[nodeIndex];
-        result.index[1] = nodeIndex;
+        for (u32 childIndex = 0;
+             childIndex < NUMBER_OF_CHILDREN;
+             ++childIndex)
+        {
+            u32 nodeIndex = _nextNodeIndex++;
+            result.address[childIndex] = &_nodes[nodeIndex];
+            result.index[childIndex] = nodeIndex;
+        }
         if (_nextNodeIndex > _maxAllocatedNodes)
         {
             _maxAllocatedNodes = _nextNodeIndex;
         }
     }
-    initializeNode(result.address[0]);
-    initializeNode(result.address[1]);
+    for (u32 childIndex = 0;
+         childIndex < NUMBER_OF_CHILDREN;
+         ++childIndex)
+    {
+        initializeNode(result.address[childIndex]);
+    }
 
     return (result);
 }
@@ -51,9 +60,13 @@ NodeInfo NodeAllocator::allocateChildren(void)
 void NodeAllocator::deleteChildren(NodeInfo nodeInfo)
 {
     ASSERT(_freeNodeSize < _freeNodeIndices.size() && _nextNodeIndex > 0);
-    _deletedNodes += 2;
-    _freeNodeIndices[_freeNodeSize++] = nodeInfo.index[1];
-    _freeNodeIndices[_freeNodeSize++] = nodeInfo.index[0];
+    _deletedNodes += NUMBER_OF_CHILDREN;
+    for (u32 childIndex = NUMBER_OF_CHILDREN;
+         childIndex > 0;
+         --childIndex)
+    {
+        _freeNodeIndices[_freeNodeSize++] = nodeInfo.index[childIndex - 1];
+    }
 }
 
 Node *NodeAllocator::getNode(u32 nodeIndex)

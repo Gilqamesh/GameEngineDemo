@@ -22,7 +22,6 @@ int main()
 
     Tree tree({0, 0, 1600, 900});
 
-    vector<Rec> rectangles;
     for (u32 iteration = 0;
          iteration < NUMBER_OF_INSERTIONS;
          ++iteration)
@@ -38,12 +37,7 @@ int main()
                           getRand(minVel, maxVel),
                           getRand(minVel, maxVel)
                           };
-        rectangles.push_back(rectangle);
-        static u32 i = 0;
-        if (++i < 50)
-        {
-            LOG(rectangle);
-        }
+        tree.insert(rectangle);
     }
     // rectangles.push_back({0.0f, 0.0f, 10.0f, 10.0f});
     // rectangles.push_back({1.0f, 1.0f, 10.0f, 10.0f});
@@ -53,9 +47,9 @@ int main()
     // rectangles.push_back({1400.0f, 700.0f, 250.0f, 250.0f});
     // rectangles.push_back({400.0f, 600.0f, 250.0f, 250.0f});
     clock_t sortStart = clock();
-    sort(rectangles.begin(), rectangles.end(), [](const Rec& l, const Rec& r){
-        return (l.topLeftX < r.topLeftX);
-    });
+    // sort(rectangles.begin(), rectangles.end(), [](const Rec& l, const Rec& r){
+    //     return (l.topLeftX < r.topLeftX);
+    // });
     clock_t sortEnd = clock() - sortStart;
     LOG("Number of rectangles: " << NUMBER_OF_INSERTIONS);
     LOG("Size of one rectangle: " << sizeof(Rec) << ", size of all rectangles: " << NUMBER_OF_INSERTIONS * sizeof(Rec) / 1024.0f << "KB");
@@ -64,12 +58,12 @@ int main()
     u32 maxNumberOfInsersections = 0;
 
     clock_t start = clock();
-    for (u32 rectangleIndex = 0;
-        rectangleIndex < rectangles.size();
-        ++rectangleIndex)
-    {
-        tree.insert(rectangles[rectangleIndex]);
-    }
+    // for (u32 rectangleIndex = 0;
+    //     rectangleIndex < rectangles.size();
+    //     ++rectangleIndex)
+    // {
+    //     tree.insert(rectangles[rectangleIndex]);
+    // }
     insertionClock += clock() - start;
     // root->logInfo(insertionFile, nodeAllocator, 0, 0);
 
@@ -114,9 +108,13 @@ int main()
     LOG("Time taken to sort rectangles: " << sortEnd / (r32)CLOCKS_PER_SEC << "s");
     LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock + sortEnd) / (r32)CLOCKS_PER_SEC << "s");
 
-    LOG("Number of LeafHashes allocated: " << tree.leafHashAllocator._leafHashes.size());
-    LOG("Number of LeafHashes deleted: " << tree.leafHashAllocator.getDeletionCount() << ", in KB: " << tree.leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
-    LOG("Total size of LeafHashes in KB: " << tree.leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
+    // LOG("Number of LeafHashes allocated: " << tree.leafHashAllocator._leafHashes.size());
+    // LOG("Number of LeafHashes deleted: " << tree.leafHashAllocator.getDeletionCount() << ", in KB: " << tree.leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
+    // LOG("Total size of LeafHashes in KB: " << tree.leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
+
+    LOG("Number of NodeLists allocated: " << tree.nodeListAllocator._nodeLists.size());
+    LOG("Number of NodeLists deleted: " << tree.nodeListAllocator.getDeletionCount() << ", in KB: " << tree.nodeListAllocator.getDeletionCount() * sizeof(NodeList) / 1024.0f);
+    LOG("Total size of NodeLists in KB: " << tree.nodeListAllocator._nodeLists.size() * sizeof(NodeList) / 1024.0f);
 
     LOG("Timer: " << timer / (r32)CLOCKS_PER_SEC << "s");
     LOG("Timer2: " << timer2 / (r32)CLOCKS_PER_SEC << "s");

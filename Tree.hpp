@@ -7,7 +7,8 @@ struct Tree
 {
     vector<Rec> rectangles;
     AABB bound;
-    LeafHashAllocator leafHashAllocator;
+    // LeafHashAllocator leafHashAllocator;
+    NodeListAllocator nodeListAllocator;
     NodeAllocator nodeAllocator;
     Node root;
 
