@@ -23,11 +23,7 @@ void Node::insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrien
         maxInsertionDepth = curDepth;
         maxInsertionBound = _nodeBound;
     }
-    if (_nodeBound.width < 1.0f || _nodeBound.height < 1.0f)
-    {
-        LOG(_nodeBound);
-        ASSERT(false);
-    }
+    ASSERT(!(_nodeBound.width < 1.0f || _nodeBound.height < 1.0f));
     if (isLeaf() == true)
     {
         if (_curNumberOfRectangles < NODE_LIMIT) // if not full yet
@@ -215,48 +211,66 @@ u32 Node::update(NodeAllocator &nodeAllocator, u32 iterationNumber)
 
     start = clock();
     // TODO(david): profile this loop, and update multiple rectangles at a time by using simd intrinsics
-    const u32 nOfConcurrentInserts = 4096;
+    const u32 nOfConcurrentInserts = 1;
     for (u32 recIndex = 0;
          recIndex < rectangles.size();
          recIndex += nOfConcurrentInserts)
     {
-        array<Rec, nOfConcurrentInserts> recs;
-        u32 recsSize = 0;
-        for (u32 i = 0;
-             i < nOfConcurrentInserts && i + recIndex < rectangles.size();
-             ++i)
-        {
-            u32 curRecIndex = i + recIndex;
-            Rec &rec = rectangles[curRecIndex];
+        // This doesn't really help
+        // array<Rec, nOfConcurrentInserts> recs;
+        // u32 recsSize = 0;
+        // for (u32 i = 0;
+        //      i < nOfConcurrentInserts && i + recIndex < rectangles.size();
+        //      ++i)
+        // {
+        //     u32 curRecIndex = i + recIndex;
+        //     Rec &rec = rectangles[curRecIndex];
 
-            if (collidedRectangles[curRecIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
+        //     if (collidedRectangles[curRecIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
+        //     {
+        //         if (rec.isXOutsideNextFrame(screenBound) == true)
+        //         {
+        //             rec.dx *= -1.0f;
+        //         }
+        //         if (rec.isYOutsideNextFrame(screenBound) == true)
+        //         {
+        //             rec.dy *= -1.0f;
+        //         }
+        //     }
+        //     rec.update();
+        //     recs[recsSize++] = rec;
+        // }
+
+        // for (u32 i = 0;
+        //      i < nOfConcurrentInserts && i + recIndex < rectangles.size();
+        //      ++i)
+        // {
+        //     insert(recIndex + i, nodeAllocator, recs[i], horizontal, 0);
+        // }
+
+        Rec &rec = rectangles[recIndex];
+
+        if (collidedRectangles[recIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
+        {
+            if (rec.isXOutsideNextFrame(screenBound) == true)
             {
-                if (rec.isXOutsideNextFrame(screenBound) == true)
-                {
-                    rec.dx *= -1.0f;
-                }
-                if (rec.isYOutsideNextFrame(screenBound) == true)
-                {
-                    rec.dy *= -1.0f;
-                }
+                rec.dx *= -1.0f;
             }
-            rec.update();
-            recs[recsSize++] = rec;
+            if (rec.isYOutsideNextFrame(screenBound) == true)
+            {
+                rec.dy *= -1.0f;
+            }
         }
-
-        for (u32 i = 0;
-             i < nOfConcurrentInserts && i + recIndex < rectangles.size();
-             ++i)
-        {
-            insert(recIndex + i, nodeAllocator, recs[i], horizontal, 0);
-        }
+        rec.update();
+        clock_t start2 = clock();
+        // this takes 11.8/15 of the time.. improve this thing
+        insert(recIndex, nodeAllocator, rec, horizontal, 0);
+        timer3 += clock() - start2;
     }
     timer2 += clock() - start;
 
-    start = clock();
     // enable this after fixing the bug
     deferredCleanup(nodeAllocator);
-    timer3 += clock() - start;
 
     return (nOfIntersections);
 }

@@ -372,18 +372,9 @@ struct Node
         xoffset -= _nodeBound.topLeftX;
         yoffset -= _nodeBound.topLeftY;
 
-        if (!(xoffset < _nodeBound.width && !(xoffset < 0)))
-        {
-            LOG("xoffset: " << xoffset);
-            LOG(_nodeBound.width);
-            ASSERT(false);
-        }
-        if (!(yoffset < _nodeBound.height && !(yoffset < 0)))
-        {
-            LOG("yoffset: " << yoffset);
-            LOG(_nodeBound.height);
-            ASSERT(false);
-        }
+        ASSERT(xoffset < _nodeBound.width && !(xoffset < 0));
+        ASSERT(yoffset < _nodeBound.height && !(yoffset < 0));
+
         array<Rec, 2> result = {
             Rec{ _nodeBound.topLeftX,
               _nodeBound.topLeftY,
