@@ -46,40 +46,89 @@ vector<RecInfo> NodeListAllocator::getRecInfos(i32 beginIndex, Tree *tree)
     return (result);
 }
 
-void Node::insert(u32 recIndex, Rec rec, AABB curBound, Tree *tree)
+struct InsertInfo
 {
-    ASSERT(!(curBound.w < 1 || curBound.h < 1));
-    if (isLeaf() == true)
+    Node *node;
+    AABB curBound;
+    u32 recIndex;
+    Rec rec;
+};
+
+void Node::insert(u32 rectangleIndex, Rec rectangle, AABB bound, Tree *tree)
+{
+    queue<InsertInfo> insertionQueue;
+    insertionQueue.push({ this, bound, rectangleIndex, rectangle });
+    while (insertionQueue.empty() == false)
     {
-        if (_curNumberOfRectangles < NODE_LIMIT) // if not full yet
+        InsertInfo insertionInfo = insertionQueue.front();
+        insertionQueue.pop();
+
+        Node *node = insertionInfo.node;
+        AABB curBound = insertionInfo.curBound;
+        u32 recIndex = insertionInfo.recIndex;
+        Rec rec = insertionInfo.rec;
+
+        array<AABB, NUMBER_OF_CHILDREN> childBounds = getChildBounds(curBound);
+        ASSERT(!(curBound.w < 1 || curBound.h < 1));
+        if (node->isLeaf() == true)
         {
-            // if (hasLeafHash() == false) // get a LeafHash to store the recs
-            // {
-            //     ASSERT(_curNumberOfRectangles == 0);
-            //     _firstChild = tree->leafHashAllocator.allocateLeafHash();
-            // }
-            // tree->leafHashAllocator.insert(recIndex, _firstChild);
-            _firstChild = tree->nodeListAllocator.insert(_firstChild, recIndex);
-            ++_curNumberOfRectangles;
-            return ;
+            if (node->_curNumberOfRectangles < NODE_LIMIT) // if not full yet
+            {
+                node->_firstChild = tree->nodeListAllocator.insert(node->_firstChild, recIndex);
+                ++node->_curNumberOfRectangles;
+                continue ;
+            }
+            // subdivide node
+            vector<RecInfo> recInfo = tree->nodeListAllocator.getRecInfos(node->_firstChild, tree);
+
+            // set node as a branch
+            node->_curNumberOfRectangles = -1;
+            tree->nodeListAllocator.eraseList(node->_firstChild);
+            node->_firstChild = -1;
+
+            NodeInfo nodeInfo;
+            for (u32 iteration = 0;
+                iteration < recInfo.size();
+                ++iteration)
+            {
+                for (u32 childIndex = 0;
+                    childIndex < NUMBER_OF_CHILDREN;
+                    ++childIndex)
+                {
+                    if (recInfo[iteration].rec.doesAABBIntersect(childBounds[childIndex]) == true)
+                    {
+                        Node *childNode;
+                        if (node->hasChildren() == false)
+                        {
+                            nodeInfo = tree->nodeAllocator.allocateChildren();
+                            childNode = nodeInfo.address[childIndex];
+                            node->_firstChild = nodeInfo.index[0];
+                            tree->nodeAllocator._numberOfLeafs += NUMBER_OF_CHILDREN;
+                        }
+                        else
+                        {
+                            childNode = nodeInfo.address[childIndex];
+                        }
+                        insertionQueue.push({ childNode, childBounds[childIndex], recInfo[iteration].index, recInfo[iteration].rec });
+                    }
+                }
+            }
+            //
+            --tree->nodeAllocator._numberOfLeafs;
         }
-        subdivide(curBound, tree); // if full -> subdivide
-        --tree->nodeAllocator._numberOfLeafs;
-    }
 
-    array<AABB, NUMBER_OF_CHILDREN> childBounds = getChildBounds(curBound);
-
-    // insert the rec to the children
-    ASSERT(hasChildren() == true);
-    NodeInfo nodeInfo = tree->nodeAllocator.getChildren(_firstChild);
-    for (u32 childIndex = 0;
-        childIndex < NUMBER_OF_CHILDREN;
-        ++childIndex)
-    {
-        if (rec.doesAABBIntersect(childBounds[childIndex]) == true)
+        // insert the rec to the children
+        ASSERT(node->hasChildren() == true);
+        NodeInfo nodeInfo = tree->nodeAllocator.getChildren(node->_firstChild);
+        for (u32 childIndex = 0;
+            childIndex < NUMBER_OF_CHILDREN;
+            ++childIndex)
         {
-            Node *childNode = nodeInfo.address[childIndex];
-            childNode->insert(recIndex, rec, childBounds[childIndex], tree);
+            if (rec.doesAABBIntersect(childBounds[childIndex]) == true)
+            {
+                Node *childNode = nodeInfo.address[childIndex];
+                insertionQueue.push({ childNode, childBounds[childIndex], recIndex, rec });
+            }
         }
     }
 }
@@ -256,14 +305,12 @@ u32 Node::update(AABB bound, Tree *tree)
             recs[recsSize++] = rec;
         }
 
-        clock_t start = clock();
         for (u32 i = 0;
              i < nOfConcurrentInserts && i + recIndex < rectanglesSize;
              ++i)
         {
             insert(recIndex + i, recs[i], bound, tree);
         }
-        timer += clock() - start;
     }
 
     // enable this after fixing the bug
