@@ -7,14 +7,9 @@
 # define FRAMES_PER_SEC 60
 # define SECONDS_SIMULATED 10
 
-extern u32 maxInsertionDepth;
-extern AABB maxInsertionBound;
 extern clock_t timer;
 extern clock_t timer2;
 extern clock_t timer3;
-ofstream insertionFile("insertion.html");
-ofstream afterEraseFile("afterErase.html");
-ofstream afterReinsert("afterReinsert.html");
 
 int main()
 {
@@ -100,7 +95,6 @@ int main()
     LOG("Total allocated nodes: " << tree.nodeAllocator.maxAllocatedNodes() << ", in kilobytes: " << tree.nodeAllocator.maxAllocatedNodes() * sizeof(Node) / 1024.0f << "KB");
     LOG("Size of a node in bytes: " << sizeof(Node) << "B");
     LOG("Node capacity: " << NODE_LIMIT << " rectangles");
-    LOG("Maximum insertion depth: " << maxInsertionDepth << ", max insertion bound: " << maxInsertionBound);
 
     LOG("Max intersections: " << maxNumberOfInsersections);
     LOG("Time taken for insertion: " << insertionClock / (r32)CLOCKS_PER_SEC << "s");

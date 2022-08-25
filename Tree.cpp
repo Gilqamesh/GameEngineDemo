@@ -8,7 +8,7 @@ Tree::Tree(AABB treeBound)
 
 void Tree::insert(Rec rec)
 {
-    root.insert(rectangles.size(), rec, horizontal, 0, bound, this);
+    root.insert(rectangles.size(), rec, bound, this);
     rectangles.push_back(rec);
 }
 

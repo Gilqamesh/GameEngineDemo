@@ -5,16 +5,10 @@
 # include <queue>
 # include <ctime>
 // both of these must be a power of 2!
-# define NUMBER_OF_CHILDREN 2
-# define NODE_LIMIT 128
+# define NUMBER_OF_CHILDREN 4
+# define NODE_LIMIT 256
 
 struct Tree;
-
-enum NodeOrientation
-{
-    horizontal,
-    vertical
-};
 
 struct RecInfo
 {
@@ -316,9 +310,7 @@ struct Node;
 
 struct NodeLeaf
 {
-    NodeOrientation orientation;
     AABB bound;
-    u32 depth;
     Node *node;
 };
 
@@ -337,16 +329,15 @@ struct __attribute__ ((__packed__)) Node
     /**
      * Assumes that the rectangle first the node's bound
      */
-    void insert(u32 recIndex, Rec rec, NodeOrientation orientation, u32 curDepth, AABB curBound, Tree *tree);
+    void insert(u32 recIndex, Rec rec, AABB curBound, Tree *tree);
 
-    queue<NodeLeaf> getLeafs(NodeOrientation orientation, AABB curBound, u32 curDepth, Tree *tree); 
+    queue<NodeLeaf> getLeafs(AABB curBound, Tree *tree); 
 
     u32 update(AABB bound, Tree *tree);
 
     void deferredCleanup(Tree *tree);
 
-    void subdivide(NodeOrientation orientation, u32 curDepth, AABB curBound,
-        Tree *tree);
+    void subdivide(AABB curBound, Tree *tree);
 
     void printBounds(i32 nodesPrinted, Tree *tree) const;
 
@@ -375,32 +366,26 @@ struct __attribute__ ((__packed__)) Node
         return (!(_firstChild < 0));
     }
 
-    inline array<AABB, NUMBER_OF_CHILDREN> getChildBounds(NodeOrientation orientation, AABB curBound) const
+    inline array<AABB, NUMBER_OF_CHILDREN> getChildBounds(AABB curBound) const
     {
-        u16 xoffset;
-        u16 yoffset;
-        xoffset = (orientation == horizontal ? curBound.x + (curBound.w >> 1) : curBound.x);
-        yoffset = (orientation == horizontal ? curBound.y : curBound.y + (curBound.h >> 1));
-
-        ASSERT(curBound.x <= xoffset);
-        ASSERT(curBound.y <= yoffset);
-
-        xoffset -= curBound.x;
-        yoffset -= curBound.y;
+        u16 xoffset = curBound.w >> 1;
+        u16 yoffset = curBound.w >> 1;
 
         ASSERT(xoffset < curBound.w);
         ASSERT(yoffset < curBound.h);
 
-        array<AABB, NUMBER_OF_CHILDREN> result = {
-            AABB{ curBound.x,
-                  curBound.y,
-                  orientation == horizontal ? xoffset : curBound.w,
-                  orientation == horizontal ? curBound.h : yoffset },
-            AABB{ static_cast<u16>(curBound.x + xoffset),
-                  static_cast<u16>(curBound.y + yoffset),
-                  orientation == horizontal ? xoffset : curBound.w,
-                  orientation == horizontal ? curBound.h : yoffset }
-        };
+        array<AABB, NUMBER_OF_CHILDREN> result;
+        for (u32 childIndex = 0;
+             childIndex < NUMBER_OF_CHILDREN;
+             ++childIndex)
+        {
+            result[childIndex] = {
+                static_cast<u16>(curBound.x + ((childIndex & 1) == 0 ? 0 : xoffset)), // alternates every time
+                static_cast<u16>(curBound.y + ((childIndex & 2) == 0 ? 0 : yoffset)), // alternates every second time
+                xoffset,
+                yoffset
+            };
+        }
 
         return (result);
     }
