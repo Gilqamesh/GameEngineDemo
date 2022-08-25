@@ -4,6 +4,14 @@
 # include "typedefs.h"
 # include <random>
 
+typedef struct AABB
+{
+    u16 x;
+    u16 y;
+    u16 w;
+    u16 h;
+} AABB;
+
 typedef struct Rec
 {
     r32 topLeftX;
@@ -19,21 +27,27 @@ typedef struct Rec
                 topLeftY <= that.topLeftY + that.height && that.topLeftY <= topLeftY + height);
     }
 
+    inline b32 doesAABBIntersect(const AABB &that) const
+    {
+        return (topLeftX <= (r32)that.x + (r32)that.w && (r32)that.x <= topLeftX + width &&
+                topLeftY <= (r32)that.y + (r32)that.h && (r32)that.y <= topLeftY + height);
+    }
+
     inline b32 isPointInRect(r32 x, r32 y) const
     {
         return (x >= topLeftX && y >= topLeftY && x <= topLeftX + width && y <= topLeftY + height);
     }
 
-    inline b32 isXOutsideNextFrame(const Rec& bound) const
+    inline b32 isXOutsideNextFrame(const AABB& bound) const
     {
-        return ((topLeftX + dx >= bound.topLeftX + bound.width ||
-                topLeftX + dx + width <= bound.topLeftX));
+        return ((topLeftX + dx >= (r32)bound.x + (r32)bound.w ||
+                topLeftX + dx + width <= (r32)bound.x));
     }
 
-    inline b32 isYOutsideNextFrame(const Rec& bound) const
+    inline b32 isYOutsideNextFrame(const AABB& bound) const
     {
-        return ((topLeftY + dy >= bound.topLeftY + bound.height ||
-                topLeftY + dy + height <= bound.topLeftY));
+        return ((topLeftY + dy >= (r32)bound.y + (r32)bound.h ||
+                topLeftY + dy + height <= (r32)bound.y));
     }
 
     inline void update(void)
@@ -59,5 +73,6 @@ inline float getRand(float low, float high)
 }
 
 ostream &operator<<(ostream& os, const Rec& rect);
+ostream &operator<<(ostream& os, const AABB& rect);
 
 #endif

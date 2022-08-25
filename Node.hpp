@@ -8,15 +8,13 @@
 // must be a power of 2
 # define NODE_LIMIT 128
 
-extern vector<Rec> rectangles;
+struct Tree;
 
 enum NodeOrientation
 {
     horizontal,
     vertical
 };
-
-class NodeAllocator;
 
 struct RecInfo
 {
@@ -142,22 +140,7 @@ struct LeafHash
         return (false);
     }
 
-    inline vector<RecInfo> getRecInfos(void)
-    {
-        vector<RecInfo> result;
-
-        for (u32 i = 0;
-             i < NODE_LIMIT;
-             ++i)
-        {
-            if (_recIndices[i] != EMPTY_HASH_SLOT)
-            {
-                result.push_back({ _recIndices[i], rectangles[_recIndices[i]] });
-            }
-        }
-
-        return (result);
-    }
+    vector<RecInfo> getRecInfos(Tree *tree);
 };
 
 struct LeafHashAllocator
@@ -248,52 +231,58 @@ struct LeafHashAllocator
     /**
      * Pulls and copies rectangles into memory for the hash
      */
-    inline vector<RecInfo> getRecInfos(u16 leafHashIndex)
+    inline vector<RecInfo> getRecInfos(u16 leafHashIndex, Tree *tree)
     {
         if (!(leafHashIndex < _leafHashes.size()))
         {
             LOG(leafHashIndex << " " << _leafHashes.size());
             ASSERT(false);
         }
-        return (_leafHashes[leafHashIndex].getRecInfos());
+        return (_leafHashes[leafHashIndex].getRecInfos(tree));
     }
 };
 
-extern LeafHashAllocator leafHashAllocator;
+struct NodeList
+{
+    i32 nextNode;
+};
+
+struct Node;
+
+struct NodeLeaf
+{
+    NodeOrientation orientation;
+    AABB bound;
+    u32 depth;
+    Node *node;
+};
 
 struct Node
 {
-    i16 _leafHashIndex; // -1 if does not have a LeafHash
-    array<i32, NUMBER_OF_CHILDREN> _children;
+    // i16 _leafHashIndex; // -1 if does not have a LeafHash
+    // array<i16, NUMBER_OF_CHILDREN> _children; // -1 is child does not exist
+    // can compress further by using 1 i32 for leafhashindex and first child
+    // if this node is a leaf it points to the leafhash
+    // if this node is a branch it points to the first child -> no invalid child
+    i32 _firstChild;
 
-    i32 _curNumberOfRectangles; // -1 if this node is not a leaf
-    // TODO(david): dont have to store these as it can be computed by the orientation
-    Rec _nodeBound;
+    i16 _curNumberOfRectangles; // -1 if this node is not a leaf
 
     /**
      * Assumes that the rectangle first the node's bound
      */
-    void insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation,
-        u32 curDepth);
+    void insert(u32 recIndex, Rec rec, NodeOrientation orientation, u32 curDepth, AABB curBound, Tree *tree);
 
-    u32 update(NodeAllocator &nodeAllocator, u32 iterationNumber);
+    queue<NodeLeaf> getLeafs(NodeOrientation orientation, AABB curBound, u32 curDepth, Tree *tree); 
 
-    void deferredCleanup(NodeAllocator &nodeAllocator);
+    u32 update(AABB bound, Tree *tree);
 
-    void subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth);
+    void deferredCleanup(Tree *tree);
 
-    void printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const;
+    void subdivide(NodeOrientation orientation, u32 curDepth, AABB curBound,
+        Tree *tree);
 
-    void logInfo(ostream &os, NodeAllocator &nodeAllocator, i32 firstNodeIndex, u32 callIndex);
-
-    inline b32 isChildValid(u32 childIndex) const
-    {
-        return (!(_children[childIndex] < 0));
-    }
-    inline void setChildInvalid(u32 childIndex)
-    {
-        _children[childIndex] = -1;
-    }
+    void printBounds(i32 nodesPrinted, Tree *tree) const;
 
     inline b32 isBranch(void) const
     {
@@ -310,80 +299,41 @@ struct Node
         return (_curNumberOfRectangles == 0);
     }
 
-    inline void setBranch(void)
-    {
-        _curNumberOfRectangles = -1;
-        ASSERT(hasLeafHash() == true);
-        leafHashAllocator.eraseLeafHash(_leafHashIndex);
-        _leafHashIndex = -1;
-    }
-
-    inline void setLeaf(void)
-    {
-        _curNumberOfRectangles = 0;
-        if (hasLeafHash() == false)
-        {
-            _leafHashIndex = leafHashAllocator.allocateLeafHash();
-        }
-    }
-
     inline b32 hasLeafHash(void) const
     {
-        return (!(_leafHashIndex < 0));
+        return (_curNumberOfRectangles >= 0 && _firstChild >= 0);
     }
 
-    inline array<Rec, 2> getChildBounds(NodeOrientation orientation) const
+    inline b32 hasChildren(void) const
     {
-        r32 xoffset;
-        r32 yoffset;
-        xoffset = (orientation == horizontal ? _nodeBound.topLeftX + _nodeBound.width / 2.0f : _nodeBound.topLeftX);
-        yoffset = (orientation == horizontal ? _nodeBound.topLeftY : _nodeBound.topLeftY + _nodeBound.height / 2.0f);
+        return (!(_firstChild < 0));
+    }
 
-        /**
-         * Uncomment for k-d tree, find average x or y offset depending on the orientation of the node
-         */
-        // xoffset = (orientation == horizontal ? 0.0f : _nodeBound.topLeftX);
-        // yoffset = (orientation == horizontal ? _nodeBound.topLeftY: 0.0f);
-        // r32 sumX = 0.0f;
-        // r32 sumY = 0.0f;
-        // for (Rec *rec : recs)
-        // {
-        //     sumX += rec->topLeftX + rec->width / 2.0f;
-        //     sumY += rec->topLeftY + rec->height / 2.0f;
-        // }
+    inline array<AABB, 2> getChildBounds(NodeOrientation orientation, AABB curBound) const
+    {
+        u16 xoffset;
+        u16 yoffset;
+        xoffset = (orientation == horizontal ? curBound.x + (curBound.w >> 1) : curBound.x);
+        yoffset = (orientation == horizontal ? curBound.y : curBound.y + (curBound.h >> 1));
 
-        // if (orientation == horizontal)
-        // {
-        //     xoffset = sumX / (r32)recsSize;
-        //     if (xoffset < _nodeBound.topLeftX || xoffset > _nodeBound.topLeftX + _nodeBound.width)
-        //     {
-        //         xoffset = _nodeBound.topLeftX + _nodeBound.width / 2.0f;
-        //     }
-        // }
-        // else
-        // {
-        //     yoffset = sumY / (r32)recsSize;
-        //     if (yoffset < _nodeBound.topLeftY || yoffset > _nodeBound.topLeftY + _nodeBound.height)
-        //     {
-        //         yoffset = _nodeBound.topLeftY + _nodeBound.height / 2.0f;
-        //     }
-        // }
+        ASSERT(curBound.x <= xoffset);
+        ASSERT(curBound.y <= yoffset);
 
-        xoffset -= _nodeBound.topLeftX;
-        yoffset -= _nodeBound.topLeftY;
+        xoffset -= curBound.x;
+        yoffset -= curBound.y;
 
-        ASSERT(xoffset < _nodeBound.width && !(xoffset < 0));
-        ASSERT(yoffset < _nodeBound.height && !(yoffset < 0));
+        ASSERT(xoffset < curBound.w);
+        ASSERT(yoffset < curBound.h);
 
-        array<Rec, 2> result = {
-            Rec{ _nodeBound.topLeftX,
-              _nodeBound.topLeftY,
-              orientation == horizontal ? xoffset : _nodeBound.width,
-              orientation == horizontal ? _nodeBound.height : yoffset },
-            Rec{ _nodeBound.topLeftX + xoffset,
-              _nodeBound.topLeftY + yoffset,
-              orientation == horizontal ? xoffset : _nodeBound.width,
-              orientation == horizontal ? _nodeBound.height : yoffset }
+        array<AABB, 2> result = {
+            AABB{ curBound.x,
+                  curBound.y,
+                  orientation == horizontal ? xoffset : curBound.w,
+                  orientation == horizontal ? curBound.h : yoffset },
+            AABB{ static_cast<u16>(curBound.x + xoffset),
+                  static_cast<u16>(curBound.y + yoffset),
+                  orientation == horizontal ? xoffset : curBound.w,
+                  orientation == horizontal ? curBound.h : yoffset }
         };
 
         return (result);

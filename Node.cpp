@@ -1,13 +1,11 @@
-#include "Node.hpp"
 #include "NodeAllocator.hpp"
+#include "Node.hpp"
 #include <bitset>
 #include <fstream>
-#include <queue>
+#include "Tree.hpp"
 
-LeafHashAllocator   leafHashAllocator;
-extern Rec screenBound;
 u32 maxInsertionDepth = 0;
-Rec maxInsertionBound;
+AABB maxInsertionBound;
 clock_t timer = 0;
 clock_t timer2 = 0;
 clock_t timer3 = 0;
@@ -16,14 +14,31 @@ extern ofstream insertionFile;
 extern ofstream afterEraseFile;
 extern ofstream afterReinsert;
 
-void Node::insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrientation orientation, u32 curDepth)
+vector<RecInfo> LeafHash::getRecInfos(Tree *tree)
+{
+    vector<RecInfo> result;
+
+    for (u32 i = 0;
+            i < NODE_LIMIT;
+            ++i)
+    {
+        if (_recIndices[i] != EMPTY_HASH_SLOT)
+        {
+            result.push_back({ _recIndices[i], tree->rectangles[_recIndices[i]] });
+        }
+    }
+
+    return (result);
+}
+
+void Node::insert(u32 recIndex, Rec rec, NodeOrientation orientation, u32 curDepth, AABB curBound, Tree *tree)
 {
     if (curDepth > maxInsertionDepth)
     {
         maxInsertionDepth = curDepth;
-        maxInsertionBound = _nodeBound;
+        maxInsertionBound = curBound;
     }
-    ASSERT(!(_nodeBound.width < 1.0f || _nodeBound.height < 1.0f));
+    ASSERT(!(curBound.w < 1 || curBound.h < 1));
     if (isLeaf() == true)
     {
         if (_curNumberOfRectangles < NODE_LIMIT) // if not full yet
@@ -31,95 +46,78 @@ void Node::insert(u32 recIndex, NodeAllocator &nodeAllocator, Rec rec, NodeOrien
             if (hasLeafHash() == false) // get a LeafHash to store the recs
             {
                 ASSERT(_curNumberOfRectangles == 0);
-                _leafHashIndex = leafHashAllocator.allocateLeafHash();
+                _firstChild = tree->leafHashAllocator.allocateLeafHash();
             }
-            leafHashAllocator.insert(recIndex, _leafHashIndex);
+            tree->leafHashAllocator.insert(recIndex, _firstChild);
             ++_curNumberOfRectangles;
             return ;
         }
-        ASSERT(isChildValid(0) == false);
-        ASSERT(isChildValid(1) == false);
-        subdivide(nodeAllocator, orientation, curDepth); // if full -> subdivide
-        setBranch();
-        --nodeAllocator._numberOfLeafs;
+        subdivide(orientation, curDepth, curBound, tree); // if full -> subdivide
+        --tree->nodeAllocator._numberOfLeafs;
     }
 
-    array<Rec, 2> childBounds = getChildBounds(orientation);
+    // clock_t start = clock();
+    array<AABB, 2> childBounds = getChildBounds(orientation, curBound);
+    // timer += clock() - start;
 
     // insert the rec to the children
+    ASSERT(hasChildren() == true);
+    NodeInfo nodeInfo = tree->nodeAllocator.getChildren(_firstChild);
     for (u32 childIndex = 0;
         childIndex < NUMBER_OF_CHILDREN;
         ++childIndex)
     {
-        if (childBounds[childIndex].doesRecIntersect(rec) == true)
+        if (rec.doesAABBIntersect(childBounds[childIndex]) == true)
         {
-            Node *childNode;
-            if (isChildValid(childIndex) == false)
-            {
-                NodeInfo nodeInfo = nodeAllocator.allocateNode(childBounds[childIndex]);
-                childNode = nodeInfo.address;
-                _children[childIndex] = nodeInfo.index;
-                ++nodeAllocator._numberOfLeafs;
-            }
-            else
-            {
-                childNode = nodeAllocator.getNode(_children[childIndex]);
-            }
-            childNode->insert(recIndex, nodeAllocator, rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
+            Node *childNode = nodeInfo.address[childIndex];
+            childNode->insert(recIndex, rec, orientation == horizontal ? vertical : horizontal, curDepth + 1,
+                childBounds[childIndex], tree);
         }
     }
 }
 
-void Node::logInfo(ostream &os, NodeAllocator &nodeAllocator, i32 firstNodeIndex, u32 callIndex)
+// TODO(david): better structure for this
+queue<NodeLeaf> Node::getLeafs(NodeOrientation orientation, AABB curBound, u32 curDepth, Tree *tree)
 {
-    queue<NodeInfo> nodePairs;
-    nodePairs.push({ this, firstNodeIndex });
-    os << "<h2>Call index: " << callIndex << "</h2>";
-    os << "<p><ul>";
-    while (nodePairs.empty() == false)
+    queue<NodeLeaf> leafs;
+    queue<NodeLeaf> toProcess;
+    toProcess.push({ orientation, curBound, curDepth, this });
+
+    while (toProcess.empty() == false)
     {
-        os << "<li>";
-        NodeInfo nodePair = nodePairs.front();
-        nodePairs.pop();
-
-        vector<RecInfo> recInfos;
-        if (nodePair.address->hasLeafHash())
+        NodeLeaf curNode = toProcess.front();
+        toProcess.pop();
+        if (curNode.node->isLeaf() == true)
         {
-            recInfos = leafHashAllocator.getRecInfos(nodePair.address->_leafHashIndex);
+            leafs.push(curNode);
         }
-        os << "Node index: <span style=\"color:blue\" />" << nodePair.index << ",</span>&nbspbound: "
-            << "<span style=\"color:green\" />" << nodePair.address->_nodeBound << "</span>,&nbspnumber of recs: "
-            << nodePair.address->_curNumberOfRectangles << ",&nbspleafHashIndex: " << nodePair.address->_leafHashIndex << ",&nbspChildren indices: " << "<span style=\"color:red\" />";
-        for (u32 childIndex = 0;
-             childIndex < NUMBER_OF_CHILDREN;
-             ++childIndex)
+        else
         {
-            i32 childNodeIndex = nodePair.address->_children[childIndex];
-            if (nodePair.address->isChildValid(childIndex) == true)
+            Node *node = curNode.node;
+            if (node->hasChildren() == true)
             {
-                NodeInfo nodeInfo;
-                nodeInfo.index = childNodeIndex;
-                nodeInfo.address = nodeAllocator.getNode(nodeInfo.index);
-                nodePairs.push(nodeInfo);
-            }
-            os << childNodeIndex << " ";
-        }
-        os << "</span></li>\n";
-        os << " stored rectangles indices: <p font-size=14px>";
-        for (RecInfo recInfo : recInfos)
-        {
-            os << recInfo.index << " ";
-        }
+                array<AABB, 2> childBounds = getChildBounds(curNode.orientation, curNode.bound);
 
+                for (u32 childIndex = 0;
+                    childIndex < NUMBER_OF_CHILDREN;
+                    ++childIndex)
+                {
+                    // TODO(david): get NodeInfo once and iterate over the addresses
+                    Node *child = tree->nodeAllocator.getNode(node->_firstChild + childIndex);
+                    toProcess.push({ (curNode.orientation == horizontal ? vertical : horizontal), childBounds[childIndex], curNode.depth + 1, child });
+                }
+            }
+        }
     }
-    os << "</p></ul></p>";
+
+    return (leafs);
 }
 
-u32 Node::update(NodeAllocator &nodeAllocator, u32 iterationNumber)
+u32 Node::update(AABB bound, Tree *tree)
 {
     u32 nOfIntersections = 0;
 
-    vector<bool> collidedRectangles(NUMBER_OF_INSERTIONS, false);
+    bitset<NUMBER_OF_INSERTIONS> collidedRectangles;
 
     // new update strategy
     // iterate over the rectangles
@@ -127,155 +125,158 @@ u32 Node::update(NodeAllocator &nodeAllocator, u32 iterationNumber)
     //  - move rec
     //  - reinsert rec
 
-    clock_t start = clock();
+    queue<NodeLeaf> leafs = getLeafs(horizontal, bound, 0, tree);
     // change rec velocities
-    for (u32 nodeIndex = 0;
-         nodeIndex < nodeAllocator._nextNodeIndex;
-         ++nodeIndex)
+    while (leafs.empty() == false)
     {
-        if (nodeAllocator.isValid(nodeIndex) == true)
+        NodeLeaf leaf = leafs.front();
+        leafs.pop();
+        Node *node = leaf.node;
+        if (node->isLeaf() == true)
         {
-            Node *node = nodeAllocator.getNode(nodeIndex);
-            if (node->isLeaf() == true)
+            // map recs out to cache
+            // TODO(david): use own structure
+            // clock_t start = clock();
+            vector<RecInfo> recInfo = tree->leafHashAllocator.getRecInfos(node->_firstChild, tree);
+            // timer += clock() - start;
+
+            for (u32 leftIter = 0;
+                leftIter < recInfo.size();
+                ++leftIter)
             {
-                // map recs out to cache
-                // TODO(david): use own structure
-                vector<RecInfo> recInfo = leafHashAllocator.getRecInfos(node->_leafHashIndex);
-
-                for (u32 leftIter = 0;
-                    leftIter < recInfo.size();
-                    ++leftIter)
+                u32 leftRecIndex = recInfo[leftIter].index;
+                if (collidedRectangles[leftRecIndex] == false)
                 {
-                    u32 leftRecIndex = recInfo[leftIter].index;
-                    if (collidedRectangles[leftRecIndex] == false)
+                    for (u32 rightIter = leftIter + 1;
+                        rightIter < recInfo.size();
+                        ++rightIter)
                     {
-                        for (u32 rightIter = leftIter + 1;
-                            rightIter < recInfo.size();
-                            ++rightIter)
+                        u32 rightRecIndex = recInfo[rightIter].index;
+                        ASSERT(leftRecIndex != rightRecIndex);
+
+                        if (collidedRectangles[rightRecIndex] == false)
                         {
-                            u32 rightRecIndex = recInfo[rightIter].index;
-                            ASSERT(leftRecIndex != rightRecIndex);
-
-                            if (collidedRectangles[rightRecIndex] == false)
+                            Rec leftRec = recInfo[leftIter].rec;
+                            Rec rightRec = recInfo[rightIter].rec;
+                            if (leftRec.doesRecIntersect(rightRec) == true)
                             {
-                                Rec leftRec = recInfo[leftIter].rec;
-                                Rec rightRec = recInfo[rightIter].rec;
-                                if (leftRec.doesRecIntersect(rightRec) == true)
+                                // remove the 2 recs for further collision detection with other recs
+                                collidedRectangles[leftRecIndex] = true;
+                                collidedRectangles[rightRecIndex] = true;
+
+                                // change velocities of recs
+                                if (leftRec.isXOutsideNextFrame(bound) == true)
                                 {
-                                    // remove the 2 recs for further collision detection with other recs
-                                    collidedRectangles[leftRecIndex] = true;
-                                    collidedRectangles[rightRecIndex] = true;
-
-                                    // change velocities of recs
-                                    if (leftRec.isXOutsideNextFrame(screenBound) == true)
-                                    {
-                                        leftRec.dx *= -1.0f;
-                                    }
-                                    if (leftRec.isYOutsideNextFrame(screenBound) == true)
-                                    {
-                                        leftRec.dy *= -1.0f;
-                                    }
-                                    if (rightRec.isXOutsideNextFrame(screenBound) == true)
-                                    {
-                                        rightRec.dx *= -1.0f;
-                                    }
-                                    if (rightRec.isYOutsideNextFrame(screenBound) == true)
-                                    {
-                                        rightRec.dy *= -1.0f;
-                                    }
-
-                                    ++nOfIntersections;
-
-                                    // break out from the second iteration, since the first rectangle collision is already resolved
-                                    break ;
+                                    leftRec.dx *= -1.0f;
                                 }
+                                if (leftRec.isYOutsideNextFrame(bound) == true)
+                                {
+                                    leftRec.dy *= -1.0f;
+                                }
+                                if (rightRec.isXOutsideNextFrame(bound) == true)
+                                {
+                                    rightRec.dx *= -1.0f;
+                                }
+                                if (rightRec.isYOutsideNextFrame(bound) == true)
+                                {
+                                    rightRec.dy *= -1.0f;
+                                }
+
+                                ++nOfIntersections;
+
+                                // break out from the second iteration, since the first rectangle collision is already resolved
+                                break ;
                             }
                         }
                     }
                 }
-
-                // map the velocities back from cache to storage
-                for (u32 i = 0;
-                     i < recInfo.size();
-                     ++i)
-                {
-                    rectangles[recInfo[i].index] = recInfo[i].rec;
-                }
-
-                leafHashAllocator.clearLeafHash(node->_leafHashIndex);
-                node->_curNumberOfRectangles = 0;
             }
+
+            // start = clock();
+            // map the velocities back from cache to storage
+            for (u32 i = 0;
+                    i < recInfo.size();
+                    ++i)
+            {
+                tree->rectangles[recInfo[i].index] = recInfo[i].rec;
+            }
+            // timer2 += clock() - start;
+
+            tree->leafHashAllocator.clearLeafHash(node->_firstChild);
+            node->_curNumberOfRectangles = 0;
         }
     }
-    timer += clock() - start;
 
-    start = clock();
+    // clock_t start = clock();
     // TODO(david): profile this loop, and update multiple rectangles at a time by using simd intrinsics
-    const u32 nOfConcurrentInserts = 1;
+    const u32 nOfConcurrentInserts = 512;
     for (u32 recIndex = 0;
-         recIndex < rectangles.size();
+         recIndex < tree->rectangles.size();
          recIndex += nOfConcurrentInserts)
     {
-        // This doesn't really help
-        // array<Rec, nOfConcurrentInserts> recs;
-        // u32 recsSize = 0;
-        // for (u32 i = 0;
-        //      i < nOfConcurrentInserts && i + recIndex < rectangles.size();
-        //      ++i)
-        // {
-        //     u32 curRecIndex = i + recIndex;
-        //     Rec &rec = rectangles[curRecIndex];
-
-        //     if (collidedRectangles[curRecIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
-        //     {
-        //         if (rec.isXOutsideNextFrame(screenBound) == true)
-        //         {
-        //             rec.dx *= -1.0f;
-        //         }
-        //         if (rec.isYOutsideNextFrame(screenBound) == true)
-        //         {
-        //             rec.dy *= -1.0f;
-        //         }
-        //     }
-        //     rec.update();
-        //     recs[recsSize++] = rec;
-        // }
-
-        // for (u32 i = 0;
-        //      i < nOfConcurrentInserts && i + recIndex < rectangles.size();
-        //      ++i)
-        // {
-        //     insert(recIndex + i, nodeAllocator, recs[i], horizontal, 0);
-        // }
-
-        Rec &rec = rectangles[recIndex];
-
-        if (collidedRectangles[recIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
+        array<Rec, nOfConcurrentInserts> recs;
+        u32 recsSize = 0;
+        // clock_t start = clock();
+        for (u32 i = 0;
+             i < nOfConcurrentInserts && i + recIndex < tree->rectangles.size();
+             ++i)
         {
-            if (rec.isXOutsideNextFrame(screenBound) == true)
+            u32 curRecIndex = i + recIndex;
+            Rec &rec = tree->rectangles[curRecIndex];
+
+            if (collidedRectangles[curRecIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
             {
-                rec.dx *= -1.0f;
+                if (rec.isXOutsideNextFrame(bound) == true)
+                {
+                    rec.dx *= -1.0f;
+                }
+                if (rec.isYOutsideNextFrame(bound) == true)
+                {
+                    rec.dy *= -1.0f;
+                }
             }
-            if (rec.isYOutsideNextFrame(screenBound) == true)
-            {
-                rec.dy *= -1.0f;
-            }
+            rec.update();
+            recs[recsSize++] = rec;
         }
-        rec.update();
-        clock_t start2 = clock();
+        // timer3 += clock() - start;
+
+        for (u32 i = 0;
+             i < nOfConcurrentInserts && i + recIndex < tree->rectangles.size();
+             ++i)
+        {
+            insert(recIndex + i, recs[i], horizontal, 0, bound, tree);
+        }
+
+        // clock_t start = clock();
+        // Rec &rec = rectangles[recIndex];
+
+        // if (collidedRectangles[recIndex] == false) // didnt collide -> bound check it as it wasnt bound checked
+        // {
+        //     if (rec.isXOutsideNextFrame(screenBound) == true)
+        //     {
+        //         rec.dx *= -1.0f;
+        //     }
+        //     if (rec.isYOutsideNextFrame(screenBound) == true)
+        //     {
+        //         rec.dy *= -1.0f;
+        //     }
+        // }
+        // rec.update();
+        // timer3 += clock() - start;
+        // clock_t start2 = clock();
         // this takes 11.8/15 of the time.. improve this thing
-        insert(recIndex, nodeAllocator, rec, horizontal, 0);
-        timer3 += clock() - start2;
+        // insert(recIndex, nodeAllocator, rec, horizontal, 0, screenBound);
+        // timer3 += clock() - start2;
     }
-    timer2 += clock() - start;
+    // timer2 += clock() - start;
 
     // enable this after fixing the bug
-    deferredCleanup(nodeAllocator);
+    deferredCleanup(tree);
 
     return (nOfIntersections);
 }
 
-void Node::deferredCleanup(NodeAllocator &nodeAllocator)
+void Node::deferredCleanup(Tree *tree)
 {
     // TODO(david): use own structure with own memory allocation
     queue<Node *> cleanupQueue;
@@ -290,9 +291,9 @@ void Node::deferredCleanup(NodeAllocator &nodeAllocator)
             childIndex < NUMBER_OF_CHILDREN;
             ++childIndex)
         {
-            if (node->isChildValid(childIndex) == true)
+            if (node->hasChildren() == true)
             {
-                Node *child = nodeAllocator.getNode(node->_children[childIndex]);
+                Node *child = tree->nodeAllocator.getNode(node->_firstChild + childIndex);
                 if (child->isBranch() == true) // if branch -> add it for processing
                 {
                     cleanupQueue.push(child);
@@ -308,29 +309,43 @@ void Node::deferredCleanup(NodeAllocator &nodeAllocator)
         // make this node the new empty leaf.
         if (nOfEmptyChilds == NUMBER_OF_CHILDREN)
         {
+            NodeInfo childInfo;
             for (u32 childIndex = 0;
                  childIndex < NUMBER_OF_CHILDREN;
                  ++childIndex)
             {
-                ASSERT(node->isChildValid(childIndex));
-                i32 childNodeIndex = node->_children[childIndex];
+                i32 childNodeIndex = node->_firstChild + childIndex;
                 // TODO(david): no need to get the pointer again
-                Node *child = nodeAllocator.getNode(childNodeIndex);
-                leafHashAllocator.eraseLeafHash(child->_leafHashIndex);
-                NodeInfo childInfo = { child, childNodeIndex };
-                nodeAllocator.deleteNode(childInfo);
-                node->setChildInvalid(childIndex);
+                Node *child = tree->nodeAllocator.getNode(childNodeIndex);
+                tree->leafHashAllocator.eraseLeafHash(child->_firstChild);
+                childInfo.address[childIndex] = child;
+                childInfo.index[childIndex] = childNodeIndex;
             }
+            tree->nodeAllocator.deleteChildren(childInfo);
+            node->_firstChild = -1;
             ASSERT(node->hasLeafHash() == false);
-            node->setLeaf();
+
+            // set node as leaf
+            _curNumberOfRectangles = 0;
+            if (hasLeafHash() == false)
+            {
+                _firstChild = tree->leafHashAllocator.allocateLeafHash();
+            }
         }
     }
 }
 
-void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, u32 curDepth)
+void Node::subdivide(NodeOrientation orientation, u32 curDepth, AABB curBound, Tree *tree)
 {
-    array<Rec, 2> childBounds = getChildBounds(orientation);
-    vector<RecInfo> recInfo = leafHashAllocator.getRecInfos(_leafHashIndex);
+    array<AABB, 2> childBounds = getChildBounds(orientation, curBound);
+    vector<RecInfo> recInfo = tree->leafHashAllocator.getRecInfos(_firstChild, tree);
+
+    // set node as a branch
+    _curNumberOfRectangles = -1;
+    tree->leafHashAllocator.eraseLeafHash(_firstChild);
+    _firstChild = -1;
+
+    NodeInfo nodeInfo;
     for (u32 iteration = 0;
          iteration < recInfo.size();
          ++iteration)
@@ -339,37 +354,28 @@ void Node::subdivide(NodeAllocator &nodeAllocator, NodeOrientation orientation, 
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
         {
-            if (childBounds[childIndex].doesRecIntersect(recInfo[iteration].rec))
+            if (recInfo[iteration].rec.doesAABBIntersect(childBounds[childIndex]) == true)
             {
                 Node *childNode;
-                if (isChildValid(childIndex) == false)
+                if (hasChildren() == false)
                 {
-                    NodeInfo nodeInfo = nodeAllocator.allocateNode(childBounds[childIndex]);
-                    childNode = nodeInfo.address;
-                    _children[childIndex] = nodeInfo.index;
-                    ++nodeAllocator._numberOfLeafs;
+                    nodeInfo = tree->nodeAllocator.allocateChildren();
+                    childNode = nodeInfo.address[childIndex];
+                    _firstChild = nodeInfo.index[0];
+                    tree->nodeAllocator._numberOfLeafs += 2;
                 }
                 else
                 {
-                    childNode = nodeAllocator.getNode(_children[childIndex]);
+                    childNode = nodeInfo.address[childIndex];
                 }
-                childNode->insert(recInfo[iteration].index, nodeAllocator, recInfo[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1);
+                childNode->insert(recInfo[iteration].index, recInfo[iteration].rec, orientation == horizontal ? vertical : horizontal, curDepth + 1,
+                    childBounds[childIndex], tree);
             }
         }
     }
 }
 
-void Node::printBounds(i32 nodesPrinted, NodeAllocator &nodeAllocator) const
+void Node::printBounds(i32 nodesPrinted, Tree *tree) const
 {
-    for (u32 nodeIndex = 0;
-         nodeIndex < nodeAllocator.size() && nodesPrinted >= 0;
-         ++nodeIndex)
-    {
-        if (nodeAllocator.isValid(nodeIndex))
-        {
-            --nodesPrinted;
-            Node *node = nodeAllocator.getNode(nodeIndex);
-            LOG(node->_nodeBound);
-        }
-    }
+    // TODO(david): implement
 }
