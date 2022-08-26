@@ -4,10 +4,6 @@
 #include <fstream>
 #include "Tree.hpp"
 
-clock_t timer = 0;
-clock_t timer2 = 0;
-clock_t timer3 = 0;
-
 NodeListAllocator::NodeListAllocator()
 {
     _nodeLists.reserve(8192);
@@ -207,7 +203,6 @@ u32 Node::update(AABB bound, Tree *tree)
     {
         array<Rec, nOfConcurrentInserts> recs;
         u32 recsSize = 0;
-        clock_t start = clock();
         for (u32 i = 0;
              i < nOfConcurrentInserts && i + recIndex < rectanglesSize;
              ++i)
@@ -216,7 +211,6 @@ u32 Node::update(AABB bound, Tree *tree)
             Rec &rec = tree->rectangles[curRecIndex];
             recs[recsSize++] = rec;
         }
-        timer += clock() - start;
 
 
         for (u32 i = 0;
@@ -238,14 +232,12 @@ u32 Node::update(AABB bound, Tree *tree)
             insert(recIndex + i, recs[i], bound, tree);
         }
 
-        start = clock();
         for (u32 i = 0;
              i < recsSize;
              ++i)
         {
             tree->rectangles[recIndex + i] = recs[i];
         }
-        timer += clock() - start;
     }
 
     // enable this after fixing the bug

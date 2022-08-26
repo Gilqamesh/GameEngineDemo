@@ -19,4 +19,9 @@ struct Tree
     u32 update();
 };
 
+void foo(void)
+{
+    cout << "hello" << endl;
+}
+
 #endif
