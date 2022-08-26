@@ -242,6 +242,12 @@ struct NodeList
     i32 next; // -1 if no next node
 };
 
+struct RecInfos
+{
+    RecInfo recs[NODE_LIMIT];
+    u32 size;
+};
+
 struct NodeListAllocator
 {
     NodeListAllocator();
@@ -303,7 +309,7 @@ struct NodeListAllocator
         return (_deletionCount);
     }
 
-    vector<RecInfo> getRecInfos(i32 beginIndex, Tree *tree);
+    RecInfos getRecInfos(i32 beginIndex, Tree *tree);
 };
 
 struct Node;
@@ -348,7 +354,7 @@ struct __attribute__ ((__packed__)) Node
 
     inline b32 isLeaf(void) const
     {
-        return (isBranch() == false);
+        return (!(_curNumberOfRectangles < 0));
     }
 
     inline b32 isEmpty(void) const

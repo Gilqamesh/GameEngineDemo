@@ -27,19 +27,20 @@ vector<RecInfo> LeafHash::getRecInfos(Tree *tree)
 
 NodeListAllocator::NodeListAllocator()
 {
+    _nodeLists.reserve(10000);
     _freeList = -1;
     _curIndex = 0;
     _deletionCount = 0;
 }
 
-vector<RecInfo> NodeListAllocator::getRecInfos(i32 beginIndex, Tree *tree)
+RecInfos NodeListAllocator::getRecInfos(i32 beginIndex, Tree *tree)
 {
-    vector<RecInfo> result;
+    RecInfos result = {};
 
     while (beginIndex != -1)
     {
         NodeList nodeList = _nodeLists[beginIndex];
-        result.push_back({ nodeList.recIndex, tree->rectangles[nodeList.recIndex] });
+        result.recs[result.size++] = { nodeList.recIndex, tree->rectangles[nodeList.recIndex] };
         beginIndex = nodeList.next;
     }
 
@@ -127,12 +128,6 @@ u32 Node::update(AABB bound, Tree *tree)
 
     bitset<NUMBER_OF_INSERTIONS> collidedRectangles;
 
-    // new update strategy
-    // iterate over the rectangles
-    //  - remove rec
-    //  - move rec
-    //  - reinsert rec
-
     queue<NodeLeaf> leafs = getLeafs(bound, tree);
     // change rec velocities
     while (leafs.empty() == false)
@@ -146,27 +141,27 @@ u32 Node::update(AABB bound, Tree *tree)
             // TODO(david): use own structure
             // clock_t start = clock();
             // vector<RecInfo> recInfo = tree->leafHashAllocator.getRecInfos(node->_firstChild, tree);
-            vector<RecInfo> recInfo = tree->nodeListAllocator.getRecInfos(node->_firstChild, tree);
+            RecInfos recInfo = tree->nodeListAllocator.getRecInfos(node->_firstChild, tree);
             // timer += clock() - start;
 
             for (u32 leftIter = 0;
-                leftIter < recInfo.size();
+                leftIter < recInfo.size;
                 ++leftIter)
             {
-                u32 leftRecIndex = recInfo[leftIter].index;
+                u32 leftRecIndex = recInfo.recs[leftIter].index;
                 if (collidedRectangles[leftRecIndex] == false)
                 {
                     for (u32 rightIter = leftIter + 1;
-                        rightIter < recInfo.size();
+                        rightIter < recInfo.size;
                         ++rightIter)
                     {
-                        u32 rightRecIndex = recInfo[rightIter].index;
+                        u32 rightRecIndex = recInfo.recs[rightIter].index;
                         ASSERT(leftRecIndex != rightRecIndex);
 
                         if (collidedRectangles[rightRecIndex] == false)
                         {
-                            Rec leftRec = recInfo[leftIter].rec;
-                            Rec rightRec = recInfo[rightIter].rec;
+                            Rec leftRec = recInfo.recs[leftIter].rec;
+                            Rec rightRec = recInfo.recs[rightIter].rec;
                             if (leftRec.doesRecIntersect(rightRec) == true)
                             {
                                 // remove the 2 recs for further collision detection with other recs
@@ -209,10 +204,10 @@ u32 Node::update(AABB bound, Tree *tree)
             // start = clock();
             // map the velocities back from cache to storage
             for (u32 i = 0;
-                    i < recInfo.size();
-                    ++i)
+                 i < recInfo.size;
+                 ++i)
             {
-                tree->rectangles[recInfo[i].index] = recInfo[i].rec;
+                tree->rectangles[recInfo.recs[i].index] = recInfo.recs[i].rec;
             }
             // timer2 += clock() - start;
 
@@ -225,7 +220,7 @@ u32 Node::update(AABB bound, Tree *tree)
     tree->nodeListAllocator.clear();
 
     // TODO(david): profile this loop, and update multiple rectangles at a time by using simd intrinsics
-    const u32 nOfConcurrentInserts = 1024;
+    const u32 nOfConcurrentInserts = 2048;
 
     u32 rectanglesSize = tree->rectangles.size();
     for (u32 recIndex = 0;
@@ -256,14 +251,14 @@ u32 Node::update(AABB bound, Tree *tree)
             recs[recsSize++] = rec;
         }
 
-        clock_t start = clock();
+        // clock_t start = clock();
         for (u32 i = 0;
              i < nOfConcurrentInserts && i + recIndex < rectanglesSize;
              ++i)
         {
             insert(recIndex + i, recs[i], bound, tree);
         }
-        timer += clock() - start;
+        // timer += clock() - start;
     }
 
     // enable this after fixing the bug
@@ -335,7 +330,7 @@ void Node::subdivide(AABB curBound, Tree *tree)
 {
     array<AABB, NUMBER_OF_CHILDREN> childBounds = getChildBounds(curBound);
     // vector<RecInfo> recInfo = tree->leafHashAllocator.getRecInfos(_firstChild, tree);
-    vector<RecInfo> recInfo = tree->nodeListAllocator.getRecInfos(_firstChild, tree);
+    RecInfos recInfo = tree->nodeListAllocator.getRecInfos(_firstChild, tree);
 
     // set node as a branch
     _curNumberOfRectangles = -1;
@@ -347,14 +342,14 @@ void Node::subdivide(AABB curBound, Tree *tree)
 
     NodeInfo nodeInfo;
     for (u32 iteration = 0;
-         iteration < recInfo.size();
+         iteration < recInfo.size;
          ++iteration)
     {
         for (u32 childIndex = 0;
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
         {
-            if (recInfo[iteration].rec.doesAABBIntersect(childBounds[childIndex]) == true)
+            if (recInfo.recs[iteration].rec.doesAABBIntersect(childBounds[childIndex]) == true)
             {
                 Node *childNode;
                 if (hasChildren() == false)
@@ -368,7 +363,7 @@ void Node::subdivide(AABB curBound, Tree *tree)
                 {
                     childNode = nodeInfo.address[childIndex];
                 }
-                childNode->insert(recInfo[iteration].index, recInfo[iteration].rec, childBounds[childIndex], tree);
+                childNode->insert(recInfo.recs[iteration].index, recInfo.recs[iteration].rec, childBounds[childIndex], tree);
             }
         }
     }

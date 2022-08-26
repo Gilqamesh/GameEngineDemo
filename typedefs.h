@@ -13,9 +13,9 @@ using namespace std;
 # define LINE() (LOG(__LINE__ << " " << __FILE__))
 
 # define NUMBER_OF_INSERTIONS 32000
-// # define NUMBER_OF_INSERTIONS 10000
+// # define NUMBER_OF_INSERTIONS 1000
 
-// # define NDEBUG
+# define NDEBUG
 
 # ifndef NDEBUG
 #  define ASSERT(x) {\

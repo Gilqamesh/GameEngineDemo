@@ -83,6 +83,7 @@
         "thread": "cpp",
         "filesystem": "cpp",
         "xiosbase": "cpp",
-        "xhash": "cpp"
+        "xhash": "cpp",
+        "charconv": "cpp"
     }
 }
