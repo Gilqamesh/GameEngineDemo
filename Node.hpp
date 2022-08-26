@@ -7,6 +7,7 @@
 // both of these must be a power of 2!
 # define NUMBER_OF_CHILDREN 4
 # define NODE_LIMIT 256
+# define HARD_NODE_LIMIT 512
 
 struct Tree;
 
@@ -16,235 +17,15 @@ struct RecInfo
     Rec rec;
 };
 
-// power of 2 > NUMBER_OF_INSERTIONS
-// #define EMPTY_HASH_SLOT UINT32_MAX
-#define EMPTY_HASH_SLOT UINT16_MAX
-struct LeafHash
-{
-    LeafHash()
-    {
-        clear();
-    }
-
-    LeafHash(const LeafHash& that)
-    {
-        *this = that;
-    }
-
-    LeafHash &operator=(const LeafHash& that)
-    {
-        if (this != &that)
-        {
-            for (u32 iteration = 0;
-             iteration < NODE_LIMIT;
-             ++iteration)
-            {
-                _recIndices[iteration] = that._recIndices[iteration];
-            }
-        }
-
-        return (*this);
-    }
-
-    u16 _recIndices[NODE_LIMIT];
-
-    inline void clear(void)
-    {
-        for (u32 i = 0;
-             i < NODE_LIMIT;
-             ++i)
-        {
-            _recIndices[i] = EMPTY_HASH_SLOT;
-        }
-    }
-
-    inline b32 insert(u32 recIndex)
-    {
-        ASSERT(recIndex < NUMBER_OF_INSERTIONS);
-        // TODO(david): better hashing function
-        u32 hashValue = (recIndex) & (NODE_LIMIT - 1);
-        ASSERT(hashValue < NODE_LIMIT);
-
-        for (u32 i = hashValue;
-             i < NODE_LIMIT;
-             ++i)
-        {
-            if (_recIndices[i] == recIndex)
-            {
-                return (false);
-            }
-            if (_recIndices[i] == EMPTY_HASH_SLOT)
-            {
-                _recIndices[i] = recIndex;
-                return (true);
-            }
-        }
-
-        // if there is no empty hash slot left from the hashValue
-        for (u32 i = 0;
-             i < hashValue;
-             ++i)
-        {
-            if (_recIndices[i] == recIndex)
-            {
-                return (false);
-            }
-            if (_recIndices[i] == EMPTY_HASH_SLOT)
-            {
-                _recIndices[i] = recIndex;
-                return (true);
-            }
-        }
-        LOG(recIndex);
-        ASSERT(false);
-
-        return (false);
-    }
-
-    inline b32 erase(u32 recIndex)
-    {
-        ASSERT(recIndex < NUMBER_OF_INSERTIONS);
-        u32 hashValue = (recIndex) & (NODE_LIMIT - 1);
-        ASSERT(hashValue < NODE_LIMIT);
-        for (u32 i = hashValue;
-             i < NODE_LIMIT;
-             ++i)
-        {
-            if (_recIndices[i] == recIndex)
-            {
-                _recIndices[i] = EMPTY_HASH_SLOT;
-                return (true);
-            }
-        }
-
-        for (u32 i = 0;
-             i < hashValue;
-             ++i)
-        {
-            if (_recIndices[i] == recIndex)
-            {
-                _recIndices[i] = EMPTY_HASH_SLOT;
-                return (true);
-            }
-        }
-
-        LOG(recIndex);
-        ASSERT(false);
-        
-        return (false);
-    }
-
-    vector<RecInfo> getRecInfos(Tree *tree);
-};
-
-struct LeafHashAllocator
-{
-    LeafHashAllocator() : _deletionCount(0) {}
-
-    vector<LeafHash> _leafHashes;
-    vector<u16>      _available;
-    u32              _deletionCount;
-
-    /**
-     * Allocates a LeafHash and returns its index
-     */
-    inline u16 allocateLeafHash(void)
-    {
-        u16 result;
-        if (_available.size())
-        {
-            result = _available.back();
-            _available.pop_back();
-        }
-        else
-        {
-            result = _leafHashes.size();
-            _leafHashes.push_back(LeafHash());
-        }
-
-        ASSERT(result < 10000); // arbitrary limit
-
-        return (result);
-    }
-
-    /**
-     * Inserts a rectangle into the LeafHash
-     */
-    inline void insert(u32 recIndex, u16 leafHashIndex)
-    {
-        if (!(leafHashIndex < _leafHashes.size()))
-        {
-            LOG(leafHashIndex << " " << _leafHashes.size() << " " << recIndex);
-            ASSERT(false);
-        }
-        b32 result = _leafHashes[leafHashIndex].insert(recIndex);
-    }
-
-    /**
-     * Erases a rectangle from the LeafHash
-     */
-    inline b32 erase(u32 recIndex, u16 leafHashIndex)
-    {
-        ASSERT(leafHashIndex < _leafHashes.size());
-        return (_leafHashes[leafHashIndex].erase(recIndex));
-    }
-
-    /**
-     * Removes the LeafHash for later use
-     */
-    inline void eraseLeafHash(u16 leafHashIndex)
-    {
-        ASSERT(leafHashIndex < _leafHashes.size());
-
-        _leafHashes[leafHashIndex].clear();
-        _available.push_back(leafHashIndex);
-        ++_deletionCount;
-    }
-
-    /**
-     * Clears the leaf hash so that it wont store any recs
-     */
-    inline void clearLeafHash(u16 leafHashIndex)
-    {
-        ASSERT(leafHashIndex < _leafHashes.size());
-        _leafHashes[leafHashIndex].clear();
-    }
-    
-    inline void clear(void)
-    {
-        _leafHashes.clear();
-        _available.clear();
-        _deletionCount = 0;
-    }
-
-    inline u32 getDeletionCount() const
-    {
-        return (_deletionCount);
-    }
-
-    /**
-     * Pulls and copies rectangles into memory for the hash
-     */
-    inline vector<RecInfo> getRecInfos(u16 leafHashIndex, Tree *tree)
-    {
-        if (!(leafHashIndex < _leafHashes.size()))
-        {
-            LOG(leafHashIndex << " " << _leafHashes.size());
-            ASSERT(false);
-        }
-        return (_leafHashes[leafHashIndex].getRecInfos(tree));
-    }
-};
-
 struct NodeList
 {
-    u16 recIndex; // rec index
+    u32 index; // rec index
     i32 next; // -1 if no next node
 };
 
 struct RecInfos
 {
-    RecInfo recs[NODE_LIMIT];
+    RecInfo recs[HARD_NODE_LIMIT];
     u32 size;
 };
 
@@ -260,7 +41,7 @@ struct NodeListAllocator
     /**
      * Returns new child
      */
-    i32 insert(i32 prevNode, u16 recIndex)
+    i32 insert(i32 prevNode, u32 index)
     {
         i32 result;
         if (!(_freeList < 0))
@@ -277,7 +58,7 @@ struct NodeListAllocator
             }
         }
         _nodeLists[result].next = prevNode;
-        _nodeLists[result].recIndex = recIndex;
+        _nodeLists[result].index = index;
 
         return (result);
     }
@@ -321,7 +102,7 @@ struct NodeLeaf
 };
 
 // __attribute__ ((__packed__))
-struct __attribute__ ((__packed__)) Node
+struct  Node
 {
     // i16 _leafHashIndex; // -1 if does not have a LeafHash
     // array<i16, NUMBER_OF_CHILDREN> _children; // -1 is child does not exist

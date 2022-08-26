@@ -16,7 +16,7 @@ NodeInfo NodeAllocator::allocateChildren(void)
 
     if (_freeNodeSize > 0)
     {
-        ASSERT((_freeNodeSize & (NUMBER_OF_CHILDREN - 1)) == 0);
+        ASSERT(!(_freeNodeSize < NUMBER_OF_CHILDREN));
         for (u32 childIndex = 0;
              childIndex < NUMBER_OF_CHILDREN;
              ++childIndex)
@@ -59,7 +59,6 @@ NodeInfo NodeAllocator::allocateChildren(void)
 
 void NodeAllocator::deleteChildren(NodeInfo nodeInfo)
 {
-    ASSERT(_freeNodeSize < _freeNodeIndices.size() && _nextNodeIndex > 0);
     _deletedNodes += NUMBER_OF_CHILDREN;
     for (u32 childIndex = NUMBER_OF_CHILDREN;
          childIndex > 0;
@@ -77,7 +76,6 @@ Node *NodeAllocator::getNode(u32 nodeIndex)
 
 NodeInfo NodeAllocator::getChildren(u32 firstChildIndex)
 {
-    ASSERT(firstChildIndex < _nodes.size() - 1);
     NodeInfo result;
     for (u32 childIndex = 0;
          childIndex < NUMBER_OF_CHILDREN;

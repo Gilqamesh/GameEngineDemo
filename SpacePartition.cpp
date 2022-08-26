@@ -30,6 +30,10 @@ int main()
     AABB screenBound = { 0, 0, static_cast<u16>(halfWidth << 1), static_cast<u16>(halfHeight << 1) };
     // Tree tree(screenBound);
 
+    const u16 numberOfThreads = 1;
+
+    clock_t insertionClock = 0;
+    clock_t start = clock();
     for (u32 iteration = 0;
          iteration < NUMBER_OF_INSERTIONS;
          ++iteration)
@@ -45,8 +49,13 @@ int main()
                           getRand(minVel, maxVel),
                           getRand(minVel, maxVel)
                           };
-        // tree.insert(screenBound);
-        if (rectangle.doesAABBIntersect(NWBound))
+        // tree.insert(rectangle);
+        // problem is between the bounds.. if an object needs to exist in both bounds what then?..
+        // if (rectangle.doesAABBIntersect(NWBound))
+        // {
+        //     trees[0].insert(rectangle);
+        // }
+        if (rectangle.doesAABBIntersect(screenBound))
         {
             trees[0].insert(rectangle);
         }
@@ -62,11 +71,9 @@ int main()
         {
             trees[3].insert(rectangle);
         }
-        else
-        {
-            ASSERT(false);
-        }
     }
+    insertionClock += clock() - start;
+
     // rectangles.push_back({0.0f, 0.0f, 10.0f, 10.0f});
     // rectangles.push_back({1.0f, 1.0f, 10.0f, 10.0f});
     // rectangles.push_back({300.0f, 200.0f, 250.0f, 250.0f});
@@ -74,37 +81,46 @@ int main()
     // rectangles.push_back({1400.0f, 200.0f, 250.0f, 250.0f});
     // rectangles.push_back({1400.0f, 700.0f, 250.0f, 250.0f});
     // rectangles.push_back({400.0f, 600.0f, 250.0f, 250.0f});
-    clock_t sortStart = clock();
-    // sort(rectangles.begin(), rectangles.end(), [](const Rec& l, const Rec& r){
-    //     return (l.topLeftX < r.topLeftX);
-    // });
-    clock_t sortEnd = clock() - sortStart;
     LOG("Number of rectangles: " << NUMBER_OF_INSERTIONS);
     LOG("Size of one rectangle: " << sizeof(Rec) << ", size of all rectangles: " << NUMBER_OF_INSERTIONS * sizeof(Rec) / 1024.0f << "KB");
 
-    clock_t insertionClock = 0;
-    u32 maxNumberOfInsersections = 0;
 
-    clock_t start = clock();
     // for (u32 rectangleIndex = 0;
     //     rectangleIndex < rectangles.size();
     //     ++rectangleIndex)
     // {
     //     tree.insert(rectangles[rectangleIndex]);
     // }
-    insertionClock += clock() - start;
     // root->logInfo(insertionFile, nodeAllocator, 0, 0);
 
     LOG("Intersections...");
     clock_t totalIntersectionClock = 0;
-    const u16 numberOfThreads = 4;
+    u32 maxNumberOfInsersections[numberOfThreads] = {};
     array<thread, numberOfThreads> threads;
     for (u16 threadIndex = 0;
          threadIndex < numberOfThreads;
          ++threadIndex)
     {
-        threads[threadIndex] = thread([&](u16 threadId){
-            for (u32 currentSecond = 0;
+        //  for (u32 currentSecond = 0;
+        //     currentSecond < SECONDS_SIMULATED;
+        //     ++currentSecond)
+        // {
+        //     // cout << currentSecond + 1 << "s: ";
+        //     for (u32 frameIndex = 0;
+        //         frameIndex < FRAMES_PER_SEC;
+        //         ++frameIndex)
+        //     {
+        //         start = clock();
+        //         u32 numberOfIntersections = tree.update();
+        //         totalIntersectionClock += clock() - start;
+        //         // cout << numberOfIntersections << " ";
+        //         if (maxNumberOfInsersections < numberOfIntersections)
+        //         {
+        //             maxNumberOfInsersections = numberOfIntersections;
+        //         }   
+        //     }
+        // }
+        for (u32 currentSecond = 0;
                 currentSecond < SECONDS_SIMULATED;
                 ++currentSecond)
             {
@@ -114,51 +130,79 @@ int main()
                     ++frameIndex)
                 {
                     start = clock();
-                    u32 numberOfIntersections = trees[threadId].update();
+                    u32 numberOfIntersections = trees[threadIndex].update();
                     totalIntersectionClock += clock() - start;
                     // cout << numberOfIntersections << " ";
-                    if (maxNumberOfInsersections < numberOfIntersections)
+                    if (maxNumberOfInsersections[threadIndex] < numberOfIntersections)
                     {
-                        maxNumberOfInsersections = numberOfIntersections;
+                        maxNumberOfInsersections[threadIndex] = numberOfIntersections;
                     }   
                 }
                 // LOG("");
             }
-        }, threadIndex);
+        // threads[threadIndex] = thread([&](u16 threadId){
+        //     for (u32 currentSecond = 0;
+        //         currentSecond < SECONDS_SIMULATED;
+        //         ++currentSecond)
+        //     {
+        //         // cout << currentSecond + 1 << "s: ";
+        //         for (u32 frameIndex = 0;
+        //             frameIndex < FRAMES_PER_SEC;
+        //             ++frameIndex)
+        //         {
+        //             start = clock();
+        //             u32 numberOfIntersections = trees[threadId].update();
+        //             totalIntersectionClock += clock() - start;
+        //             // cout << numberOfIntersections << " ";
+        //             if (maxNumberOfInsersections[threadId] < numberOfIntersections)
+        //             {
+        //                 maxNumberOfInsersections[threadId] = numberOfIntersections;
+        //             }   
+        //         }
+        //         // LOG("");
+        //     }
+        // }, threadIndex);
     }
+    u32 totalMaxNumberOfIntersections = 0;
+    Tree &treeRef = trees[0];
+    u32 allocatedNodes = 0;
+    u32 deletedNodes = 0;
+    u32 maxAllocatedNodes = 0;
+    u32 nodeListsAllocated = 0;
+    u32 nodeListsDeleted = 0;
     for (u16 threadIndex = 0;
          threadIndex < numberOfThreads;
          ++threadIndex)
     {
-        threads[threadIndex].join();
+        // threads[threadIndex].join();
+        totalMaxNumberOfIntersections += maxNumberOfInsersections[threadIndex];
+        allocatedNodes += trees[threadIndex].nodeAllocator.allocatedNodes();
+        deletedNodes += trees[threadIndex].nodeAllocator.deletedNodes();
+        maxAllocatedNodes += trees[threadIndex].nodeAllocator.maxAllocatedNodes();
+        nodeListsAllocated += trees[threadIndex].nodeListAllocator._nodeLists.size();
+        nodeListsDeleted += trees[threadIndex].nodeListAllocator.getDeletionCount();
     }
 
-    // for (u32 treeIndex = 0;
-    //      treeIndex < 4;
-    //      ++treeIndex)
-    // {
+    LOG("Initial Node pool size: " << NODE_POOL_SIZE * numberOfThreads << ", in kilobytes: " << NODE_POOL_SIZE * sizeof(Node) * numberOfThreads / 1024.0f << "KB");
 
-    // }
-    LOG("Node pool size: " << NODE_POOL_SIZE << ", in kilobytes: " << NODE_POOL_SIZE * sizeof(Node) / 1024.0f << "KB");
-    LOG("Allocated nodes: " << trees[0].nodeAllocator.allocatedNodes() << ", in kilobytes: " << trees[0].nodeAllocator.allocatedNodes() * sizeof(Node) / 1024.0f << "KB");
-    LOG("Deleted nodes: " << trees[0].nodeAllocator.deletedNodes() << ", in kilobytes: " << trees[0].nodeAllocator.deletedNodes() * sizeof(Node) / 1024.0f << "KB");
-    LOG("Total allocated nodes: " << trees[0].nodeAllocator.maxAllocatedNodes() << ", in kilobytes: " << trees[0].nodeAllocator.maxAllocatedNodes() * sizeof(Node) / 1024.0f << "KB");
+    LOG("Allocated nodes: " << allocatedNodes << ", in kilobytes: " << allocatedNodes * sizeof(Node) / 1024.0f << "KB");
+    LOG("Deleted nodes: " << deletedNodes << ", in kilobytes: " << deletedNodes * sizeof(Node) / 1024.0f << "KB");
+    LOG("Total allocated nodes: " << maxAllocatedNodes << ", in kilobytes: " << maxAllocatedNodes * sizeof(Node) / 1024.0f << "KB");
     LOG("Size of a node in bytes: " << sizeof(Node) << "B");
     LOG("Node capacity: " << NODE_LIMIT << " rectangles");
 
-    LOG("Max intersections: " << maxNumberOfInsersections);
+    LOG("Max intersections: " << totalMaxNumberOfIntersections);
     LOG("Time taken for insertion: " << insertionClock / (r32)CLOCKS_PER_SEC << "s");
-    LOG("Time taken for update check: " << totalIntersectionClock / (r32)CLOCKS_PER_SEC / SECONDS_SIMULATED << "s");
-    LOG("Time taken to sort rectangles: " << sortEnd / (r32)CLOCKS_PER_SEC << "s");
-    LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock + sortEnd) / (r32)CLOCKS_PER_SEC << "s");
+    LOG("Time taken for update check: " << totalIntersectionClock / (r32)CLOCKS_PER_SEC / (r32)SECONDS_SIMULATED / (r32)numberOfThreads << "s");
+    LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock) / (r32)CLOCKS_PER_SEC / (r32)numberOfThreads << "s");
 
-    // LOG("Number of LeafHashes allocated: " << trees[0].leafHashAllocator._leafHashes.size());
-    // LOG("Number of LeafHashes deleted: " << trees[0].leafHashAllocator.getDeletionCount() << ", in KB: " << trees[0].leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
-    // LOG("Total size of LeafHashes in KB: " << trees[0].leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
+    // LOG("Number of LeafHashes allocated: " << treeRef.leafHashAllocator._leafHashes.size());
+    // LOG("Number of LeafHashes deleted: " << treeRef.leafHashAllocator.getDeletionCount() << ", in KB: " << treeRef.leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
+    // LOG("Total size of LeafHashes in KB: " << treeRef.leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
 
-    LOG("Number of NodeLists allocated: " << trees[0].nodeListAllocator._nodeLists.size());
-    LOG("Number of NodeLists deleted: " << trees[0].nodeListAllocator.getDeletionCount() << ", in KB: " << trees[0].nodeListAllocator.getDeletionCount() * sizeof(NodeList) / 1024.0f);
-    LOG("Total size of NodeLists in KB: " << trees[0].nodeListAllocator._nodeLists.size() * sizeof(NodeList) / 1024.0f);
+    LOG("Number of NodeLists allocated: " << nodeListsAllocated);
+    LOG("Number of NodeLists deleted: " << nodeListsDeleted << ", in KB: " << nodeListsDeleted * sizeof(NodeList) / 1024.0f);
+    LOG("Total size of NodeLists in KB: " << nodeListsAllocated * sizeof(NodeList) / 1024.0f);
 
     LOG("Timer: " << timer / (r32)CLOCKS_PER_SEC << "s");
     LOG("Timer2: " << timer2 / (r32)CLOCKS_PER_SEC << "s");

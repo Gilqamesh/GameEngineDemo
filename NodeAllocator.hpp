@@ -3,8 +3,7 @@
 
 # include "Node.hpp"
 
-# define NODE_POOL_SIZE 20000
-// # define NODE_POOL_SIZE 1000
+# define NODE_POOL_SIZE 10000
 
 struct NodeInfo
 {
@@ -16,10 +15,12 @@ struct NodeAllocator
 {
     vector<Node>    _nodes;
     u32             _nextNodeIndex;
-    u32             _maxAllocatedNodes;
-    u32             _numberOfLeafs;
+
     vector<u32>     _freeNodeIndices;
     u32             _freeNodeSize;
+
+    u32             _numberOfLeafs;
+    u32             _maxAllocatedNodes;
     u32             _deletedNodes;
 
     NodeAllocator();
