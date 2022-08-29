@@ -101,10 +101,10 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
     glfwSetCursorPosCallback(_window, [](GLFWwindow *window, double x, double y){
         MacWindowProps *w = (MacWindowProps *)glfwGetWindowUserPointer(window);
 
-        w->xMouseChange = x - w->previousMouseX;
-        w->yMouseChange = w->previousMouseY - y;
-        w->previousMouseX = x;
-        w->previousMouseY = y;
+        w->xMouseChange = (r32)x - w->previousMouseX;
+        w->yMouseChange = w->previousMouseY - (r32)y;
+        w->previousMouseX = (r32)x;
+        w->previousMouseY = (r32)y;
 
         MouseMovedEvent e((float)x, (float)y);
         w->eventCallback(e);
@@ -112,7 +112,7 @@ MacWindow::MacWindow(const MacWindowProps &windowProps)
     glfwSetScrollCallback(_window, [](GLFWwindow *window, double offsetX, double offsetY){
         MacWindowProps *w = (MacWindowProps *)glfwGetWindowUserPointer(window);
 
-        MouseScrolledEvent e((float)offsetX, (float)offsetY);
+        MouseScrolledEvent e((r32)offsetX, (r32)offsetY);
         w->eventCallback(e);
     });
     glfwSetKeyCallback(_window, [](GLFWwindow *window, int key, int scancode, int action, int mods){

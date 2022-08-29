@@ -5,6 +5,7 @@
 #include "ECS/Components/VelocityComponent2D.hpp"
 #include "ECS/Components/PositionComponent2D.hpp"
 #include "ECS/Systems/CollisionSystem2D.hpp"
+#include "Debug/Stopwatch.hpp"
 
 namespace GilqEngine
 {
@@ -31,7 +32,7 @@ void QuadTreeLayer::onAttach()
     float maxWidth = (float)_window->getWidth();
     LOG(_window->getWidth());
     LOG(_window->getHeight());
-    unsigned int numberOfInsertions = 250;
+    unsigned int numberOfInsertions = 10;
     vector<string> modelNames = {
         "BlackRectangleModel",
         "RedRectangleModel",
@@ -76,7 +77,7 @@ void QuadTreeLayer::onAttach()
 
         // Create rectangle
         ASSERT(modelNames.size());
-        string modelName = modelNames[getRand(0, modelNames.size() - 1)];
+        string modelName = modelNames[getRand(0, (i32)modelNames.size() - 1)];
         Entity rectangle = _objectCoordinator.createModel2D(modelName, "RectangleShader");
         _objectCoordinator.attachComponent<RectangleColliderComponent>(rectangle, { position, size });
         float lowVelocity = -40.0f;
@@ -100,13 +101,18 @@ void QuadTreeLayer::onEvent(IEvent &e)
 
 void QuadTreeLayer::onUpdate(float deltaTime)
 {
-    LOG(deltaTime);
+    // LOG(deltaTime);
+    BEGIN_TIMED_BLOCK(Update);
     _objectCoordinator.update(deltaTime);
+    END_TIMED_BLOCK(Update);
 }
 
 void QuadTreeLayer::onRender()
 {
+    BEGIN_TIMED_BLOCK(Render);
     _objectCoordinator.drawObjects2D();
+    END_TIMED_BLOCK(Render);
+    PrintCycleCounters();
 }
 
 void QuadTreeLayer::loadShaders(void)

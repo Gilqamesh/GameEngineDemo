@@ -7,8 +7,6 @@
 # include "ECS/Components/Colliders/RectangleColliderComponent.hpp"
 # include "Generators/ParticleGenerator.hpp"
 
-# include "Debug/Stopwatch.hpp"
-
 namespace GilqEngine
 {
 
@@ -28,8 +26,6 @@ class CollisionDevLayer : public ILayer
     Entity _circle;
 
     Entity _normalLine;
-
-    Stopwatch _stopwatch;
 
     GeneratorId _mouseParticleGenerator;
 public:

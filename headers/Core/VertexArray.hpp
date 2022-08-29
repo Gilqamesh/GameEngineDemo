@@ -1,43 +1,44 @@
 #ifndef VERTEXARRAY_HPP
-# define VERTEXARRAY_HPP
+#define VERTEXARRAY_HPP
 
-# include "pch.hpp"
-# include "Core/VertexBuffer.hpp"
-# include "Core/VertexLayout.hpp"
-# include "Core/IndexBuffer.hpp"
+#include "pch.hpp"
+#include "Core/VertexBuffer.hpp"
+#include "Core/VertexLayout.hpp"
+#include "Core/IndexBuffer.hpp"
 
 namespace GilqEngine
 {
 
-class VertexArray
-{
-GLuint GL_ID;
-public:
-    VertexArray();
-    ~VertexArray();
+    class VertexArray
+    {
+        GLuint GL_ID;
 
-    // to avoid destruction of OpenGL context
-    VertexArray(const VertexArray &other) = delete;
-    VertexArray &operator=(const VertexArray &other) = delete;
+    public:
+        VertexArray();
+        ~VertexArray();
 
-    VertexArray(VertexArray &&other);
-    VertexArray &operator=(VertexArray &&other);
+        // to avoid destruction of OpenGL context
+        VertexArray(const VertexArray &other) = delete;
+        VertexArray &operator=(const VertexArray &other) = delete;
 
-    /*
-     * Only call this once
-     */
-    void create();
+        VertexArray(VertexArray &&other);
+        VertexArray &operator=(VertexArray &&other);
 
-    /*
-     * Caller's responsibility:
-     *      - prior to calling this function, bind() this object
-     *      - prior to calling this function, bind() the specific Buffer Object
-     */
-    void pushVertexAttribute(const VertexLayout &layout, GLuint index, uint64 offset);
+        /*
+         * Only call this once
+         */
+        void create();
 
-    void bind();
-    void unbind();
-};
+        /*
+         * Caller's responsibility:
+         *      - prior to calling this function, bind() this object
+         *      - prior to calling this function, bind() the specific Buffer Object
+         */
+        void pushVertexAttribute(const VertexLayout &layout, GLuint index, u64 offset);
+
+        void bind();
+        void unbind();
+    };
 
 }
 

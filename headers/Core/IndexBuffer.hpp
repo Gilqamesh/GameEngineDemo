@@ -1,56 +1,57 @@
 #ifndef INDEXBUFFER_HPP
-# define INDEXBUFFER_HPP
+#define INDEXBUFFER_HPP
 
-# include "pch.hpp"
+#include "pch.hpp"
 
 namespace GilqEngine
 {
-    
-class IndexBuffer
-{
-uint32  GL_ID;
-uint32  _count;
-public:
-    IndexBuffer();
-    /*
-     * Static version
-     * Cannot be modified
-     */
-    IndexBuffer(const void *data, uint32 count);
-    /*
-     * Dynamic version
-     * Initialize it later and possibly multiple times
-     */
-    IndexBuffer(uint32 count);
-    ~IndexBuffer();
 
-    // to avoid destruction of OpenGL context
-    IndexBuffer(const IndexBuffer &other) = delete;
-    IndexBuffer &operator=(const IndexBuffer &other) = delete;
+    class IndexBuffer
+    {
+        u32 GL_ID;
+        u32 _count;
 
-    IndexBuffer(IndexBuffer &&other);
-    IndexBuffer &operator=(IndexBuffer &&other);
+    public:
+        IndexBuffer();
+        /*
+         * Static version
+         * Cannot be modified
+         */
+        IndexBuffer(const void *data, u32 count);
+        /*
+         * Dynamic version
+         * Initialize it later and possibly multiple times
+         */
+        IndexBuffer(u32 count);
+        ~IndexBuffer();
 
-    inline uint32 getID() const { return (GL_ID); }
+        // to avoid destruction of OpenGL context
+        IndexBuffer(const IndexBuffer &other) = delete;
+        IndexBuffer &operator=(const IndexBuffer &other) = delete;
 
-    /*
-     * Caller responsibility:
-     *      - IBO has to be dynamically initialized
-     *      - call bind() before calling 'update'
-     */
-    void update(const void *data, uint32 count);
+        IndexBuffer(IndexBuffer &&other);
+        IndexBuffer &operator=(IndexBuffer &&other);
 
-    /*
-     * Delete IndexBuffer from the OpenGL context
-     * Reset the object's state
-     */
-    void release();
+        inline u32 getID() const { return (GL_ID); }
 
-    void bind();
-    void unbind();
+        /*
+         * Caller responsibility:
+         *      - IBO has to be dynamically initialized
+         *      - call bind() before calling 'update'
+         */
+        void update(const void *data, u32 count);
 
-    inline uint32 getCount() const { return (_count); }
-};
+        /*
+         * Delete IndexBuffer from the OpenGL context
+         * Reset the object's state
+         */
+        void release();
+
+        void bind();
+        void unbind();
+
+        inline u32 getCount() const { return (_count); }
+    };
 
 }
 

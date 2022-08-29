@@ -12,8 +12,8 @@ int main(void)
 
     try
     {
-        unique_ptr<ISimulator> simulator = make_unique<QuadTreeSimulator>();
-        // unique_ptr<ISimulator> simulator = make_unique<CollisionDevSimulator>();
+        // unique_ptr<ISimulator> simulator = make_unique<QuadTreeSimulator>();
+        unique_ptr<ISimulator> simulator = make_unique<CollisionDevSimulator>();
         simulator->main();
     }
     catch (const Exception& e)

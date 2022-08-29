@@ -3,51 +3,24 @@
 
 namespace GilqEngine
 {
+    DebugCycleCounters GlobalCycleCounters[256] = {};
 
-Stopwatch::Stopwatch()
-    : _currentTimes{},
-      _accumulatedTimes{},
-      _current(0)
-{
-
-}
-
-void Stopwatch::set()
-{
-    _currentTimes[_current] = clock();
-    if (_current > 0)
+    void PrintCycleCounters(void)
     {
-        _accumulatedTimes[_current - 1] += _currentTimes[_current] - _currentTimes[_current - 1];
-    }
-    ++_current;
-}
+        LOG("DEBUG CYCLE COUNTS:");
+        for(u32 counterIndex = 0;
+            counterIndex < ArrayCount(GlobalCycleCounters);
+            ++counterIndex)
+        {
+            DebugCycleCounters *Counter = GlobalCycleCounters + counterIndex;
 
-void Stopwatch::reset()
-{
-    _current = 0;
-}
-
-void Stopwatch::clear()
-{
-    for (auto &time : _currentTimes)
-    {
-        time = 0;
+            if(Counter->hitCount)
+            {
+                LOG(counterIndex << ": " << Counter->cycleCount << "cy "
+                    << Counter->hitCount << "h " << Counter->cycleCount / Counter->hitCount << "cy/h");
+                Counter->hitCount = 0;
+                Counter->cycleCount = 0;
+            }
+        }
     }
-    for (auto &time : _accumulatedTimes)
-    {
-        time = 0;
-    }
-    reset();
-}
-
-void Stopwatch::print()
-{
-    if (_current == 0)
-        return ;
-    for (uint8 i = 0; i < _current - 1; ++i)
-    {
-        LOG(static_cast<int>(i) << " -> " << _accumulatedTimes[i] / static_cast<float>(CLOCKS_PER_SEC) << "s");
-    }
-}
-
 }

@@ -1,25 +1,32 @@
 #ifndef STOPWATCH_HPP
-# define STOPWATCH_HPP
+#define STOPWATCH_HPP
 
-# include "pch.hpp"
+#include "pch.hpp"
 
 namespace GilqEngine
 {
+    enum
+    {
+        DebugCycleCounter_Update,
+        DebugCycleCounter_Render,
+    };
 
-class Stopwatch
-{
-array<time_t, UINT8_MAX> _currentTimes;
-array<time_t, UINT8_MAX> _accumulatedTimes;
-uint8 _current;
-public:
-    Stopwatch();
+    #define BEGIN_TIMED_BLOCK(ID) u64 StartCycleCount##ID = __rdtsc();
+    #define END_TIMED_BLOCK(ID) {\
+        GlobalCycleCounters[DebugCycleCounter_##ID].cycleCount += __rdtsc() - StartCycleCount##ID;\
+        ++GlobalCycleCounters[DebugCycleCounter_##ID].hitCount;\
+    }
 
-    void set();
-    void reset();
-    void clear();
+    struct DebugCycleCounters
+    {
+        u64 cycleCount;
+        u32 hitCount;
+    };
 
-    void print();
-};
+
+    void PrintCycleCounters(void);
+
+    extern DebugCycleCounters GlobalCycleCounters[256];
 
 }
 

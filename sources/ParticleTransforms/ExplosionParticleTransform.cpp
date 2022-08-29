@@ -11,7 +11,7 @@ void ExplosionParticleTransform::reviveTransformFunction(const Particle& inputPa
     float lifeMultiplier = getRand(0.8f, 1.2f);
 
     static float sinValue;
-    sinValue += 0.025;
+    sinValue += 0.025f;
     outputParticle.position = inputParticle.position;
     Vector<float, 2> velocityDirection(getRand(-1.0f, 1.0f), getRand(-1.0f, 1.0f));
     // Vector<float, 2> velocityDirection(cos(sinValue), sin(sinValue));
@@ -31,14 +31,14 @@ void ExplosionParticleTransform::reviveTransformFunction(const Particle& inputPa
 void ExplosionParticleTransform::updateTransformFunction(float deltaTime, Particle& particle)
 {
     TRACE();
-    float lifeTransienceMultiplier = 0.2;
+    float lifeTransienceMultiplier = 0.2f;
     particle.life -= deltaTime * lifeTransienceMultiplier;
     if (particle.life > 0.0f)
     {
         particle.position += particle.velocity * deltaTime;
-        particle.velocity *= 0.99;
-        particle.size *= 0.99;
-        float colorFluctuation = 0.005;
+        particle.velocity *= 0.99f;
+        particle.size *= 0.99f;
+        float colorFluctuation = 0.005f;
         particle.color[0] = max(1.0f, particle.color[0] * (1 + colorFluctuation));
         particle.color[1] *= 1 - colorFluctuation;
         particle.color[3] -= deltaTime * lifeTransienceMultiplier;

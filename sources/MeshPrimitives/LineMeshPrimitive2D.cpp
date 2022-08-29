@@ -15,10 +15,10 @@ Mesh LineMeshPrimitive2D::createMesh()
         {0.0f, 0.0f}, {1.0f / (float)sqrt(2), -1.0f / (float)sqrt(2)}
     };
 
-    vertexData.pushAttributeFloat2_dynamic(0, position.size(), position);
+    vertexData.pushAttributeFloat2_dynamic(0, (u32)position.size(), position);
     vertexData.configureBufferFloat2_dynamic();
 
-    vertexData.pushIndices({0, 1});
+    vertexData.pushIndices({ 0, 1 });
     vertexData.configureIndices();
 
     vertexData.configureVAO();

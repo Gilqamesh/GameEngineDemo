@@ -4,458 +4,457 @@
 namespace GilqEngine
 {
 
-ObjectCoordinator::ObjectCoordinator(MacWindow *macWindow)
-    : _window(macWindow)
-{
-    TRACE();
-    _modelManager.setMaterialManager(&_materialManager);
-    _modelManager.setTextureManager(&_textureManager);
-    // TODO(david): maybe abstract these system registrations out
-    _directionalLightSourceSystem = _modelManager.registerSystem<DirectionalLightSourceSystem>();
-    _pointLightSourceSystem = _modelManager.registerSystem<PointLightSourceSystem>();
-    _spotLightSourceSystem = _modelManager.registerSystem<SpotLightSourceSystem>();
-}
-
-ObjectCoordinator::~ObjectCoordinator()
-{
-    TRACE();
-}
-
-// ************************************************************************** //
-//                              Material Methods                              //
-// ************************************************************************** //
-
-void ObjectCoordinator::addMaterial(const string &materialName)
-{
-    TRACE();
-    _materialManager.addMaterial(materialName);
-}
-
-void ObjectCoordinator::setAmbient(const string &materialName, const string &textureName)
-{
-    TRACE();
-    Material &material = _materialManager.getMaterial(materialName);
-    material.setAmbient(_textureManager.getTexture(textureName));
-}
-
-void ObjectCoordinator::setDiffuse(const string &materialName, const string &textureName)
-{
-    TRACE();
-    Material &material = _materialManager.getMaterial(materialName);
-    material.setDiffuse(_textureManager.getTexture(textureName));
-}
-
-void ObjectCoordinator::setSpecular(const string &materialName, const string &textureName)
-{
-    TRACE();
-    Material &material = _materialManager.getMaterial(materialName);
-    material.setSpecular(_textureManager.getTexture(textureName));
-}
-
-void ObjectCoordinator::setEmission(const string &materialName, const string &textureName)
-{
-    TRACE();
-    Material &material = _materialManager.getMaterial(materialName);
-    material.setEmission(_textureManager.getTexture(textureName));
-}
-
-// ************************************************************************** //
-//                               Shader Methods                               //
-// ************************************************************************** //
-
-void ObjectCoordinator::addShader(const string &vsPath, const string &fsPath, const string &shaderName)
-{
-    TRACE();
-    _shaderManager.addShader(vsPath, fsPath, shaderName);
-}
-
-void ObjectCoordinator::addInt(const string &shaderName, const string &uniformName, GLint value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addInt(uniformName, value);
-}
-
-void ObjectCoordinator::addIntArr(const string &shaderName, const string &uniformName, int *value, uint32 size)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addIntArr(uniformName, value, size);
-}
-
-void ObjectCoordinator::addFloat(const string &shaderName, const string &uniformName, GLfloat value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addFloat(uniformName, value);
-}
-
-void ObjectCoordinator::addFloat2(const string &shaderName, const string &uniformName, const Vector<GLfloat, 2> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addFloat2(uniformName, value);
-}
-
-void ObjectCoordinator::addFloat3(const string &shaderName, const string &uniformName, const Vector<GLfloat, 3> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addFloat3(uniformName, value);
-}
-
-void ObjectCoordinator::addFloat4(const string &shaderName, const string &uniformName, const Vector<GLfloat, 4> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addFloat4(uniformName, value);
-}
-
-void ObjectCoordinator::addMat4(const string &shaderName, const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->addMat4(uniformName, value);
-}
-
-void ObjectCoordinator::updateInt(const string &shaderName, const string& uniformName, GLint value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateInt(uniformName, value);
-}
-
-void ObjectCoordinator::updateIntArr(const string &shaderName, const string& uniformName, int *value, uint32 size)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateIntArr(uniformName, value, size);
-}
-
-void ObjectCoordinator::updateFloat(const string &shaderName, const string& uniformName, GLfloat value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateFloat(uniformName, value);
-}
-
-void ObjectCoordinator::updateFloat2(const string &shaderName, const string& uniformName, const Vector<GLfloat, 2> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateFloat2(uniformName, value);
-}
-
-void ObjectCoordinator::updateFloat3(const string &shaderName, const string& uniformName, const Vector<GLfloat, 3> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateFloat3(uniformName, value);
-}
-
-void ObjectCoordinator::updateFloat4(const string &shaderName, const string& uniformName, const Vector<GLfloat, 4> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateFloat4(uniformName, value);
-}
-
-void ObjectCoordinator::updateMat4(const string &shaderName, const string& uniformName, const Matrix<GLfloat, 4, 4> &value)
-{
-    TRACE();
-    _shaderManager.getShader(shaderName)->updateMat4(uniformName, value);
-}
-
-Shader *ObjectCoordinator::getShader(const string& shaderName)
-{
-    TRACE();
-    return (_shaderManager.getShader(shaderName));
-}
-
-// ************************************************************************** //
-//                              Texture Methods                               //
-// ************************************************************************** //
-
-void ObjectCoordinator::addTexture(const string &texturePath, const string &textureName)
-{
-    TRACE();
-    _textureManager.addTexture(texturePath, textureName);
-}
-
-void ObjectCoordinator::addTexture(const char *texturePath, const string &textureName)
-{
-    addTexture(string(texturePath), textureName);
-}
-
-// ************************************************************************** //
-//                               Model Methods                                //
-// ************************************************************************** //
-
-void ObjectCoordinator::loadModel(const string &modelPath, const string &modelName)
-{
-    TRACE();
-    _modelManager.loadModel(modelPath, modelName);
-}
-
-void ObjectCoordinator::loadModel(
-    IMeshPrimitive *meshPrimitive,
-    const string &modelName,
-    const string &materialName)
-{
-    TRACE();
-    _modelManager.loadModel(meshPrimitive, modelName, materialName);
-}
-
-Model *ObjectCoordinator::getModel(const string& modelName)
-{
-    TRACE();
-    return (_modelManager.getModel(modelName));
-}
-
-Entity ObjectCoordinator::createModel2D(const string &modelName, const string &shaderName)
-{
-    TRACE();
-    Entity entity = _modelManager.createModel(modelName);
-
-    _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
-    _aliveEntities.insert(entity);
-    return (entity);
-}
-
-Entity ObjectCoordinator::createModel3D(const string &modelName, const string &shaderName)
-{
-    TRACE();
-    Entity entity = _modelManager.createModel(modelName);
-
-    _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
-    _aliveEntities.insert(entity);
-    return (entity);
-}
-
-void ObjectCoordinator::hideEntity(Entity entity)
-{
-    TRACE();
-    _modelManager.hideEntity(entity);
-    _aliveEntities.erase(entity);
-    _deadEntities.insert(entity);
-}
-
-void ObjectCoordinator::showEntity(Entity entity)
-{
-    TRACE();
-    _modelManager.showEntity(entity);
-    _deadEntities.erase(entity);
-    _aliveEntities.insert(entity);
-}
-
-// ************************************************************************** //
-//                          ParticleGenerator Methods                         //
-// ************************************************************************** //
-
-GeneratorId ObjectCoordinator::registerParticleGenerator(
-    const string& modelName,
-    const string& shaderName,
-    uint32 maxNewParticlesPerFrame,
-    float maxLifeTime,
-    const string& particleTransform)
-{
-    TRACE();
-    GeneratorId generatorId = _particleGeneratorManager.addParticleGenerator(maxNewParticlesPerFrame, maxLifeTime);
-    _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
-    _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
-    _particleGeneratorManager.setParticleTransform(generatorId, particleTransform);
-    _particleGeneratorManager.setParticlesPerFrame(generatorId, 2);
-    _particleGeneratorManager.setParticle(generatorId, Particle());
-
-    _runningGenerators.insert(generatorId);
-
-    return (generatorId);
-}
-
-void ObjectCoordinator::updateGeneratorParticleTransform(GeneratorId generatorId, const string& transformName)
-{
-    TRACE();
-    _particleGeneratorManager.setParticleTransform(generatorId, transformName);
-}
-
-void ObjectCoordinator::updateGeneratorShader(GeneratorId generatorId, const string& shaderName)
-{
-    TRACE();
-    _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
-}
-
-void ObjectCoordinator::updateGeneratorModel(GeneratorId generatorId, const string& modelName)
-{
-    TRACE();
-    _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
-}
-
-void ObjectCoordinator::updateGeneratorSpawnRate(GeneratorId generatorId, uint32 nOfParticlesToSpawn)
-{
-    TRACE();
-    _particleGeneratorManager.setParticlesPerFrame(generatorId, nOfParticlesToSpawn);
-}
-
-void ObjectCoordinator::updateGeneratorParticle(GeneratorId generatorId, const Particle& particle)
-{
-    TRACE();
-    _particleGeneratorManager.setParticle(generatorId, particle);
-}
-
-void ObjectCoordinator::updateGeneratorParticlePosition(GeneratorId generatorId, Vector<float, 2> position)
-{
-    TRACE();
-    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
-    particle.position = position;
-}
-
-void ObjectCoordinator::updateGeneratorParticleVelocity(GeneratorId generatorId, Vector<float, 2> velocity)
-{
-    TRACE();
-    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
-    particle.velocity = velocity;
-}
-
-void ObjectCoordinator::updateGeneratorParticleColor(GeneratorId generatorId, const Vector<float, 4>& color)
-{
-    TRACE();
-    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
-    particle.color = color;
-}
-
-void ObjectCoordinator::updateGeneratorParticleSize(GeneratorId generatorId, Vector<float, 2> size)
-{
-    TRACE();
-    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
-    particle.size = size;
-}
-
-void ObjectCoordinator::updateGeneratorParticleLife(GeneratorId generatorId, float life)
-{
-    TRACE();
-    Particle &particle = _particleGeneratorManager.getParticle(generatorId);
-    particle.life = life;
-}
-
-void ObjectCoordinator::stopGenerator(GeneratorId generatorId)
-{
-    TRACE();
-    _runningGenerators.erase(generatorId);
-    _idleGenerators.insert(generatorId);
-}
-
-void ObjectCoordinator::startGenerator(GeneratorId generatorId)
-{
-    TRACE();
-    _idleGenerators.erase(generatorId);
-    _runningGenerators.insert(generatorId);
-}
-
-// ************************************************************************** //
-//                                 Own Methods                                //
-// ************************************************************************** //
-
-void ObjectCoordinator::updateBufferFloat2(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
-{
-    TRACE();
-    _modelManager.updateBufferFloat2(object, layoutIndex, data, numberOfUpdates);
-}
-
-void ObjectCoordinator::updateBufferFloat3(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
-{
-    TRACE();
-    _modelManager.updateBufferFloat3(object, layoutIndex, data, numberOfUpdates);
-}
-
-void ObjectCoordinator::updateBufferFloat4(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
-{
-    TRACE();
-    _modelManager.updateBufferFloat4(object, layoutIndex, data, numberOfUpdates);
-}
-
-void ObjectCoordinator::updateBufferMat4(Entity object, uint32 layoutIndex, const void *data, uint32 numberOfUpdates)
-{
-    TRACE();
-    _modelManager.updateBufferMat4(object, layoutIndex, data, numberOfUpdates);
-}
-
-void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
-{
-    TRACE();
-    _modelManager.updateIBO(object, data, count);
-}
-
-void ObjectCoordinator::update(float deltaTime)
-{
-    TRACE();
-    for (GeneratorId generatorId : _runningGenerators)
+    ObjectCoordinator::ObjectCoordinator(MacWindow *macWindow)
+        : _window(macWindow)
     {
-        _particleGeneratorManager.update(generatorId, deltaTime);
-        Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
-        uint32 numberOfParticles = _particleGeneratorManager.getNumberOfAliveParticles(generatorId);
-        // Position
-        particleModel->updateBufferFloat2(0, _particleGeneratorManager.getParticlePositionsData(generatorId), numberOfParticles);
-        // Size
-        particleModel->updateBufferFloat2(1, _particleGeneratorManager.getParticleSizesData(generatorId), numberOfParticles);
-        // Color
-        particleModel->updateBufferFloat4(0, _particleGeneratorManager.getParticleColorsData(generatorId), numberOfParticles);
+        TRACE();
+        _modelManager.setMaterialManager(&_materialManager);
+        _modelManager.setTextureManager(&_textureManager);
+        // TODO(david): maybe abstract these system registrations out
+        _directionalLightSourceSystem = _modelManager.registerSystem<DirectionalLightSourceSystem>();
+        _pointLightSourceSystem = _modelManager.registerSystem<PointLightSourceSystem>();
+        _spotLightSourceSystem = _modelManager.registerSystem<SpotLightSourceSystem>();
     }
-    _modelManager.updateSystems(deltaTime);
-}
 
-void ObjectCoordinator::drawObjects2D(void)
-{
-    TRACE();
-    Matrix<float, 4, 4> projection = projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f);
-    // BlendFuncParams prevBlendParams = _window->getBlendParams();
-    // For glow effect (GL_ONE - additive) when particles are stacked on onto each other
-    // _window->setBlendFunc(GL_SRC_ALPHA, GL_ONE);
-    for (GeneratorId generatorId : _runningGenerators)
+    ObjectCoordinator::~ObjectCoordinator()
     {
-        _particleGeneratorManager.draw(generatorId, projection);
+        TRACE();
     }
-    // _window->setBlendFunc(prevBlendParams);
-    for (auto &entity : _aliveEntities)
+
+    // ************************************************************************** //
+    //                              Material Methods                              //
+    // ************************************************************************** //
+
+    void ObjectCoordinator::addMaterial(const string &materialName)
     {
-        Shader *shader = _modelManager.getShader(entity);
-        shader->bind();
-        shader->setUniforms();
-        _modelManager.setUniforms(entity);
-        shader->setMat4("model", _modelManager.getModelMatrix(entity));
-        shader->setMat4("projection", projection);
-        _modelManager.drawModel(entity);
-        shader->unbind();
+        TRACE();
+        _materialManager.addMaterial(materialName);
     }
-}
 
-void ObjectCoordinator::drawObjects3D(
-    const Vector<float, 3> &cameraPosition,
-    const Matrix<float, 4, 4> &view,
-    const Matrix<float, 4, 4> &projection)
-{
-    TRACE();
-    /* TODO(david): support for particle generation */
-    for (auto &entity : _aliveEntities)
+    void ObjectCoordinator::setAmbient(const string &materialName, const string &textureName)
     {
-        Shader *shader = _modelManager.getShader(entity);
-        shader->bind();
-        shader->setUniforms();
-        _modelManager.setUniforms(entity);
-        Matrix<float, 4, 4> modelMatrix = _modelManager.getModelMatrix(entity);
-        shader->setMat4("model", modelMatrix);
-        shader->setMat4("view", view);
-        shader->setMat4("projection", projection);
-        shader->setMat4("normalMatrix", normal_matrix(modelMatrix));
-        shader->setFloat3("viewPos", cameraPosition);
-        _directionalLightSourceSystem->onRender(shader);
-        _pointLightSourceSystem->onRender(shader);
-        _spotLightSourceSystem->onRender(shader);
-        _modelManager.drawModel(entity);
+        TRACE();
+        Material &material = _materialManager.getMaterial(materialName);
+        material.setAmbient(_textureManager.getTexture(textureName));
     }
-}
 
-void ObjectCoordinator::clear(void)
-{
-    _materialManager.clear();
-    _shaderManager.clear();
-    _textureManager.clear();
-    _modelManager.clear();
-    _aliveEntities.clear();
-    _deadEntities.clear();
+    void ObjectCoordinator::setDiffuse(const string &materialName, const string &textureName)
+    {
+        TRACE();
+        Material &material = _materialManager.getMaterial(materialName);
+        material.setDiffuse(_textureManager.getTexture(textureName));
+    }
 
-}
+    void ObjectCoordinator::setSpecular(const string &materialName, const string &textureName)
+    {
+        TRACE();
+        Material &material = _materialManager.getMaterial(materialName);
+        material.setSpecular(_textureManager.getTexture(textureName));
+    }
 
-void ObjectCoordinator::print()
-{
-    TRACE();
-    _modelManager.print();
-}
+    void ObjectCoordinator::setEmission(const string &materialName, const string &textureName)
+    {
+        TRACE();
+        Material &material = _materialManager.getMaterial(materialName);
+        material.setEmission(_textureManager.getTexture(textureName));
+    }
+
+    // ************************************************************************** //
+    //                               Shader Methods                               //
+    // ************************************************************************** //
+
+    void ObjectCoordinator::addShader(const string &vsPath, const string &fsPath, const string &shaderName)
+    {
+        TRACE();
+        _shaderManager.addShader(vsPath, fsPath, shaderName);
+    }
+
+    void ObjectCoordinator::addInt(const string &shaderName, const string &uniformName, GLint value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addInt(uniformName, value);
+    }
+
+    void ObjectCoordinator::addIntArr(const string &shaderName, const string &uniformName, int *value, u32 size)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addIntArr(uniformName, value, size);
+    }
+
+    void ObjectCoordinator::addFloat(const string &shaderName, const string &uniformName, GLfloat value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addFloat(uniformName, value);
+    }
+
+    void ObjectCoordinator::addFloat2(const string &shaderName, const string &uniformName, const Vector<GLfloat, 2> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addFloat2(uniformName, value);
+    }
+
+    void ObjectCoordinator::addFloat3(const string &shaderName, const string &uniformName, const Vector<GLfloat, 3> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addFloat3(uniformName, value);
+    }
+
+    void ObjectCoordinator::addFloat4(const string &shaderName, const string &uniformName, const Vector<GLfloat, 4> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addFloat4(uniformName, value);
+    }
+
+    void ObjectCoordinator::addMat4(const string &shaderName, const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->addMat4(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateInt(const string &shaderName, const string &uniformName, GLint value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateInt(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateIntArr(const string &shaderName, const string &uniformName, int *value, u32 size)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateIntArr(uniformName, value, size);
+    }
+
+    void ObjectCoordinator::updateFloat(const string &shaderName, const string &uniformName, GLfloat value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateFloat(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateFloat2(const string &shaderName, const string &uniformName, const Vector<GLfloat, 2> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateFloat2(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateFloat3(const string &shaderName, const string &uniformName, const Vector<GLfloat, 3> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateFloat3(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateFloat4(const string &shaderName, const string &uniformName, const Vector<GLfloat, 4> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateFloat4(uniformName, value);
+    }
+
+    void ObjectCoordinator::updateMat4(const string &shaderName, const string &uniformName, const Matrix<GLfloat, 4, 4> &value)
+    {
+        TRACE();
+        _shaderManager.getShader(shaderName)->updateMat4(uniformName, value);
+    }
+
+    Shader *ObjectCoordinator::getShader(const string &shaderName)
+    {
+        TRACE();
+        return (_shaderManager.getShader(shaderName));
+    }
+
+    // ************************************************************************** //
+    //                              Texture Methods                               //
+    // ************************************************************************** //
+
+    void ObjectCoordinator::addTexture(const string &texturePath, const string &textureName)
+    {
+        TRACE();
+        _textureManager.addTexture(texturePath, textureName);
+    }
+
+    void ObjectCoordinator::addTexture(const char *texturePath, const string &textureName)
+    {
+        addTexture(string(texturePath), textureName);
+    }
+
+    // ************************************************************************** //
+    //                               Model Methods                                //
+    // ************************************************************************** //
+
+    void ObjectCoordinator::loadModel(const string &modelPath, const string &modelName)
+    {
+        TRACE();
+        _modelManager.loadModel(modelPath, modelName);
+    }
+
+    void ObjectCoordinator::loadModel(
+        IMeshPrimitive *meshPrimitive,
+        const string &modelName,
+        const string &materialName)
+    {
+        TRACE();
+        _modelManager.loadModel(meshPrimitive, modelName, materialName);
+    }
+
+    Model *ObjectCoordinator::getModel(const string &modelName)
+    {
+        TRACE();
+        return (_modelManager.getModel(modelName));
+    }
+
+    Entity ObjectCoordinator::createModel2D(const string &modelName, const string &shaderName)
+    {
+        TRACE();
+        Entity entity = _modelManager.createModel(modelName);
+
+        _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
+        _aliveEntities.insert(entity);
+        return (entity);
+    }
+
+    Entity ObjectCoordinator::createModel3D(const string &modelName, const string &shaderName)
+    {
+        TRACE();
+        Entity entity = _modelManager.createModel(modelName);
+
+        _modelManager.setModelShader(entity, _shaderManager.getShader(shaderName));
+        _aliveEntities.insert(entity);
+        return (entity);
+    }
+
+    void ObjectCoordinator::hideEntity(Entity entity)
+    {
+        TRACE();
+        _modelManager.hideEntity(entity);
+        _aliveEntities.erase(entity);
+        _deadEntities.insert(entity);
+    }
+
+    void ObjectCoordinator::showEntity(Entity entity)
+    {
+        TRACE();
+        _modelManager.showEntity(entity);
+        _deadEntities.erase(entity);
+        _aliveEntities.insert(entity);
+    }
+
+    // ************************************************************************** //
+    //                          ParticleGenerator Methods                         //
+    // ************************************************************************** //
+
+    GeneratorId ObjectCoordinator::registerParticleGenerator(
+        const string &modelName,
+        const string &shaderName,
+        u32 maxNewParticlesPerFrame,
+        float maxLifeTime,
+        const string &particleTransform)
+    {
+        TRACE();
+        GeneratorId generatorId = _particleGeneratorManager.addParticleGenerator(maxNewParticlesPerFrame, maxLifeTime);
+        _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
+        _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
+        _particleGeneratorManager.setParticleTransform(generatorId, particleTransform);
+        _particleGeneratorManager.setParticlesPerFrame(generatorId, 2);
+        _particleGeneratorManager.setParticle(generatorId, Particle());
+
+        _runningGenerators.insert(generatorId);
+
+        return (generatorId);
+    }
+
+    void ObjectCoordinator::updateGeneratorParticleTransform(GeneratorId generatorId, const string &transformName)
+    {
+        TRACE();
+        _particleGeneratorManager.setParticleTransform(generatorId, transformName);
+    }
+
+    void ObjectCoordinator::updateGeneratorShader(GeneratorId generatorId, const string &shaderName)
+    {
+        TRACE();
+        _particleGeneratorManager.setShader(generatorId, _shaderManager.getShader(shaderName));
+    }
+
+    void ObjectCoordinator::updateGeneratorModel(GeneratorId generatorId, const string &modelName)
+    {
+        TRACE();
+        _particleGeneratorManager.setModel(generatorId, _modelManager.getModel(modelName));
+    }
+
+    void ObjectCoordinator::updateGeneratorSpawnRate(GeneratorId generatorId, u32 nOfParticlesToSpawn)
+    {
+        TRACE();
+        _particleGeneratorManager.setParticlesPerFrame(generatorId, nOfParticlesToSpawn);
+    }
+
+    void ObjectCoordinator::updateGeneratorParticle(GeneratorId generatorId, const Particle &particle)
+    {
+        TRACE();
+        _particleGeneratorManager.setParticle(generatorId, particle);
+    }
+
+    void ObjectCoordinator::updateGeneratorParticlePosition(GeneratorId generatorId, Vector<float, 2> position)
+    {
+        TRACE();
+        Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+        particle.position = position;
+    }
+
+    void ObjectCoordinator::updateGeneratorParticleVelocity(GeneratorId generatorId, Vector<float, 2> velocity)
+    {
+        TRACE();
+        Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+        particle.velocity = velocity;
+    }
+
+    void ObjectCoordinator::updateGeneratorParticleColor(GeneratorId generatorId, const Vector<float, 4> &color)
+    {
+        TRACE();
+        Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+        particle.color = color;
+    }
+
+    void ObjectCoordinator::updateGeneratorParticleSize(GeneratorId generatorId, Vector<float, 2> size)
+    {
+        TRACE();
+        Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+        particle.size = size;
+    }
+
+    void ObjectCoordinator::updateGeneratorParticleLife(GeneratorId generatorId, float life)
+    {
+        TRACE();
+        Particle &particle = _particleGeneratorManager.getParticle(generatorId);
+        particle.life = life;
+    }
+
+    void ObjectCoordinator::stopGenerator(GeneratorId generatorId)
+    {
+        TRACE();
+        _runningGenerators.erase(generatorId);
+        _idleGenerators.insert(generatorId);
+    }
+
+    void ObjectCoordinator::startGenerator(GeneratorId generatorId)
+    {
+        TRACE();
+        _idleGenerators.erase(generatorId);
+        _runningGenerators.insert(generatorId);
+    }
+
+    // ************************************************************************** //
+    //                                 Own Methods                                //
+    // ************************************************************************** //
+
+    void ObjectCoordinator::updateBufferFloat2(Entity object, u32 layoutIndex, const void *data, u32 numberOfUpdates)
+    {
+        TRACE();
+        _modelManager.updateBufferFloat2(object, layoutIndex, data, numberOfUpdates);
+    }
+
+    void ObjectCoordinator::updateBufferFloat3(Entity object, u32 layoutIndex, const void *data, u32 numberOfUpdates)
+    {
+        TRACE();
+        _modelManager.updateBufferFloat3(object, layoutIndex, data, numberOfUpdates);
+    }
+
+    void ObjectCoordinator::updateBufferFloat4(Entity object, u32 layoutIndex, const void *data, u32 numberOfUpdates)
+    {
+        TRACE();
+        _modelManager.updateBufferFloat4(object, layoutIndex, data, numberOfUpdates);
+    }
+
+    void ObjectCoordinator::updateBufferMat4(Entity object, u32 layoutIndex, const void *data, u32 numberOfUpdates)
+    {
+        TRACE();
+        _modelManager.updateBufferMat4(object, layoutIndex, data, numberOfUpdates);
+    }
+
+    void ObjectCoordinator::updateIBO(Entity object, const void *data, GLuint count)
+    {
+        TRACE();
+        _modelManager.updateIBO(object, data, count);
+    }
+
+    void ObjectCoordinator::update(float deltaTime)
+    {
+        TRACE();
+        for (GeneratorId generatorId : _runningGenerators)
+        {
+            _particleGeneratorManager.update(generatorId, deltaTime);
+            Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
+            u32 numberOfParticles = _particleGeneratorManager.getNumberOfAliveParticles(generatorId);
+            // Position
+            particleModel->updateBufferFloat2(0, _particleGeneratorManager.getParticlePositionsData(generatorId), numberOfParticles);
+            // Size
+            particleModel->updateBufferFloat2(1, _particleGeneratorManager.getParticleSizesData(generatorId), numberOfParticles);
+            // Color
+            particleModel->updateBufferFloat4(0, _particleGeneratorManager.getParticleColorsData(generatorId), numberOfParticles);
+        }
+        _modelManager.updateSystems(deltaTime);
+    }
+
+    void ObjectCoordinator::drawObjects2D(void)
+    {
+        TRACE();
+        Matrix<float, 4, 4> projection = projection_matrix_ortho(0.0f, (float)_window->getWidth(), (float)_window->getHeight(), 0.0f, -1.0f, 1.0f);
+        // BlendFuncParams prevBlendParams = _window->getBlendParams();
+        // For glow effect (GL_ONE - additive) when particles are stacked on onto each other
+        // _window->setBlendFunc(GL_SRC_ALPHA, GL_ONE);
+        for (GeneratorId generatorId : _runningGenerators)
+        {
+            _particleGeneratorManager.draw(generatorId, projection);
+        }
+        // _window->setBlendFunc(prevBlendParams);
+        for (auto &entity : _aliveEntities)
+        {
+            Shader *shader = _modelManager.getShader(entity);
+            shader->bind();
+            shader->setUniforms();
+            _modelManager.setUniforms(entity);
+            shader->setMat4("model", _modelManager.getModelMatrix(entity));
+            shader->setMat4("projection", projection);
+            _modelManager.drawModel(entity);
+            shader->unbind();
+        }
+    }
+
+    void ObjectCoordinator::drawObjects3D(
+        const Vector<float, 3> &cameraPosition,
+        const Matrix<float, 4, 4> &view,
+        const Matrix<float, 4, 4> &projection)
+    {
+        TRACE();
+        /* TODO(david): support for particle generation */
+        for (auto &entity : _aliveEntities)
+        {
+            Shader *shader = _modelManager.getShader(entity);
+            shader->bind();
+            shader->setUniforms();
+            _modelManager.setUniforms(entity);
+            Matrix<float, 4, 4> modelMatrix = _modelManager.getModelMatrix(entity);
+            shader->setMat4("model", modelMatrix);
+            shader->setMat4("view", view);
+            shader->setMat4("projection", projection);
+            shader->setMat4("normalMatrix", normal_matrix(modelMatrix));
+            shader->setFloat3("viewPos", cameraPosition);
+            _directionalLightSourceSystem->onRender(shader);
+            _pointLightSourceSystem->onRender(shader);
+            _spotLightSourceSystem->onRender(shader);
+            _modelManager.drawModel(entity);
+        }
+    }
+
+    void ObjectCoordinator::clear(void)
+    {
+        _materialManager.clear();
+        _shaderManager.clear();
+        _textureManager.clear();
+        _modelManager.clear();
+        _aliveEntities.clear();
+        _deadEntities.clear();
+    }
+
+    void ObjectCoordinator::print()
+    {
+        TRACE();
+        _modelManager.print();
+    }
 
 }

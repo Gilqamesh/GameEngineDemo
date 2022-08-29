@@ -17,6 +17,7 @@ using namespace std;
     exit(0);\
 }
 # define LINE() (LOG(__FILE__ << " " << __LINE__))
+# define ArrayCount(x) (sizeof(x)/(sizeof((x)[0])))
 
 /**
  * On Linux systems this only works if the exe is started from the /build dir
