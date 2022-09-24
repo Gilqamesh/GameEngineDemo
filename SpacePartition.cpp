@@ -7,28 +7,24 @@
 # define FRAMES_PER_SEC 60
 # define SECONDS_SIMULATED 10
 
-extern clock_t timer;
-extern clock_t timer2;
-extern clock_t timer3;
-
 int main()
 {
     srand(42);
 
     u16 halfWidth = 800;
     u16 halfHeight = 900;
-    AABB NWBound = { 0, 0, halfWidth, halfHeight };
-    AABB NEBound = { halfWidth, 0, halfWidth, halfHeight };
-    AABB SWBound = { 0, halfHeight, halfWidth, halfHeight };
-    AABB SEBound = { halfWidth, halfHeight, halfWidth, halfHeight };
-    Tree trees[4] = {
-        Tree(NWBound),
-        Tree(NEBound),
-        Tree(SWBound),
-        Tree(SEBound)
-    };
+    // AABB NWBound = { 0, 0, halfWidth, halfHeight };
+    // AABB NEBound = { halfWidth, 0, halfWidth, halfHeight };
+    // AABB SWBound = { 0, halfHeight, halfWidth, halfHeight };
+    // AABB SEBound = { halfWidth, halfHeight, halfWidth, halfHeight };
+    // Tree trees[4] = {
+    //     Tree(NWBound),
+    //     Tree(NEBound),
+    //     Tree(SWBound),
+    //     Tree(SEBound)
+    // };
     AABB screenBound = { 0, 0, static_cast<u16>(halfWidth << 1), static_cast<u16>(halfHeight << 1) };
-    // Tree tree(screenBound);
+    Tree tree(screenBound);
 
     const u16 numberOfThreads = 1;
 
@@ -51,26 +47,26 @@ int main()
                           };
         // tree.insert(rectangle);
         // problem is between the bounds.. if an object needs to exist in both bounds what then?..
+        if (rectangle.doesAABBIntersect(screenBound))
+        {
+            tree.insert(rectangle);
+        }
         // if (rectangle.doesAABBIntersect(NWBound))
         // {
         //     trees[0].insert(rectangle);
         // }
-        if (rectangle.doesAABBIntersect(screenBound))
-        {
-            trees[0].insert(rectangle);
-        }
-        else if (rectangle.doesAABBIntersect(NEBound))
-        {
-            trees[1].insert(rectangle);
-        }
-        else if (rectangle.doesAABBIntersect(SWBound))
-        {
-            trees[2].insert(rectangle);
-        }
-        else if (rectangle.doesAABBIntersect(SEBound))
-        {
-            trees[3].insert(rectangle);
-        }
+        // else if (rectangle.doesAABBIntersect(NEBound))
+        // {
+        //     trees[1].insert(rectangle);
+        // }
+        // else if (rectangle.doesAABBIntersect(SWBound))
+        // {
+        //     trees[2].insert(rectangle);
+        // }
+        // else if (rectangle.doesAABBIntersect(SEBound))
+        // {
+        //     trees[3].insert(rectangle);
+        // }
     }
     insertionClock += clock() - start;
 
@@ -101,9 +97,28 @@ int main()
          threadIndex < numberOfThreads;
          ++threadIndex)
     {
-        //  for (u32 currentSecond = 0;
-        //     currentSecond < SECONDS_SIMULATED;
-        //     ++currentSecond)
+        for (u32 currentSecond = 0;
+            currentSecond < SECONDS_SIMULATED;
+            ++currentSecond)
+        {
+            // cout << currentSecond + 1 << "s: ";
+            for (u32 frameIndex = 0;
+                frameIndex < FRAMES_PER_SEC;
+                ++frameIndex)
+            {
+                start = clock();
+                u32 numberOfIntersections = tree.update();
+                totalIntersectionClock += clock() - start;
+                // cout << numberOfIntersections << " ";
+                if (maxNumberOfInsersections[threadIndex] < numberOfIntersections)
+                {
+                    maxNumberOfInsersections[threadIndex] = numberOfIntersections;
+                }   
+            }
+        }
+        // for (u32 currentSecond = 0;
+        //         currentSecond < SECONDS_SIMULATED;
+        //         ++currentSecond)
         // {
         //     // cout << currentSecond + 1 << "s: ";
         //     for (u32 frameIndex = 0;
@@ -111,35 +126,16 @@ int main()
         //         ++frameIndex)
         //     {
         //         start = clock();
-        //         u32 numberOfIntersections = tree.update();
+        //         u32 numberOfIntersections = trees[threadIndex].update();
         //         totalIntersectionClock += clock() - start;
         //         // cout << numberOfIntersections << " ";
-        //         if (maxNumberOfInsersections < numberOfIntersections)
+        //         if (maxNumberOfInsersections[threadIndex] < numberOfIntersections)
         //         {
-        //             maxNumberOfInsersections = numberOfIntersections;
+        //             maxNumberOfInsersections[threadIndex] = numberOfIntersections;
         //         }   
         //     }
+        //     // LOG("");
         // }
-        for (u32 currentSecond = 0;
-                currentSecond < SECONDS_SIMULATED;
-                ++currentSecond)
-            {
-                // cout << currentSecond + 1 << "s: ";
-                for (u32 frameIndex = 0;
-                    frameIndex < FRAMES_PER_SEC;
-                    ++frameIndex)
-                {
-                    start = clock();
-                    u32 numberOfIntersections = trees[threadIndex].update();
-                    totalIntersectionClock += clock() - start;
-                    // cout << numberOfIntersections << " ";
-                    if (maxNumberOfInsersections[threadIndex] < numberOfIntersections)
-                    {
-                        maxNumberOfInsersections[threadIndex] = numberOfIntersections;
-                    }   
-                }
-                // LOG("");
-            }
         // threads[threadIndex] = thread([&](u16 threadId){
         //     for (u32 currentSecond = 0;
         //         currentSecond < SECONDS_SIMULATED;
@@ -164,24 +160,24 @@ int main()
         // }, threadIndex);
     }
     u32 totalMaxNumberOfIntersections = 0;
-    Tree &treeRef = trees[0];
-    u32 allocatedNodes = 0;
-    u32 deletedNodes = 0;
-    u32 maxAllocatedNodes = 0;
-    u32 nodeListsAllocated = 0;
-    u32 nodeListsDeleted = 0;
-    for (u16 threadIndex = 0;
-         threadIndex < numberOfThreads;
-         ++threadIndex)
-    {
-        // threads[threadIndex].join();
-        totalMaxNumberOfIntersections += maxNumberOfInsersections[threadIndex];
-        allocatedNodes += trees[threadIndex].nodeAllocator.allocatedNodes();
-        deletedNodes += trees[threadIndex].nodeAllocator.deletedNodes();
-        maxAllocatedNodes += trees[threadIndex].nodeAllocator.maxAllocatedNodes();
-        nodeListsAllocated += trees[threadIndex].nodeListAllocator._nodeLists.size();
-        nodeListsDeleted += trees[threadIndex].nodeListAllocator.getDeletionCount();
-    }
+    Tree &treeRef = tree;
+    u32 allocatedNodes = tree.nodeAllocator.allocatedNodes();
+    u32 deletedNodes = tree.nodeAllocator.deletedNodes();
+    u32 maxAllocatedNodes = tree.nodeAllocator.maxAllocatedNodes();
+    u32 nodeListsAllocated = tree.nodeListAllocator._nodeLists.size();
+    u32 nodeListsDeleted = tree.nodeListAllocator.getDeletionCount();
+    // for (u16 threadIndex = 0;
+    //      threadIndex < numberOfThreads;
+    //      ++threadIndex)
+    // {
+    //     // threads[threadIndex].join();
+    //     totalMaxNumberOfIntersections += maxNumberOfInsersections[threadIndex];
+    //     allocatedNodes += trees[threadIndex].nodeAllocator.allocatedNodes();
+    //     deletedNodes += trees[threadIndex].nodeAllocator.deletedNodes();
+    //     maxAllocatedNodes += trees[threadIndex].nodeAllocator.maxAllocatedNodes();
+    //     nodeListsAllocated += trees[threadIndex].nodeListAllocator._nodeLists.size();
+    //     nodeListsDeleted += trees[threadIndex].nodeListAllocator.getDeletionCount();
+    // }
 
     LOG("Initial Node pool size: " << NODE_POOL_SIZE * numberOfThreads << ", in kilobytes: " << NODE_POOL_SIZE * sizeof(Node) * numberOfThreads / 1024.0f << "KB");
 
@@ -196,19 +192,9 @@ int main()
     LOG("Time taken for update check: " << totalIntersectionClock / (r32)CLOCKS_PER_SEC / (r32)SECONDS_SIMULATED / (r32)numberOfThreads << "s");
     LOG("Seconds simulated: " << SECONDS_SIMULATED << ", total time taken: " << (totalIntersectionClock + insertionClock) / (r32)CLOCKS_PER_SEC / (r32)numberOfThreads << "s");
 
-    // LOG("Number of LeafHashes allocated: " << treeRef.leafHashAllocator._leafHashes.size());
-    // LOG("Number of LeafHashes deleted: " << treeRef.leafHashAllocator.getDeletionCount() << ", in KB: " << treeRef.leafHashAllocator.getDeletionCount() * sizeof(LeafHash) / 1024.0f);
-    // LOG("Total size of LeafHashes in KB: " << treeRef.leafHashAllocator._leafHashes.size() * sizeof(LeafHash) / 1024.0f);
-
     LOG("Number of NodeLists allocated: " << nodeListsAllocated);
     LOG("Number of NodeLists deleted: " << nodeListsDeleted << ", in KB: " << nodeListsDeleted * sizeof(NodeList) / 1024.0f);
     LOG("Total size of NodeLists in KB: " << nodeListsAllocated * sizeof(NodeList) / 1024.0f);
-
-    LOG("Timer: " << timer / (r32)CLOCKS_PER_SEC << "s");
-    LOG("Timer2: " << timer2 / (r32)CLOCKS_PER_SEC << "s");
-    LOG("Timer3: " << timer3 / (r32)CLOCKS_PER_SEC << "s");
-
-    // system("leaks a.out");
 
     return (0);
 }

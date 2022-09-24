@@ -49,7 +49,7 @@ public:
     /**
      * Returns the array of vertex attributes size in bytes.
      */
-    inline GLuint size() const { return ((GLuint)(_vertexAttributes.size() * sizeof(VertexAttribute))); }
+    inline u32 size() const { return ((u32)(_vertexAttributes.size() * sizeof(VertexAttribute))); }
 
     /**
      * Clears the data.

@@ -1,5 +1,6 @@
 #include "Managers/ObjectCoordinator.hpp"
 #include "Log.hpp"
+#include "Debug/Stopwatch.hpp"
 
 namespace GilqEngine
 {
@@ -377,15 +378,19 @@ namespace GilqEngine
         TRACE();
         for (GeneratorId generatorId : _runningGenerators)
         {
+            BEGIN_TIMED_BLOCK(UpdateGenerator);
             _particleGeneratorManager.update(generatorId, deltaTime);
+            END_TIMED_BLOCK(UpdateGenerator);
             Model *particleModel = _modelManager.getModel(_particleGeneratorManager.getGeneratorModelName(generatorId));
             u32 numberOfParticles = _particleGeneratorManager.getNumberOfAliveParticles(generatorId);
             // Position
+            BEGIN_TIMED_BLOCK(UpdateBuffers);
             particleModel->updateBufferFloat2(0, _particleGeneratorManager.getParticlePositionsData(generatorId), numberOfParticles);
             // Size
             particleModel->updateBufferFloat2(1, _particleGeneratorManager.getParticleSizesData(generatorId), numberOfParticles);
             // Color
             particleModel->updateBufferFloat4(0, _particleGeneratorManager.getParticleColorsData(generatorId), numberOfParticles);
+            END_TIMED_BLOCK(UpdateBuffers);
         }
         _modelManager.updateSystems(deltaTime);
     }

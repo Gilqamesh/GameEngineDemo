@@ -8,6 +8,11 @@ namespace GilqEngine
     enum
     {
         DebugCycleCounter_Update,
+        DebugCycleCounter_UpdateGenerator,
+        DebugCycleCounter_ParticleGeneratorRevive,
+        DebugCycleCounter_ParticleGeneratorUpdate,
+        DebugCycleCounter_UpdateTransformFn,
+        DebugCycleCounter_UpdateBuffers,
         DebugCycleCounter_Render,
     };
 

@@ -27,11 +27,11 @@ private:
 Trace();
 };
 
-# if defined(G_RELEASE)
-#  define TRACE()
-# elif defined (G_DEBUG)
+# if defined(G_TRACE)
 #  define TRACE() (Trace::getInstance()->add("File: " + string(__FILE__) + ", function: " \
     + string(__FUNCTION__) + ", line: " + to_string(__LINE__)))
+# else
+#  define TRACE()
 # endif
 
 }

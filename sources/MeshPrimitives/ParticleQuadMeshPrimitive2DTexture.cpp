@@ -23,7 +23,7 @@ namespace GilqEngine
             {0.0f, 0.0f}, {0.0f, 1.0f}, {1.0f, 0.0f}, {1.0f, 1.0f}};
         vertexData.pushAttributeFloat2_static(texture);
 
-        u32 maxNumberOfParticles = 1000;
+        u32 maxNumberOfParticles = 10000;
         // position
         vertexData.pushAttributeFloat2_dynamic(1, maxNumberOfParticles);
         // size

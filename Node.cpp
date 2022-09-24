@@ -31,7 +31,7 @@ void Node::insert(u32 recIndex, Rec rec, AABB curBound, Tree *tree)
     if (isLeaf() == true)
     {
         // just insert it to the current node and allow the node to store more agents
-        if (curBound.w < 16 || curBound.h < 16 || _curNumberOfRectangles < NODE_LIMIT) // if not full yet
+        if (((curBound.w < 16 || curBound.h < 16) && _curNumberOfRectangles < HARD_NODE_LIMIT) || _curNumberOfRectangles < NODE_LIMIT) // if not full yet
         {
             _firstChild = tree->nodeListAllocator.insert(_firstChild, recIndex);
             ++_curNumberOfRectangles;

@@ -12,6 +12,7 @@
 #include "ECS/Systems/CollisionSystem2D.hpp"
 #include "ParticleTransforms/ExplosionParticleTransform.hpp"
 #include "Inputs/GLFWInput.hpp"
+#include "Debug/Stopwatch.hpp"
 
 namespace GilqEngine
 {
@@ -76,11 +77,11 @@ namespace GilqEngine
         _mouseParticleGenerator = _objectCoordinator.registerParticleGenerator(
             "ParticleModel",
             "ParticleShader",
-            10, 2.0f,
+            50, 2.0f,
             "ExplosionTransform");
         _objectCoordinator.updateGeneratorParticle(_mouseParticleGenerator,
                                                    {_mouseRectangle.position, {}, {1.0f, 1.0f, 0.0f, 1.0f}, {100.0f, 100.0f}, 1.0f});
-        _objectCoordinator.updateGeneratorSpawnRate(_mouseParticleGenerator, 10);
+        _objectCoordinator.updateGeneratorSpawnRate(_mouseParticleGenerator, 6);
     }
 
     void CollisionDevLayer::onDetach()
@@ -95,7 +96,7 @@ namespace GilqEngine
 
     void CollisionDevLayer::onUpdate(float deltaTime)
     {
-        LOG(deltaTime);
+        // LOG(deltaTime);
 
         // mouseRay line
         Vector<float, 2> mousePos = _window->getMousePosition();
@@ -113,10 +114,34 @@ namespace GilqEngine
         Vector<float, 2> rayDirection = mousePos - _mouseRectangle.position;
         Vector<float, 2> mouseRecVelocity = normalize(rayDirection) * 10.0f;
         VelocityComponent2D &prevVelocity = _objectCoordinator.getComponent<VelocityComponent2D>(_mouseRect);
-        if (GLFWInput::getInstance(_window->getWindow())->isMousePressed(0))
+        // if (GLFWInput::getInstance(_window->getWindow())->isMousePressed(0))
+        // {
+        //     prevVelocity.v += mouseRecVelocity;
+        // }
+        /*
+        * a = a;
+        * v = at + v(o)
+        * s = a/2 t^2 + vt + s(0)
+        */
+        r32 ddt = 250.0f;
+        GLFWInput *input = GLFWInput::getInstance(_window->getWindow());
+        if (input->isKeyPressed(GLFW_KEY_W))
         {
-            prevVelocity.v += mouseRecVelocity;
+            prevVelocity.v += Vector<r32, 2>(0.0f, -1.0f) * ddt * deltaTime;
         }
+        if (input->isKeyPressed(GLFW_KEY_S))
+        {
+            prevVelocity.v += Vector<r32, 2>(0.0f, 1.0f) * ddt * deltaTime;
+        }
+        if (input->isKeyPressed(GLFW_KEY_A))
+        {
+            prevVelocity.v += Vector<r32, 2>(-1.0f, 0.0f) * ddt * deltaTime;
+        }
+        if (input->isKeyPressed(GLFW_KEY_D))
+        {
+            prevVelocity.v += Vector<r32, 2>(1.0f, 0.0f) * ddt * deltaTime;
+        }
+        // LOG(prevVelocity);
 
         bool showCircle = false;
         vector<Vector<float, 2>> normalLine;
@@ -170,8 +195,14 @@ namespace GilqEngine
             }
         }
         Vector<float, 2> newMouseRectPosition = _mouseRectangle.position + prevVelocity.v * deltaTime;
+        if (newMouseRectPosition[0] < 0.0f) newMouseRectPosition[0] = (r32)_window->getWidth();
+        if (newMouseRectPosition[0] > (r32)_window->getWidth()) newMouseRectPosition[0] = 0.0f;
+        if (newMouseRectPosition[1] < 0.0f) newMouseRectPosition[1] = (r32)_window->getHeight();
+        if (newMouseRectPosition[1] > (r32)_window->getHeight()) newMouseRectPosition[1] = 0.0f;
         _objectCoordinator.updateComponent<PositionComponent2D>(_mouseRect, newMouseRectPosition);
         _mouseRectangle.position = newMouseRectPosition;
+
+        _objectCoordinator.updateGeneratorParticleVelocity(_mouseParticleGenerator, 100.0f * normalize(-prevVelocity.v));
 
         if (showCircle)
         {
@@ -186,12 +217,17 @@ namespace GilqEngine
         }
 
         _objectCoordinator.updateGeneratorParticlePosition(_mouseParticleGenerator, _mouseRectangle.position);
+        BEGIN_TIMED_BLOCK(Update);
         _objectCoordinator.update(deltaTime);
+        END_TIMED_BLOCK(Update);
     }
 
     void CollisionDevLayer::onRender()
     {
+        BEGIN_TIMED_BLOCK(Render);
         _objectCoordinator.drawObjects2D();
+        END_TIMED_BLOCK(Render);
+        PrintCycleCounters();
     }
 
     void CollisionDevLayer::loadShaders(void)

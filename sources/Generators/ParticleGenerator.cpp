@@ -1,6 +1,7 @@
 #include "Generators/ParticleGenerator.hpp"
 #include "ParticleTransforms/DefaultParticleTransform.hpp"
 #include "Log.hpp"
+#include "Debug/Stopwatch.hpp"
 
 namespace GilqEngine
 {
@@ -32,17 +33,22 @@ namespace GilqEngine
     {
         TRACE();
         nOfParticlesToSpawn = static_cast<u32>(round((static_cast<float>(nOfParticlesToSpawn) * 60.0f * deltaTime)));
+        BEGIN_TIMED_BLOCK(ParticleGeneratorRevive);
         for (u32 i = 0; i < nOfParticlesToSpawn; ++i)
         {
             u32 reviveIndex = getNextReviveIndex();
             particleTransform->reviveTransformFunction(spawnedParticle, _particles[reviveIndex]);
         }
+        END_TIMED_BLOCK(ParticleGeneratorRevive);
 
         _numberOfAliveParticles = 0;
         u32 lastDrawnParticleIndex = 0;
+        BEGIN_TIMED_BLOCK(ParticleGeneratorUpdate);
         for (u32 i = 0; i < _particles.size(); ++i)
         {
+            BEGIN_TIMED_BLOCK(UpdateTransformFn);
             particleTransform->updateTransformFunction(deltaTime, _particles[i]);
+            END_TIMED_BLOCK(UpdateTransformFn);
             if (_particles[i].life > 0.0f && _particles[i].color[3] >= 0.0f)
             {
                 lastDrawnParticleIndex = i;
@@ -52,7 +58,8 @@ namespace GilqEngine
                 ++_numberOfAliveParticles;
             }
         }
-        LOG("Last drawn particle index: " << lastDrawnParticleIndex);
+        END_TIMED_BLOCK(ParticleGeneratorUpdate);
+        // LOG("Last drawn particle index: " << lastDrawnParticleIndex);
     }
 
     void ParticleGenerator::draw(

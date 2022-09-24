@@ -16,11 +16,15 @@ set(GLEW_PATH GLEW)
 set(GLFW_URL "https://github.com/glfw/glfw")
 set(GLFW_PATH GLFW)
 
+# set(CMAKE_CXX_FLAGS_DEBUG_INIT)
+set(CMAKE_CXX_FLAGS_RELEASE_INIT)
+
 include(ExternalProject)
 if (NOT EXISTS "${ASSIMP_PATH}")
     ExternalProject_Add(${ASSIMP_PATH}
         DOWNLOAD_COMMAND git clone --depth 1 --branch "v3.1.1" ${ASSIMP_URL} ${ASSIMP_PATH}
         PREFIX ${ASSIMP_PATH}
+        BUILD_COMMAND ""
     )
 endif()
 if (NOT EXISTS "${GLFW_PATH}")
@@ -28,6 +32,7 @@ if (NOT EXISTS "${GLFW_PATH}")
         DOWNLOAD_COMMAND git clone --depth 1 --branch "3.3.8" ${GLFW_URL} ${GLFW_PATH}
         PREFIX ${GLFW_PATH}
         CMAKE_ARGS -DBUILD_SHARED_LIBS=ON
+        BUILD_COMMAND ""
     )
 endif()
 if (NOT EXISTS "${GLEW_PATH}")
@@ -52,7 +57,7 @@ set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 if (MSVC)
-    add_compile_options(-Oi -FC -Zi -WX -W4 -nologo -EHa -wd4100 -wd4189 -wd4702 -wd4505 -wd4996 -wd4005 /std:c++14)
+    add_compile_options(-Oi -FC -Zo -WX -W4 -nologo -fp:fast -EHa -wd4100 -wd4189 -wd4702 -wd4505 -wd4996 -wd4005 /std:c++14)
 else()
     add_compile_options(-Wall -Wextra -Wno-address-of-packed-member -std=c++14)
 endif()
@@ -64,7 +69,7 @@ target_precompile_headers(${PROJECT_NAME} PUBLIC headers/pch.hpp)
 
 # linking
 if (MSVC)
-    set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS opengl32.lib)
+    set_property(TARGET ${PROJECT_NAME} APPEND_STRING PROPERTY LINK_FLAGS opengl32.lib -opt:ref -incremental:no)
     file(GLOB GLEW_LIB "build/${GLEW_PATH}/src/${GLEW_PATH}-build/lib/Debug/glew32d.lib")
     file(GLOB GLFW_LIB "build/${GLFW_PATH}/src/${GLFW_PATH}-build/src/Debug/glfw3dll.lib")
     file(GLOB ASSIMP_LIB "build/${ASSIMP_PATH}/src/${ASSIMP_PATH}-build/code/Debug/assimpd.lib")

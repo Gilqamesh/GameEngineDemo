@@ -7,10 +7,8 @@ namespace GilqEngine
 {
 
 # if defined(G_RELEASE)
-#  define ASSERT(x) ((void)(x))
-#  define GLCall(x) GLClearError();\
-    x;\
-    ASSERT(GLLogCall(#x, __FILE__, __LINE__))
+#  define ASSERT(x)
+#  define GLCall(x) x
 # elif defined(G_DEBUG)
 #  define ASSERT(x) {\
     if(!(x)) {\
@@ -19,7 +17,8 @@ namespace GilqEngine
         raise(SIGINT);\
     }\
 }
-#  define GLCall(x) GLClearError();\
+#  define GLCall(x)\
+    GLClearError();\
     x;\
     ASSERT(GLLogCall(#x, __FILE__, __LINE__))
 # endif
